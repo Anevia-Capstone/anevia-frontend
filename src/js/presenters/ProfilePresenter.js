@@ -218,13 +218,13 @@ export default class ProfilePresenter extends BasePresenter {
         </div>
         <div class="modal-actions">
           <button class="action-btn secondary-btn" onclick="this.closest('.modal').remove()">Cancel</button>
-          <button class="action-btn primary-btn" id="confirmLinkPassword">Link Password</button>
+          <button class="action-btn primary-btn" id="confirmLinkPasswordBtn">Link Password</button>
         </div>
       </div>
     `
     );
 
-    const confirmBtn = modal.querySelector("#confirmLinkPassword");
+    const confirmBtn = modal.querySelector("#confirmLinkPasswordBtn");
     confirmBtn.addEventListener("click", () => {
       this.handleLinkPasswordConfirm(modal);
     });
