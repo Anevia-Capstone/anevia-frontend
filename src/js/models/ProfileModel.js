@@ -1,0 +1,319 @@
+// Profile Model for managing user profile data and operations
+import BaseModel from "./BaseModel.js";
+import {
+  getUserProfile,
+  updateUserProfile,
+  uploadProfileImage,
+  linkEmailPassword,
+  resetUserPassword,
+  deleteUserProfile,
+} from "../api.js";
+import { getCurrentUser, logoutUser } from "../firebase/auth.js";
+
+export default class ProfileModel extends BaseModel {
+  constructor() {
+    super();
+    this.currentUser = null;
+    this.backendUser = null;
+    this.isLoading = false;
+  }
+
+  // Load user profile from backend
+  async loadUserProfile() {
+    try {
+      this.setData("isLoading", true);
+
+      this.currentUser = getCurrentUser();
+      if (!this.currentUser) {
+        throw new Error("Please log in to view your profile");
+      }
+
+      // Get user profile from backend
+      const response = await getUserProfile(this.currentUser.uid);
+      this.backendUser = response.user;
+
+      this.setData("currentUser", this.currentUser);
+      this.setData("backendUser", this.backendUser);
+
+      return {
+        success: true,
+        currentUser: this.currentUser,
+        backendUser: this.backendUser,
+      };
+    } catch (error) {
+      console.error("Error loading user profile:", error);
+      return {
+        success: false,
+        error: error.message || "Failed to load profile",
+      };
+    } finally {
+      this.setData("isLoading", false);
+    }
+  }
+
+  // Update user profile
+  async updateProfile(profileData) {
+    try {
+      this.setData("isLoading", true);
+
+      if (!this.currentUser) {
+        throw new Error("User not authenticated");
+      }
+
+      if (!profileData.username) {
+        throw new Error("Username is required");
+      }
+
+      const response = await updateUserProfile(
+        this.currentUser.uid,
+        profileData
+      );
+      this.backendUser = response.user;
+
+      this.setData("backendUser", this.backendUser);
+
+      return {
+        success: true,
+        user: this.backendUser,
+      };
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      return {
+        success: false,
+        error: error.message || "Failed to update profile",
+      };
+    } finally {
+      this.setData("isLoading", false);
+    }
+  }
+
+  // Upload profile image
+  async uploadImage(file) {
+    try {
+      this.setData("isLoading", true);
+
+      if (!this.currentUser) {
+        throw new Error("User not authenticated");
+      }
+
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        throw new Error("Please select a valid image file");
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error("Image size must be less than 5MB");
+      }
+
+      const response = await uploadProfileImage(this.currentUser.uid, file);
+      this.backendUser = response.user;
+
+      this.setData("backendUser", this.backendUser);
+
+      return {
+        success: true,
+        user: this.backendUser,
+      };
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      return {
+        success: false,
+        error: error.message || "Failed to upload image",
+      };
+    } finally {
+      this.setData("isLoading", false);
+    }
+  }
+
+  // Change user password
+  async changePassword(newPassword, confirmPassword) {
+    try {
+      this.setData("isLoading", true);
+
+      if (!this.currentUser) {
+        throw new Error("User not authenticated");
+      }
+
+      if (!newPassword || !confirmPassword) {
+        throw new Error("Please fill in all fields");
+      }
+
+      if (newPassword.length < 6) {
+        throw new Error("Password must be at least 6 characters long");
+      }
+
+      if (newPassword !== confirmPassword) {
+        throw new Error("Passwords do not match");
+      }
+
+      await resetUserPassword(this.currentUser.uid, newPassword);
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error changing password:", error);
+      return {
+        success: false,
+        error: error.message || "Failed to change password",
+      };
+    } finally {
+      this.setData("isLoading", false);
+    }
+  }
+
+  // Link email/password authentication
+  async linkPassword(password, confirmPassword) {
+    try {
+      this.setData("isLoading", true);
+
+      if (!this.currentUser) {
+        throw new Error("User not authenticated");
+      }
+
+      if (!password || !confirmPassword) {
+        throw new Error("Please fill in all fields");
+      }
+
+      if (password.length < 6) {
+        throw new Error("Password must be at least 6 characters long");
+      }
+
+      if (password !== confirmPassword) {
+        throw new Error("Passwords do not match");
+      }
+
+      await linkEmailPassword(this.currentUser.uid, password);
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error linking password:", error);
+      return {
+        success: false,
+        error: error.message || "Failed to link password",
+      };
+    } finally {
+      this.setData("isLoading", false);
+    }
+  }
+
+  // Delete user account
+  async deleteAccount(confirmText) {
+    try {
+      this.setData("isLoading", true);
+
+      if (!this.currentUser) {
+        throw new Error("User not authenticated");
+      }
+
+      if (confirmText !== "DELETE") {
+        throw new Error('Please type "DELETE" to confirm');
+      }
+
+      await deleteUserProfile(this.currentUser.uid);
+
+      // Log out user after successful deletion
+      await logoutUser();
+
+      // Clear local data
+      this.currentUser = null;
+      this.backendUser = null;
+      this.clearData();
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      return {
+        success: false,
+        error: error.message || "Failed to delete account",
+      };
+    } finally {
+      this.setData("isLoading", false);
+    }
+  }
+
+  // Update user data from external source (e.g., auth state change)
+  updateUserData(currentUser, backendUser) {
+    this.currentUser = currentUser;
+    this.backendUser = backendUser;
+
+    this.setData("currentUser", this.currentUser);
+    this.setData("backendUser", this.backendUser);
+  }
+
+  // Get current user
+  getCurrentUser() {
+    return this.currentUser;
+  }
+
+  // Get backend user
+  getBackendUser() {
+    return this.backendUser;
+  }
+
+  // Check if user is authenticated
+  isUserAuthenticated() {
+    return !!this.currentUser;
+  }
+
+  // Check if user has password authentication
+  hasPasswordAuth() {
+    if (!this.currentUser) return false;
+    const providers = this.currentUser.providerData.map((p) => p.providerId);
+    return providers.includes("password");
+  }
+
+  // Check if user has Google authentication
+  hasGoogleAuth() {
+    if (!this.currentUser) return false;
+    const providers = this.currentUser.providerData.map((p) => p.providerId);
+    return providers.includes("google.com");
+  }
+
+  // Get user profile image URL
+  getProfileImageUrl() {
+    let imageUrl = "./src/assets/default-avatar.svg";
+
+    // Priority: backend photoUrl > Firebase photoURL > default
+    if (this.backendUser?.photoUrl) {
+      // Check if backend photoUrl is a full URL or relative path
+      if (this.backendUser.photoUrl.startsWith("http")) {
+        // It's already a full URL (e.g., Google Photos URL)
+        imageUrl = this.backendUser.photoUrl;
+      } else {
+        // It's a relative path, prepend backend URL
+        imageUrl = `https://server.anevia.my.id${this.backendUser.photoUrl}`;
+      }
+    } else if (this.currentUser?.photoURL) {
+      // Firebase photoURL is always a full URL
+      imageUrl = this.currentUser.photoURL;
+    }
+
+    return imageUrl;
+  }
+
+  // Get user display name
+  getDisplayName() {
+    return this.backendUser?.username || this.currentUser?.displayName || "";
+  }
+
+  // Get user email
+  getEmail() {
+    return this.backendUser?.email || this.currentUser?.email || "";
+  }
+
+  // Get formatted creation date
+  getCreationDate() {
+    if (this.backendUser?.createdAt) {
+      return new Date(this.backendUser.createdAt).toLocaleDateString();
+    }
+    return "";
+  }
+
+  // Get formatted birth date
+  getBirthDate() {
+    if (this.backendUser?.birthdate) {
+      return new Date(this.backendUser.birthdate).toISOString().split("T")[0];
+    }
+    return "";
+  }
+}
