@@ -86,13 +86,20 @@ export default class HomeView extends BaseView {
 
   render() {
     const html = `
-      <div class="container">
-        <div class="hero-content">
-          <h1 class="hero-title">The Future of Anemia Detection: Empowered by AI Technology</h1>
-          <p class="hero-subtitle">Detect anemia early through advanced eye scanning technology. Quick, non-invasive, and accurate results in seconds.</p>
-          <div class="hero-buttons">
-            <a href="#tools" class="btn btn-primary">Try It Now</a>
-            <a href="#about" class="btn btn-secondary">Learn More</a>
+      <div class="hero-section">
+        <div class="hero-body-container">
+          <div class="hero-text-section">
+            <div class="hero-title-container">
+              <h1 class="hero-title">The Future of Anemia Detection: Empowered by <span class="hero-title-highlight">AI Technology</span></h1>
+            </div>
+            <div class="hero-cta-container">
+              <button class="hero-try-now-btn" id="hero-try-now">
+                <span>Try now</span>
+              </button>
+            </div>
+            <div class="hero-image-container">
+              <img src="/src/assets/eyes.png" alt="Eye Detection" class="hero-eye-image">
+            </div>
           </div>
         </div>
       </div>
@@ -278,21 +285,12 @@ export default class HomeView extends BaseView {
   }
 
   setupEventListeners() {
-    const tryItNowBtn = this.findElement(".btn-primary");
-    const learnMoreBtn = this.findElement(".btn-secondary");
+    const heroTryNowBtn = this.findElement("#hero-try-now");
 
-    if (tryItNowBtn) {
-      this.addEventListener(tryItNowBtn, "click", (e) => {
+    if (heroTryNowBtn) {
+      this.addEventListener(heroTryNowBtn, "click", (e) => {
         e.preventDefault();
         window.location.hash = "tools";
-      });
-    }
-
-    if (learnMoreBtn) {
-      this.addEventListener(learnMoreBtn, "click", (e) => {
-        e.preventDefault();
-        // Scroll to about section within the same page
-        this.scrollToAboutSection();
       });
     }
 

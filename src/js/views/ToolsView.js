@@ -1,10 +1,10 @@
 // Tools View for displaying the anemia detection tools
-import BaseView from './BaseView.js';
+import BaseView from "./BaseView.js";
 
 export default class ToolsView extends BaseView {
   constructor() {
-    super('tools');
-    this.scanMode = 'camera';
+    super("tools");
+    this.scanMode = "camera";
     this.stream = null;
     this.capturedImage = null;
     this.init();
@@ -110,8 +110,14 @@ export default class ToolsView extends BaseView {
           </div>
 
           <div class="result-actions">
-            <button class="btn btn-primary" id="new-scan-btn">New Scan</button>
-            <button class="btn btn-secondary" id="download-report-btn">Download Report</button>
+            <button class="btn btn-secondary" id="back-btn">
+              <i class="fas fa-arrow-left"></i>
+              Kembali
+            </button>
+            <button class="btn btn-primary" id="chat-ai-btn">
+              <i class="fas fa-robot"></i>
+              Bicarakan dengan AI Sekarang!
+            </button>
           </div>
         </div>
       </div>
@@ -122,60 +128,60 @@ export default class ToolsView extends BaseView {
 
   setupEventListeners() {
     // Scan option selection
-    const scanOptions = this.findElements('.scan-option');
-    const cameraInterface = this.findElement('#camera-interface');
-    const uploadInterface = this.findElement('#upload-interface');
-    const cameraControls = this.findElement('#camera-controls');
+    const scanOptions = this.findElements(".scan-option");
+    const cameraInterface = this.findElement("#camera-interface");
+    const uploadInterface = this.findElement("#upload-interface");
+    const cameraControls = this.findElement("#camera-controls");
 
     scanOptions.forEach((option) => {
-      this.addEventListener(option, 'click', () => {
+      this.addEventListener(option, "click", () => {
         this.handleScanModeChange(option.dataset.mode);
       });
     });
 
     // Camera functionality
-    const enableCameraBtn = this.findElement('#enable-camera');
-    const captureBtn = this.findElement('#capture-btn');
-    const switchCameraBtn = this.findElement('#switch-camera-btn');
-    const stopCameraBtn = this.findElement('#stop-camera-btn');
+    const enableCameraBtn = this.findElement("#enable-camera");
+    const captureBtn = this.findElement("#capture-btn");
+    const switchCameraBtn = this.findElement("#switch-camera-btn");
+    const stopCameraBtn = this.findElement("#stop-camera-btn");
 
     if (enableCameraBtn) {
-      this.addEventListener(enableCameraBtn, 'click', () => {
+      this.addEventListener(enableCameraBtn, "click", () => {
         this.onCameraEnable();
       });
     }
 
     if (captureBtn) {
-      this.addEventListener(captureBtn, 'click', () => {
+      this.addEventListener(captureBtn, "click", () => {
         this.onCameraCapture();
       });
     }
 
     if (switchCameraBtn) {
-      this.addEventListener(switchCameraBtn, 'click', () => {
+      this.addEventListener(switchCameraBtn, "click", () => {
         this.onCameraSwitch();
       });
     }
 
     if (stopCameraBtn) {
-      this.addEventListener(stopCameraBtn, 'click', () => {
+      this.addEventListener(stopCameraBtn, "click", () => {
         this.onCameraStop();
       });
     }
 
     // Upload functionality
-    const fileInput = this.findElement('#file-input');
-    const browseBtn = this.findElement('#browse-btn');
-    const uploadContainer = this.findElement('#upload-interface');
+    const fileInput = this.findElement("#file-input");
+    const browseBtn = this.findElement("#browse-btn");
+    const uploadContainer = this.findElement("#upload-interface");
 
     if (browseBtn) {
-      this.addEventListener(browseBtn, 'click', () => {
+      this.addEventListener(browseBtn, "click", () => {
         fileInput.click();
       });
     }
 
     if (fileInput) {
-      this.addEventListener(fileInput, 'change', (e) => {
+      this.addEventListener(fileInput, "change", (e) => {
         if (e.target.files.length > 0) {
           this.onFileUpload(e.target.files[0]);
         }
@@ -184,18 +190,18 @@ export default class ToolsView extends BaseView {
 
     // Drag and drop functionality
     if (uploadContainer) {
-      this.addEventListener(uploadContainer, 'dragover', (e) => {
+      this.addEventListener(uploadContainer, "dragover", (e) => {
         e.preventDefault();
-        uploadContainer.classList.add('dragover');
+        uploadContainer.classList.add("dragover");
       });
 
-      this.addEventListener(uploadContainer, 'dragleave', () => {
-        uploadContainer.classList.remove('dragover');
+      this.addEventListener(uploadContainer, "dragleave", () => {
+        uploadContainer.classList.remove("dragover");
       });
 
-      this.addEventListener(uploadContainer, 'drop', (e) => {
+      this.addEventListener(uploadContainer, "drop", (e) => {
         e.preventDefault();
-        uploadContainer.classList.remove('dragover');
+        uploadContainer.classList.remove("dragover");
         if (e.dataTransfer.files.length > 0) {
           this.onFileUpload(e.dataTransfer.files[0]);
         }
@@ -203,33 +209,47 @@ export default class ToolsView extends BaseView {
     }
 
     // Preview and scan functionality
-    const scanBtn = this.findElement('#scan-btn');
-    const retakeBtn = this.findElement('#retake-btn');
+    const scanBtn = this.findElement("#scan-btn");
+    const retakeBtn = this.findElement("#retake-btn");
 
     if (scanBtn) {
-      this.addEventListener(scanBtn, 'click', () => {
+      this.addEventListener(scanBtn, "click", () => {
         this.onScanImage();
       });
     }
 
     if (retakeBtn) {
-      this.addEventListener(retakeBtn, 'click', () => {
+      this.addEventListener(retakeBtn, "click", () => {
         this.onRetake();
       });
     }
 
     // Result functionality
-    const newScanBtn = this.findElement('#new-scan-btn');
-    const downloadReportBtn = this.findElement('#download-report-btn');
+    const backBtn = this.findElement("#back-btn");
+    const chatAiBtn = this.findElement("#chat-ai-btn");
+    const newScanBtn = this.findElement("#new-scan-btn");
+    const downloadReportBtn = this.findElement("#download-report-btn");
+
+    if (backBtn) {
+      this.addEventListener(backBtn, "click", () => {
+        this.onBack();
+      });
+    }
+
+    if (chatAiBtn) {
+      this.addEventListener(chatAiBtn, "click", () => {
+        this.onChatWithAI();
+      });
+    }
 
     if (newScanBtn) {
-      this.addEventListener(newScanBtn, 'click', () => {
+      this.addEventListener(newScanBtn, "click", () => {
         this.onNewScan();
       });
     }
 
     if (downloadReportBtn) {
-      this.addEventListener(downloadReportBtn, 'click', () => {
+      this.addEventListener(downloadReportBtn, "click", () => {
         this.onDownloadReport();
       });
     }
@@ -238,7 +258,7 @@ export default class ToolsView extends BaseView {
   setupCleanupListeners() {
     // Define event handlers as class methods so they can be removed later
     this.handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden' && this.stream) {
+      if (document.visibilityState === "hidden" && this.stream) {
         this.stopCamera();
       }
     };
@@ -250,87 +270,102 @@ export default class ToolsView extends BaseView {
     };
 
     // Add event listeners for page visibility changes to stop camera when user leaves
-    document.addEventListener('visibilitychange', this.handleVisibilityChange);
-    window.addEventListener('beforeunload', this.handleBeforeUnload);
+    document.addEventListener("visibilitychange", this.handleVisibilityChange);
+    window.addEventListener("beforeunload", this.handleBeforeUnload);
   }
 
   // Event handler methods that will be called by presenter
   handleScanModeChange(mode) {
     // Remove active class from all options
-    this.findElements('.scan-option').forEach(opt => opt.classList.remove('active'));
-    
+    this.findElements(".scan-option").forEach((opt) =>
+      opt.classList.remove("active")
+    );
+
     // Add active class to selected option
     const selectedOption = this.findElement(`[data-mode="${mode}"]`);
     if (selectedOption) {
-      selectedOption.classList.add('active');
+      selectedOption.classList.add("active");
     }
 
     this.scanMode = mode;
 
-    const cameraInterface = this.findElement('#camera-interface');
-    const uploadInterface = this.findElement('#upload-interface');
-    const cameraControls = this.findElement('#camera-controls');
+    const cameraInterface = this.findElement("#camera-interface");
+    const uploadInterface = this.findElement("#upload-interface");
+    const cameraControls = this.findElement("#camera-controls");
 
     // Show/hide appropriate interface
-    if (this.scanMode === 'camera') {
-      cameraInterface.style.display = 'block';
-      uploadInterface.style.display = 'none';
-      cameraControls.style.display = 'flex';
+    if (this.scanMode === "camera") {
+      cameraInterface.style.display = "block";
+      uploadInterface.style.display = "none";
+      cameraControls.style.display = "flex";
     } else {
-      cameraInterface.style.display = 'none';
-      uploadInterface.style.display = 'block';
-      cameraControls.style.display = 'none';
+      cameraInterface.style.display = "none";
+      uploadInterface.style.display = "block";
+      cameraControls.style.display = "none";
     }
   }
 
   onCameraEnable() {
     // Notify presenter to handle camera enable
-    this.notifyPresenter('cameraEnable');
+    this.notifyPresenter("cameraEnable");
   }
 
   onCameraCapture() {
     // Notify presenter to handle camera capture
-    this.notifyPresenter('cameraCapture');
+    this.notifyPresenter("cameraCapture");
   }
 
   onCameraSwitch() {
     // Notify presenter to handle camera switch
-    this.notifyPresenter('cameraSwitch');
+    this.notifyPresenter("cameraSwitch");
   }
 
   onCameraStop() {
     // Notify presenter to handle camera stop
-    this.notifyPresenter('cameraStop');
+    this.notifyPresenter("cameraStop");
   }
 
   onFileUpload(file) {
     // Notify presenter to handle file upload
-    this.notifyPresenter('fileUpload', { file });
+    this.notifyPresenter("fileUpload", { file });
   }
 
   onScanImage() {
     // Notify presenter to handle scan
-    this.notifyPresenter('scanImage');
+    this.notifyPresenter("scanImage");
   }
 
   onRetake() {
     // Notify presenter to handle retake
-    this.notifyPresenter('retake');
+    this.notifyPresenter("retake");
+  }
+
+  onBack() {
+    // Notify presenter to handle back action
+    this.notifyPresenter("back");
+  }
+
+  onChatWithAI() {
+    // Notify presenter to handle chat with AI
+    this.notifyPresenter("chatWithAI");
   }
 
   onNewScan() {
     // Notify presenter to handle new scan
-    this.notifyPresenter('newScan');
+    this.notifyPresenter("newScan");
   }
 
   onDownloadReport() {
     // Notify presenter to handle download report
-    this.notifyPresenter('downloadReport');
+    this.notifyPresenter("downloadReport");
   }
 
   // Method to notify presenter of user actions
   notifyPresenter(action, data = {}) {
-    if (this.presenter && typeof this.presenter.handleUserAction === 'function') {
+    if (
+      this.presenter &&
+      typeof this.presenter.handleUserAction === "function"
+    ) {
       this.presenter.handleUserAction(action, data);
     }
   }
@@ -342,112 +377,124 @@ export default class ToolsView extends BaseView {
 
   // Camera-related methods that will be called by presenter
   async startCamera() {
-    const videoElement = this.findElement('.camera-feed');
-    const cameraOverlay = this.findElement('.camera-overlay');
-    const eyePlaceholder = this.findElement('#eye-placeholder');
+    const videoElement = this.findElement(".camera-feed");
+    const cameraOverlay = this.findElement(".camera-overlay");
+    const eyePlaceholder = this.findElement("#eye-placeholder");
 
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }
+        video: { facingMode: "environment" },
       });
 
       videoElement.srcObject = this.stream;
-      cameraOverlay.style.display = 'none';
-      eyePlaceholder.classList.add('active');
+      cameraOverlay.style.display = "none";
+      eyePlaceholder.classList.add("active");
     } catch (error) {
-      console.error('Error accessing camera:', error);
-      const cameraMessage = cameraOverlay.querySelector('.camera-message');
+      console.error("Error accessing camera:", error);
+      const cameraMessage = cameraOverlay.querySelector(".camera-message");
       if (cameraMessage) {
-        cameraMessage.textContent = 'Camera access denied. Please enable camera permissions.';
+        cameraMessage.textContent =
+          "Camera access denied. Please enable camera permissions.";
       }
     }
   }
 
   stopCamera() {
     if (this.stream) {
-      this.stream.getTracks().forEach(track => track.stop());
+      this.stream.getTracks().forEach((track) => track.stop());
       this.stream = null;
 
-      const videoElement = this.findElement('.camera-feed');
-      const eyePlaceholder = this.findElement('#eye-placeholder');
-      const cameraOverlay = this.findElement('.camera-overlay');
+      const videoElement = this.findElement(".camera-feed");
+      const eyePlaceholder = this.findElement("#eye-placeholder");
+      const cameraOverlay = this.findElement(".camera-overlay");
 
       if (videoElement) videoElement.srcObject = null;
-      if (eyePlaceholder) eyePlaceholder.classList.remove('active');
-      if (cameraOverlay) cameraOverlay.style.display = 'flex';
+      if (eyePlaceholder) eyePlaceholder.classList.remove("active");
+      if (cameraOverlay) cameraOverlay.style.display = "flex";
     }
   }
 
   capturePhoto() {
-    const videoElement = this.findElement('.camera-feed');
+    const videoElement = this.findElement(".camera-feed");
     if (!videoElement) return null;
 
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     canvas.width = videoElement.videoWidth;
     canvas.height = videoElement.videoHeight;
 
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext("2d");
     context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
     return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
-        this.capturedImage = blob;
-        resolve(blob);
-      }, 'image/jpeg', 0.9);
+      canvas.toBlob(
+        (blob) => {
+          this.capturedImage = blob;
+          resolve(blob);
+        },
+        "image/jpeg",
+        0.9
+      );
     });
   }
 
   showPreview(imageUrl) {
-    const previewContainer = this.findElement('#preview-container');
-    const previewImage = this.findElement('#preview-image');
-    const cameraInterface = this.findElement('#camera-interface');
-    const uploadInterface = this.findElement('#upload-interface');
-    const cameraControls = this.findElement('#camera-controls');
-    const eyePlaceholder = this.findElement('#eye-placeholder');
+    const previewContainer = this.findElement("#preview-container");
+    const previewImage = this.findElement("#preview-image");
+    const cameraInterface = this.findElement("#camera-interface");
+    const uploadInterface = this.findElement("#upload-interface");
+    const cameraControls = this.findElement("#camera-controls");
+    const eyePlaceholder = this.findElement("#eye-placeholder");
 
     // Hide interfaces
-    if (cameraInterface) cameraInterface.style.display = 'none';
-    if (uploadInterface) uploadInterface.style.display = 'none';
-    if (cameraControls) cameraControls.style.display = 'none';
-    if (eyePlaceholder) eyePlaceholder.classList.remove('active');
+    if (cameraInterface) cameraInterface.style.display = "none";
+    if (uploadInterface) uploadInterface.style.display = "none";
+    if (cameraControls) cameraControls.style.display = "none";
+    if (eyePlaceholder) eyePlaceholder.classList.remove("active");
 
     // Show preview
     if (previewImage) previewImage.src = imageUrl;
-    if (previewContainer) previewContainer.classList.add('active');
+    if (previewContainer) previewContainer.classList.add("active");
   }
 
   showScanResult(result) {
-    const resultContainer = this.findElement('#result-container');
-    const resultIcon = this.findElement('#result-icon');
-    const resultTitle = this.findElement('#result-title');
-    const resultDescription = this.findElement('#result-description');
-    const resultDetails = this.findElement('#result-details');
-    const previewContainer = this.findElement('#preview-container');
+    const resultContainer = this.findElement("#result-container");
+    const resultIcon = this.findElement("#result-icon");
+    const resultTitle = this.findElement("#result-title");
+    const resultDescription = this.findElement("#result-description");
+    const resultDetails = this.findElement("#result-details");
+    const previewContainer = this.findElement("#preview-container");
 
-    if (previewContainer) previewContainer.classList.remove('active');
-    if (resultContainer) resultContainer.classList.add('active');
+    if (previewContainer) previewContainer.classList.remove("active");
+    if (resultContainer) resultContainer.classList.add("active");
 
     if (result.isLoading) {
-      if (resultIcon) resultIcon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-      if (resultTitle) resultTitle.textContent = 'Analyzing your scan...';
-      if (resultDescription) resultDescription.textContent = 'Please wait while we process your image.';
-      if (resultDetails) resultDetails.innerHTML = '';
+      if (resultIcon)
+        resultIcon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      if (resultTitle) resultTitle.textContent = "Analyzing your scan...";
+      if (resultDescription)
+        resultDescription.textContent =
+          "Please wait while we process your image.";
+      if (resultDetails) resultDetails.innerHTML = "";
     } else {
       if (resultIcon) {
-        resultIcon.innerHTML = result.isAnemic ? 
-          '<i class="fas fa-exclamation-circle"></i>' : 
-          '<i class="fas fa-check-circle"></i>';
-        resultIcon.className = result.isAnemic ? 'result-icon positive' : 'result-icon negative';
+        resultIcon.innerHTML = result.isAnemic
+          ? '<i class="fas fa-exclamation-circle"></i>'
+          : '<i class="fas fa-check-circle"></i>';
+        resultIcon.className = result.isAnemic
+          ? "result-icon positive"
+          : "result-icon negative";
       }
-      
+
       if (resultTitle) {
-        resultTitle.textContent = result.isAnemic ? 'Anemia Detected' : 'No Anemia Detected';
+        resultTitle.textContent = result.isAnemic
+          ? "Anemia Detected"
+          : "No Anemia Detected";
       }
-      
+
       if (resultDescription) {
         resultDescription.textContent = result.description;
       }
-      
+
       if (resultDetails && result.details) {
         resultDetails.innerHTML = result.details;
       }
@@ -455,26 +502,26 @@ export default class ToolsView extends BaseView {
   }
 
   resetToInitialState() {
-    const previewContainer = this.findElement('#preview-container');
-    const resultContainer = this.findElement('#result-container');
-    const cameraInterface = this.findElement('#camera-interface');
-    const uploadInterface = this.findElement('#upload-interface');
-    const cameraControls = this.findElement('#camera-controls');
-    const eyePlaceholder = this.findElement('#eye-placeholder');
+    const previewContainer = this.findElement("#preview-container");
+    const resultContainer = this.findElement("#result-container");
+    const cameraInterface = this.findElement("#camera-interface");
+    const uploadInterface = this.findElement("#upload-interface");
+    const cameraControls = this.findElement("#camera-controls");
+    const eyePlaceholder = this.findElement("#eye-placeholder");
 
-    if (previewContainer) previewContainer.classList.remove('active');
-    if (resultContainer) resultContainer.classList.remove('active');
-    
+    if (previewContainer) previewContainer.classList.remove("active");
+    if (resultContainer) resultContainer.classList.remove("active");
+
     this.capturedImage = null;
 
-    if (this.scanMode === 'camera') {
-      if (cameraInterface) cameraInterface.style.display = 'block';
-      if (cameraControls) cameraControls.style.display = 'flex';
+    if (this.scanMode === "camera") {
+      if (cameraInterface) cameraInterface.style.display = "block";
+      if (cameraControls) cameraControls.style.display = "flex";
       if (this.stream && this.stream.active && eyePlaceholder) {
-        eyePlaceholder.classList.add('active');
+        eyePlaceholder.classList.add("active");
       }
     } else {
-      if (uploadInterface) uploadInterface.style.display = 'block';
+      if (uploadInterface) uploadInterface.style.display = "block";
     }
   }
 
@@ -488,8 +535,11 @@ export default class ToolsView extends BaseView {
     this.stopCamera();
 
     // Remove cleanup event listeners
-    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
-    window.removeEventListener('beforeunload', this.handleBeforeUnload);
+    document.removeEventListener(
+      "visibilitychange",
+      this.handleVisibilityChange
+    );
+    window.removeEventListener("beforeunload", this.handleBeforeUnload);
 
     // Call parent destroy
     super.destroy();

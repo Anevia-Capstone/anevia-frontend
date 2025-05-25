@@ -432,10 +432,21 @@ export default class ProfileView extends BaseView {
 
   // Get form data
   getFormData() {
-    return {
-      username: this.findElement("#username")?.value?.trim() || "",
-      birthdate: this.findElement("#birthdate")?.value || "",
-    };
+    const data = {};
+
+    // Only include username if it has a value
+    const username = this.findElement("#username")?.value?.trim();
+    if (username) {
+      data.username = username;
+    }
+
+    // Only include birthdate if it has a value
+    const birthdate = this.findElement("#birthdate")?.value?.trim();
+    if (birthdate) {
+      data.birthdate = birthdate;
+    }
+
+    return data;
   }
 
   // Set loading state

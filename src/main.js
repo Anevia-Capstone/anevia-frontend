@@ -14,6 +14,7 @@ import ToolsPresenter from "./js/presenters/ToolsPresenter.js";
 import LoginPresenter from "./js/presenters/LoginPresenter.js";
 import RegisterPresenter from "./js/presenters/RegisterPresenter.js";
 import ProfilePresenter from "./js/presenters/ProfilePresenter.js";
+import ChatPresenter from "./js/presenters/ChatPresenter.js";
 
 // Import Navigation and Footer components (these remain as components)
 import Navigation from "./js/components/Navigation.js";
@@ -55,10 +56,13 @@ class App {
     // Define routes with their corresponding presenters
     this.router.addRoute("", () => this.showHome());
     this.router.addRoute("home", () => this.showHome());
+    this.router.addRoute("about", () => this.showHomeWithScroll("about"));
+    this.router.addRoute("faq", () => this.showHomeWithScroll("faq"));
     this.router.addRoute("tools", () => this.showTools());
     this.router.addRoute("login", () => this.showLogin());
     this.router.addRoute("register", () => this.showRegister());
     this.router.addRoute("profile", () => this.showProfile());
+    this.router.addRoute("chat", () => this.showChat());
   }
 
   setupCustomEventListeners() {
@@ -74,6 +78,13 @@ class App {
     document.addEventListener("showProfile", () => {
       this.router.navigate("profile");
     });
+
+    // Listen for navigate to chat event from tools page
+    window.addEventListener("navigateToChat", (event) => {
+      console.log("Navigate to chat event received:", event.detail);
+      this.pendingScanData = event.detail;
+      this.router.navigate("chat");
+    });
   }
 
   showHome() {
@@ -83,6 +94,20 @@ class App {
       this.homePresenter = new HomePresenter();
     }
     this.homePresenter.show();
+  }
+
+  showHomeWithScroll(section) {
+    this.hideAllPages();
+    this.showHeaderFooter();
+    if (!this.homePresenter) {
+      this.homePresenter = new HomePresenter();
+    }
+    this.homePresenter.show();
+
+    // Scroll to the specific section after a short delay to ensure page is rendered
+    setTimeout(() => {
+      this.homePresenter.scrollToSection(section);
+    }, 100);
   }
 
   showTools() {
@@ -121,6 +146,22 @@ class App {
     this.profilePresenter.show();
   }
 
+  showChat() {
+    this.hideAllPages();
+    this.showHeaderFooter();
+    if (!this.chatPresenter) {
+      this.chatPresenter = new ChatPresenter();
+    }
+
+    // If we have pending scan data, initialize chat with it
+    if (this.pendingScanData) {
+      this.chatPresenter.initializeWithScanData(this.pendingScanData);
+      this.pendingScanData = null; // Clear after use
+    }
+
+    this.chatPresenter.show();
+  }
+
   hideAllPages() {
     // Hide all main sections
     document.querySelectorAll("section.section").forEach((section) => {
@@ -133,6 +174,7 @@ class App {
     if (this.loginPresenter) this.loginPresenter.hide();
     if (this.registerPresenter) this.registerPresenter.hide();
     if (this.profilePresenter) this.profilePresenter.hide();
+    if (this.chatPresenter) this.chatPresenter.hide();
   }
 
   showHeaderFooter() {
@@ -151,6 +193,9 @@ class App {
     // Set up token refresh mechanism
     setupTokenRefresh();
 
+    // Show initial loading state
+    this.showAuthLoading(true);
+
     // Listen for authentication state changes
     onAuthStateChanged((user, backendUser, backendResponse) => {
       console.log("Auth state changed:", user ? "logged in" : "logged out");
@@ -164,10 +209,14 @@ class App {
 
         if (backendUser) {
           console.log("Backend user data:", backendUser);
+          // Hide loading only when we have complete user data
+          this.showAuthLoading(false);
         } else {
           console.log(
             "Backend user data not available, using Firebase user only"
           );
+          // Hide loading even if backend data is not available
+          this.showAuthLoading(false);
         }
 
         // Update UI for logged in user
@@ -178,6 +227,9 @@ class App {
         this.backendUser = null;
         this.backendResponse = null;
         console.log("User is signed out");
+
+        // Hide loading
+        this.showAuthLoading(false);
 
         // Update UI for logged out user
         this.updateUIForLoggedOutUser();
@@ -276,6 +328,56 @@ class App {
 
   getBackendResponse() {
     return this.backendResponse;
+  }
+
+  showAuthLoading(show) {
+    let loadingElement = document.getElementById("auth-loading");
+
+    if (show) {
+      if (!loadingElement) {
+        loadingElement = document.createElement("div");
+        loadingElement.id = "auth-loading";
+        loadingElement.innerHTML = `
+          <div style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            font-family: 'Poppins', sans-serif;
+          ">
+            <div style="text-align: center;">
+              <div style="
+                width: 40px;
+                height: 40px;
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid #007bff;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 16px;
+              "></div>
+              <p style="margin: 0; color: #666; font-size: 14px;">Loading user data...</p>
+            </div>
+          </div>
+          <style>
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          </style>
+        `;
+        document.body.appendChild(loadingElement);
+      }
+    } else {
+      if (loadingElement) {
+        loadingElement.remove();
+      }
+    }
   }
 }
 

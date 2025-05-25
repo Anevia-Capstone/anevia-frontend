@@ -26,6 +26,12 @@ authAxios.interceptors.request.use(
 // Function to upload an image for anemia detection
 export const uploadScanImage = async (imageFile) => {
   try {
+    console.log(
+      "Uploading scan image to backend:",
+      imageFile.name,
+      imageFile.size
+    );
+
     const formData = new FormData();
     formData.append("image", imageFile);
 
@@ -36,9 +42,11 @@ export const uploadScanImage = async (imageFile) => {
       },
     });
 
+    console.log("Scan image upload response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error uploading scan image:", error);
+    console.error("Error response:", error.response?.data);
     throw error;
   }
 };
@@ -275,6 +283,104 @@ export const deleteUserProfile = async (uid) => {
     return response.data;
   } catch (error) {
     console.error(`Error deleting user profile for UID ${uid}:`, error);
+    console.error("Error response:", error.response?.data);
+    throw error;
+  }
+};
+
+// ==================== Chat API Functions ====================
+
+// Function to start a new chat session from scan data
+export const startChatFromScan = async (scanId, userId) => {
+  try {
+    console.log(
+      `Starting new chat session for scan ${scanId} and user ${userId}`
+    );
+
+    const response = await authAxios.post(
+      `${API_ENDPOINT}/chats`,
+      {
+        scanId: scanId,
+        userId: userId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("Chat session started successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`Error starting chat session for scan ${scanId}:`, error);
+    console.error("Error response:", error.response?.data);
+    throw error;
+  }
+};
+
+// Function to send a message in an existing chat session
+export const sendChatMessage = async (sessionId, userId, message) => {
+  try {
+    console.log(`Sending message to session ${sessionId} from user ${userId}`);
+
+    const response = await authAxios.post(
+      `${API_ENDPOINT}/chats/messages`,
+      {
+        sessionId: sessionId,
+        userId: userId,
+        message: message,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("Message sent successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`Error sending message to session ${sessionId}:`, error);
+    console.error("Error response:", error.response?.data);
+    throw error;
+  }
+};
+
+// Function to get all chat sessions for a user
+export const getUserChatSessions = async (userId) => {
+  try {
+    console.log(`Fetching all chat sessions for user ${userId}`);
+
+    const response = await authAxios.get(`${API_ENDPOINT}/chats/${userId}`);
+
+    console.log("Chat sessions fetched successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching chat sessions for user ${userId}:`, error);
+    console.error("Error response:", error.response?.data);
+    throw error;
+  }
+};
+
+// Function to get chat messages by user and session ID
+export const getChatMessages = async (userId, sessionId) => {
+  try {
+    console.log(
+      `Fetching chat messages for user ${userId} and session ${sessionId}`
+    );
+
+    const response = await authAxios.get(
+      `${API_ENDPOINT}/chats/${userId}/${sessionId}`
+    );
+
+    console.log("Chat messages fetched successfully:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error(
+      `Error fetching chat messages for user ${userId} and session ${sessionId}:`,
+      error
+    );
     console.error("Error response:", error.response?.data);
     throw error;
   }

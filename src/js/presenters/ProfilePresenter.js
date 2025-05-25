@@ -56,6 +56,9 @@ export default class ProfilePresenter extends BasePresenter {
     try {
       this.view.setLoading(true);
 
+      // Wait a bit for auth state to stabilize on page refresh
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       const result = await this.model.loadUserProfile();
 
       if (result.success) {
@@ -63,17 +66,45 @@ export default class ProfilePresenter extends BasePresenter {
         // Don't show success message for normal profile loading
         console.log("Profile loaded successfully");
       } else {
+        // Check if this is just a temporary auth state issue
+        const currentUser = this.model.getCurrentUser();
+        if (!currentUser) {
+          // Try to wait for auth state to load
+          console.log("Waiting for auth state to load...");
+          let retryCount = 0;
+          const maxRetries = 3;
+
+          while (retryCount < maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            const retryResult = await this.model.loadUserProfile();
+
+            if (retryResult.success) {
+              this.view.updateUserData(
+                retryResult.currentUser,
+                retryResult.backendUser
+              );
+              console.log("Profile loaded successfully after retry");
+              return;
+            }
+
+            retryCount++;
+            console.log(`Retry ${retryCount}/${maxRetries} failed`);
+          }
+        }
+
         this.view.showError(result.error);
 
-        // Only redirect if user is definitely not authenticated
+        // Only redirect if user is definitely not authenticated after retries
         if (
           result.error.includes("log in") ||
           result.error.includes("not authenticated")
         ) {
-          console.log("User not authenticated, redirecting to home");
+          console.log(
+            "User not authenticated after retries, redirecting to home"
+          );
           setTimeout(() => {
             this.navigate("home");
-          }, 2000);
+          }, 3000); // Increased timeout to give user time to see the error
         }
       }
     } catch (error) {

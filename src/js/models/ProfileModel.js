@@ -60,21 +60,62 @@ export default class ProfileModel extends BaseModel {
         throw new Error("User not authenticated");
       }
 
-      if (!profileData.username) {
-        throw new Error("Username is required");
+      // Validate that we have at least some data to update
+      if (!profileData || Object.keys(profileData).length === 0) {
+        throw new Error("No profile data provided");
       }
+
+      // Validate username if provided
+      if (profileData.username !== undefined) {
+        if (!profileData.username || profileData.username.trim() === "") {
+          throw new Error("Username cannot be empty");
+        }
+
+        const username = profileData.username.trim();
+        if (username.length < 2) {
+          throw new Error("Username must be at least 2 characters long");
+        }
+        if (username.length > 50) {
+          throw new Error("Username must be less than 50 characters");
+        }
+      }
+
+      // Validate birthdate format if provided
+      if (profileData.birthdate !== undefined && profileData.birthdate !== "") {
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(profileData.birthdate)) {
+          throw new Error("Birthdate must be in YYYY-MM-DD format");
+        }
+
+        const birthDate = new Date(profileData.birthdate);
+        const today = new Date();
+        if (birthDate > today) {
+          throw new Error("Birthdate cannot be in the future");
+        }
+
+        // Check if age is reasonable (between 1 and 120 years)
+        const age = today.getFullYear() - birthDate.getFullYear();
+        if (age < 1 || age > 120) {
+          throw new Error("Please enter a valid birthdate");
+        }
+      }
+
+      console.log("Sending profile update with data:", profileData);
 
       const response = await updateUserProfile(
         this.currentUser.uid,
         profileData
       );
-      this.backendUser = response.user;
 
-      this.setData("backendUser", this.backendUser);
+      if (response && response.user) {
+        this.backendUser = response.user;
+        this.setData("backendUser", this.backendUser);
+      }
 
       return {
         success: true,
         user: this.backendUser,
+        message: "Profile updated successfully",
       };
     } catch (error) {
       console.error("Error updating profile:", error);

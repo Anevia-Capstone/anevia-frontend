@@ -1,6 +1,6 @@
 // Tools Model for managing anemia detection functionality
-import BaseModel from './BaseModel.js';
-import { uploadScanImage } from '../api.js';
+import BaseModel from "./BaseModel.js";
+import { uploadScanImage } from "../api.js";
 
 export default class ToolsModel extends BaseModel {
   constructor() {
@@ -13,51 +13,85 @@ export default class ToolsModel extends BaseModel {
   // Upload and scan image for anemia detection
   async scanImage(imageFile) {
     if (this.isScanning) {
-      return { success: false, error: 'Scan already in progress' };
+      return { success: false, error: "Scan already in progress" };
     }
 
     try {
       this.isScanning = true;
-      this.setData('isScanning', true);
+      this.setData("isScanning", true);
 
       // Upload image to API
       const response = await uploadScanImage(imageFile);
-      
-      // For now, simulate API response since the actual API might not be fully implemented
-      const scanResult = this.simulateScanResult();
-      
-      // Store scan result
-      this.currentScan = {
-        id: this.generateScanId(),
-        timestamp: new Date(),
-        result: scanResult,
-        imageFile: imageFile
-      };
+      console.log("Backend scan response received:", response);
+
+      // Check if the API response is successful and contains scan data
+      if (response.status === "success" && response.data) {
+        // Use the actual scan result from the backend
+        const scanData = response.data;
+        const scanId = scanData.scanId || scanData.id;
+
+        this.currentScan = {
+          id: scanId,
+          scanId: scanId, // Add scanId for compatibility with chat API
+          timestamp: new Date(),
+          result: {
+            isAnemic: scanData.isAnemic,
+            confidence: scanData.confidence,
+            description:
+              scanData.description ||
+              this.getDefaultDescription(scanData.isAnemic),
+            details: {
+              confidenceLevel: `${scanData.confidence}%`,
+              scanDate: new Date().toLocaleDateString(),
+              scanId: scanId,
+              recommendations:
+                scanData.recommendations ||
+                this.getDefaultRecommendations(scanData.isAnemic),
+            },
+          },
+          imageFile: imageFile,
+          backendData: scanData, // Store original backend response
+        };
+      } else {
+        // Fallback to simulated result if backend doesn't return proper data
+        console.warn(
+          "Backend scan response not in expected format, using simulated result"
+        );
+        const scanResult = this.simulateScanResult();
+        const scanId = this.generateScanId();
+
+        this.currentScan = {
+          id: scanId,
+          scanId: scanId,
+          timestamp: new Date(),
+          result: scanResult,
+          imageFile: imageFile,
+        };
+      }
 
       // Add to scan history
       this.scanHistory.push(this.currentScan);
 
       // Update data
-      this.setData('currentScan', this.currentScan);
-      this.setData('scanHistory', this.scanHistory);
-      this.setData('isScanning', false);
+      this.setData("currentScan", this.currentScan);
+      this.setData("scanHistory", this.scanHistory);
+      this.setData("isScanning", false);
 
       this.isScanning = false;
 
       return {
         success: true,
-        result: scanResult,
-        scanId: this.currentScan.id
+        result: this.currentScan.result,
+        scanId: this.currentScan.scanId,
       };
-
     } catch (error) {
-      console.error('Error scanning image:', error);
+      console.error("Error scanning image:", error);
       this.isScanning = false;
-      this.setData('isScanning', false);
+      this.setData("isScanning", false);
 
       return {
         success: false,
-        error: error.message || 'Failed to scan image'
+        error: error.message || "Failed to scan image",
       };
     }
   }
@@ -70,31 +104,53 @@ export default class ToolsModel extends BaseModel {
     return {
       isAnemic: isAnemic,
       confidence: confidence,
-      description: isAnemic 
-        ? 'Our analysis indicates signs of anemia. Please consult with a healthcare professional for further evaluation.'
-        : 'Our analysis does not indicate signs of anemia. Continue to monitor your health regularly.',
+      description: isAnemic
+        ? "Our analysis indicates signs of anemia. Please consult with a healthcare professional for further evaluation."
+        : "Our analysis does not indicate signs of anemia. Continue to monitor your health regularly.",
       details: {
         confidenceLevel: `${confidence}%`,
         scanDate: new Date().toLocaleDateString(),
         scanId: this.generateScanId(),
-        recommendations: isAnemic 
+        recommendations: isAnemic
           ? [
-              'Consult with a healthcare professional',
-              'Consider iron-rich foods in your diet',
-              'Schedule a complete blood count test'
+              "Consult with a healthcare professional",
+              "Consider iron-rich foods in your diet",
+              "Schedule a complete blood count test",
             ]
           : [
-              'Continue regular health monitoring',
-              'Maintain a balanced diet',
-              'Schedule routine health checkups'
-            ]
-      }
+              "Continue regular health monitoring",
+              "Maintain a balanced diet",
+              "Schedule routine health checkups",
+            ],
+      },
     };
   }
 
   // Generate unique scan ID
   generateScanId() {
     return Math.random().toString(36).substring(2, 10).toUpperCase();
+  }
+
+  // Get default description based on anemia status
+  getDefaultDescription(isAnemic) {
+    return isAnemic
+      ? "Our analysis indicates signs of anemia. Please consult with a healthcare professional for further evaluation."
+      : "Our analysis does not indicate signs of anemia. Continue to monitor your health regularly.";
+  }
+
+  // Get default recommendations based on anemia status
+  getDefaultRecommendations(isAnemic) {
+    return isAnemic
+      ? [
+          "Consult with a healthcare professional",
+          "Consider iron-rich foods in your diet",
+          "Schedule a complete blood count test",
+        ]
+      : [
+          "Continue regular health monitoring",
+          "Maintain a balanced diet",
+          "Schedule routine health checkups",
+        ];
   }
 
   // Get current scan result
@@ -115,31 +171,31 @@ export default class ToolsModel extends BaseModel {
   // Clear current scan
   clearCurrentScan() {
     this.currentScan = null;
-    this.setData('currentScan', null);
+    this.setData("currentScan", null);
   }
 
   // Clear scan history
   clearScanHistory() {
     this.scanHistory = [];
-    this.setData('scanHistory', []);
+    this.setData("scanHistory", []);
   }
 
   // Validate image file
   validateImageFile(file) {
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    const validTypes = ["image/jpeg", "image/jpg", "image/png"];
     const maxSize = 10 * 1024 * 1024; // 10MB
 
     if (!validTypes.includes(file.type)) {
       return {
         valid: false,
-        error: 'Please upload a valid image file (JPG, JPEG, PNG)'
+        error: "Please upload a valid image file (JPG, JPEG, PNG)",
       };
     }
 
     if (file.size > maxSize) {
       return {
         valid: false,
-        error: 'File size exceeds 10MB limit'
+        error: "File size exceeds 10MB limit",
       };
     }
 
@@ -149,7 +205,7 @@ export default class ToolsModel extends BaseModel {
   // Generate report content
   generateReport(scanResult = null) {
     const scan = scanResult || this.currentScan;
-    
+
     if (!scan) {
       return null;
     }
@@ -161,7 +217,7 @@ export default class ToolsModel extends BaseModel {
 Anevia Anemia Detection Report
 ==============================
 
-Result: ${result.isAnemic ? 'Anemia Detected' : 'No Anemia Detected'}
+Result: ${result.isAnemic ? "Anemia Detected" : "No Anemia Detected"}
 
 ${result.description}
 
@@ -171,7 +227,7 @@ Details:
 - Scan ID: ${details.scanId}
 
 Recommendations:
-${details.recommendations.map(rec => `- ${rec}`).join('\n')}
+${details.recommendations.map((rec) => `- ${rec}`).join("\n")}
 
 Generated on: ${new Date().toLocaleString()}
 
@@ -183,16 +239,16 @@ Please consult with a healthcare professional for proper diagnosis and treatment
   // Download report as text file
   downloadReport(scanResult = null) {
     const reportContent = this.generateReport(scanResult);
-    
+
     if (!reportContent) {
-      return { success: false, error: 'No scan result available' };
+      return { success: false, error: "No scan result available" };
     }
 
     try {
-      const blob = new Blob([reportContent], { type: 'text/plain' });
+      const blob = new Blob([reportContent], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
 
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
       a.download = `anevia-report-${Date.now()}.txt`;
       document.body.appendChild(a);
@@ -202,22 +258,25 @@ Please consult with a healthcare professional for proper diagnosis and treatment
 
       return { success: true };
     } catch (error) {
-      console.error('Error downloading report:', error);
-      return { success: false, error: 'Failed to download report' };
+      console.error("Error downloading report:", error);
+      return { success: false, error: "Failed to download report" };
     }
   }
 
   // Get scan statistics
   getScanStatistics() {
     const totalScans = this.scanHistory.length;
-    const anemicScans = this.scanHistory.filter(scan => scan.result.isAnemic).length;
+    const anemicScans = this.scanHistory.filter(
+      (scan) => scan.result.isAnemic
+    ).length;
     const nonAnemicScans = totalScans - anemicScans;
 
     return {
       totalScans,
       anemicScans,
       nonAnemicScans,
-      anemicPercentage: totalScans > 0 ? Math.round((anemicScans / totalScans) * 100) : 0
+      anemicPercentage:
+        totalScans > 0 ? Math.round((anemicScans / totalScans) * 100) : 0,
     };
   }
 }

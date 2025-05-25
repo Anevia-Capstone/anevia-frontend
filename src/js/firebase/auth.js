@@ -172,6 +172,9 @@ export const onAuthStateChanged = (callback) => {
   return auth.onAuthStateChanged(async (user) => {
     if (user) {
       try {
+        // First call callback immediately with Firebase user to prevent logout
+        callback(user, null, null);
+
         // Check if we have a cached token first
         let token = localStorage.getItem("firebaseToken");
         const tokenExpiry = localStorage.getItem("firebaseTokenExpiry");
@@ -191,16 +194,17 @@ export const onAuthStateChanged = (callback) => {
           // Verify with backend (but don't fail if backend is down)
           await verifyToken(token);
           userProfile = await getUserProfile(user.uid);
+
+          // Call callback again with complete user data
+          callback(user, userProfile?.user || null, userProfile);
         } catch (backendError) {
           console.warn(
             "Backend unavailable, continuing with Firebase user only:",
             backendError
           );
           // Don't throw error, just continue with Firebase user
+          // No need to call callback again since we already called it with Firebase user
         }
-
-        // Call the original callback with both Firebase user and backend user
-        callback(user, userProfile?.user || null, userProfile);
       } catch (error) {
         console.error("Error in auth state change handler:", error);
         // Still call callback with user to prevent logout
