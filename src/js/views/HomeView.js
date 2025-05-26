@@ -1,5 +1,6 @@
 // Home View for displaying the landing page
 import BaseView from "./BaseView.js";
+import { animationManager } from "../utils/animations.js";
 
 export default class HomeView extends BaseView {
   constructor() {
@@ -97,24 +98,21 @@ export default class HomeView extends BaseView {
                 <span>Try now</span>
               </button>
             </div>
-            <div class="hero-image-container">
-              <img src="/src/assets/eyes.png" alt="Eye Detection" class="hero-eye-image">
-            </div>
           </div>
         </div>
       </div>
 
-      <div class="innovation-statement">
+      <div class="innovation-statement" data-animation="fadeInUp">
         <div class="container">
-          <p class="statement-text">Innovative AI-powered anemia detection technology applied to tackle real-world healthcare challenges.</p>
+          <p class="statement-text" data-animation="typeWriter">Innovative AI-powered anemia detection technology applied to tackle real-world healthcare challenges.</p>
         </div>
       </div>
 
-      <div class="features">
+      <div class="features" data-animation="fadeInUp">
         <div class="container">
           <h2 class="section-title">Why Choose Anevia?</h2>
-          <div class="features-container">
-            <div class="feature-card">
+          <div class="features-container" data-animation="staggerFadeIn">
+            <div class="feature-card" data-animation="scaleIn">
               <div class="feature-icon">
                 <i class="fas fa-bolt"></i>
               </div>
@@ -122,7 +120,7 @@ export default class HomeView extends BaseView {
               <p class="feature-description">Get your anemia screening results in seconds, not days. No more waiting for lab tests.</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card" data-animation="scaleIn">
               <div class="feature-icon">
                 <i class="fas fa-shield-alt"></i>
               </div>
@@ -130,7 +128,7 @@ export default class HomeView extends BaseView {
               <p class="feature-description">No needles, no blood samples. Just a simple scan of your eye's conjunctiva.</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card" data-animation="scaleIn">
               <div class="feature-icon">
                 <i class="fas fa-chart-line"></i>
               </div>
@@ -141,25 +139,25 @@ export default class HomeView extends BaseView {
         </div>
       </div>
 
-      <div class="how-it-works">
+      <div class="how-it-works" data-animation="fadeInUp">
         <div class="container">
           <h2 class="section-title">How It Works</h2>
           <p class="section-subtitle">Our technology analyzes the color of your eye's conjunctiva to detect signs of anemia, providing quick and reliable results.</p>
 
-          <div class="steps-container">
-            <div class="step">
+          <div class="steps-container" data-animation="staggerFadeIn">
+            <div class="step" data-animation="slideInUp">
               <div class="step-number">1</div>
               <h3 class="step-title">Capture</h3>
               <p class="step-description">Take a clear photo of your eye's conjunctiva using your device's camera or upload an existing image.</p>
             </div>
 
-            <div class="step">
+            <div class="step" data-animation="slideInUp">
               <div class="step-number">2</div>
               <h3 class="step-title">Analyze</h3>
               <p class="step-description">Our AI algorithm analyzes the color and characteristics of your conjunctiva.</p>
             </div>
 
-            <div class="step">
+            <div class="step" data-animation="slideInUp">
               <div class="step-number">3</div>
               <h3 class="step-title">Results</h3>
               <p class="step-description">Receive your anemia screening results instantly, with recommendations for next steps.</p>
@@ -169,7 +167,7 @@ export default class HomeView extends BaseView {
       </div>
 
       <!-- About Section -->
-      <div class="about-section">
+      <div class="about-section" data-animation="aboutSection">
         <div class="container about-container">
           <h2 class="section-title">About Anevia</h2>
           <p class="section-subtitle">We're on a mission to make anemia detection accessible to everyone through innovative technology.</p>
@@ -186,7 +184,7 @@ export default class HomeView extends BaseView {
             </div>
           </div>
 
-          <div class="team-section">
+          <div class="team-section" data-animation="teamMembers">
             <h2 class="section-title">Meet Our Team</h2>
             <div class="team-container">
               <div class="team-member">
@@ -254,7 +252,7 @@ export default class HomeView extends BaseView {
       </div>
 
       <!-- FAQ Section -->
-      <div class="faq-section">
+      <div class="faq-section" data-animation="faqSection">
         <div class="container faq-container">
           <h2 class="section-title">Frequently Asked Questions</h2>
           <p class="section-subtitle">Find answers to common questions about our anemia detection technology.</p>
@@ -268,14 +266,6 @@ export default class HomeView extends BaseView {
 
           <div class="accordion" id="faq-accordion">
             <!-- FAQ items will be inserted here -->
-          </div>
-
-          <div class="faq-contact">
-            <h3 class="faq-contact-title">Still Have Questions?</h3>
-            <p class="faq-contact-text">If you couldn't find the answer to your question, feel free to contact our support team.</p>
-            <a href="mailto:support@anevia.my.id" class="btn btn-primary faq-contact-button">
-              <i class="fas fa-envelope"></i> Contact Support
-            </a>
           </div>
         </div>
       </div>
@@ -349,6 +339,16 @@ export default class HomeView extends BaseView {
 
     // Add event listeners to the new accordion items
     this.setupAccordionListeners();
+
+    // Animate the new FAQ items
+    setTimeout(() => {
+      const newItems = accordion.querySelectorAll(".accordion-item");
+      animationManager.animateStaggerFadeIn(newItems, {
+        direction: "left",
+        staggerDelay: 100,
+        delay: 100,
+      });
+    }, 50);
   }
 
   setupAccordionListeners() {
@@ -361,27 +361,22 @@ export default class HomeView extends BaseView {
         // Check if the clicked item is already active
         const isActive = item.classList.contains("active");
 
-        // If it's active, just close it
-        if (isActive) {
-          item.classList.remove("active");
-          const content = item.querySelector(".accordion-content");
-          content.style.maxHeight = "0";
-          return;
-        }
-
-        // If it's not active, toggle it and close others
-        item.classList.add("active");
-        const content = item.querySelector(".accordion-content");
-        content.style.maxHeight = "500px";
-
-        // Close other items
+        // Close other items first
         accordionItems.forEach((otherItem) => {
-          if (otherItem !== item) {
+          if (otherItem !== item && otherItem.classList.contains("active")) {
             otherItem.classList.remove("active");
-            const otherContent = otherItem.querySelector(".accordion-content");
-            otherContent.style.maxHeight = "0";
+            animationManager.animateAccordionItem(otherItem, false);
           }
         });
+
+        // Toggle current item
+        if (isActive) {
+          item.classList.remove("active");
+          animationManager.animateAccordionItem(item, false);
+        } else {
+          item.classList.add("active");
+          animationManager.animateAccordionItem(item, true);
+        }
       });
     });
   }
@@ -397,6 +392,19 @@ export default class HomeView extends BaseView {
   onShow() {
     // Scroll to top when showing home page
     window.scrollTo(0, 0);
+
+    // Initialize animations
+    this.initializeAnimations();
+  }
+
+  initializeAnimations() {
+    // Trigger hero section animations immediately
+    setTimeout(() => {
+      animationManager.animateHeroSection();
+    }, 100);
+
+    // Setup scroll-triggered animations for other sections
+    animationManager.observeElements("[data-animation]");
   }
 
   update(data) {
