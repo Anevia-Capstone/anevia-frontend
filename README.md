@@ -339,29 +339,4 @@ npm run preview
 
 Project ini dikembangkan untuk keperluan akademik dalam program Dicoding.
 
-## 🤝 Contributing
-
-### Development Workflow
-
-1. Fork repository ini
-2. Buat feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push ke branch (`git push origin feature/AmazingFeature`)
-5. Buat Pull Request
-
-### Code Review Process
-
-- Semua PR harus di-review minimal oleh 1 team member
-- Pastikan tidak ada breaking changes
-- Test manual sebelum merge
-
-## 📞 Support
-
-Untuk pertanyaan atau bantuan:
-
-- Buat issue di GitHub repository
-- Hubungi team leader: Yonathan Tirza K.
-
----
-
 **Anevia** - Deteksi Anemia Berbasis AI untuk Kesehatan yang Lebih Baik 🩺✨
