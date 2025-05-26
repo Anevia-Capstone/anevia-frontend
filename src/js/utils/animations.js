@@ -497,7 +497,7 @@ export class AnimationManager {
         anime({
           targets: category,
           scale: [1, 1.1, 1],
-          duration: 300,
+          duration: 100,
           easing: "easeOutBack",
         });
 
@@ -508,7 +508,7 @@ export class AnimationManager {
         anime({
           targets: otherCategories,
           scale: [1, 0.95, 1],
-          duration: 300,
+          duration: 100,
           easing: "easeOutQuad",
         });
       });
@@ -530,7 +530,7 @@ export class AnimationManager {
       anime({
         targets: content,
         maxHeight: [`0px`, `${naturalHeight + 32}px`], // Add padding
-        duration: 600,
+        duration: 200,
         easing: "easeOutCubic",
         complete: () => {
           // Set to auto after animation for responsive behavior
@@ -542,7 +542,7 @@ export class AnimationManager {
         targets: body,
         opacity: [0, 1],
         translateY: [-20, 0],
-        duration: 400,
+        duration: 200,
         delay: 200,
         easing: "easeOutQuad",
       });

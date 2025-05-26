@@ -215,10 +215,14 @@ header {
   width: 100%;
   z-index: 1000;
   padding: 24px 84px;
+  transition: padding 0.3s ease;
 }
 
 .nav-container {
   padding: 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 .navbar {
@@ -230,6 +234,21 @@ header {
   align-items: center;
   padding: 16px 24px;
   gap: 10px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin: 0 auto;
+  max-width: none;
+}
+
+/* Shrunk navbar state */
+.navbar-shrunk {
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.95);
+  margin: 0 auto;
+  transform: translateX(0);
 }
 
 .logo {
@@ -239,6 +258,7 @@ header {
   color: #2d3339;
   line-height: 1.6em;
   white-space: nowrap;
+  transition: font-size 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-links {
@@ -249,6 +269,12 @@ header {
   flex: 1;
   justify-content: center;
   align-items: center;
+  transition: gap 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Shrunk nav links state */
+.navbar-shrunk .nav-links {
+  gap: 24px;
 }
 
 .nav-links li a {
@@ -256,11 +282,12 @@ header {
   font-weight: 500;
   font-size: 16px;
   color: #2d3339;
-  transition: color 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-links a:hover {
   color: #297afe;
+  transform: translateY(-1px);
 }
 
 .login-btn {
@@ -273,7 +300,7 @@ header {
   border: none;
   border-radius: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .login-btn:hover {
@@ -320,6 +347,10 @@ header {
     padding: 12px;
   }
 
+  header {
+    padding: 16px 12px;
+  }
+
   .innovation-statement .container {
     padding: 80px 24px;
   }
@@ -337,6 +368,14 @@ header {
   .navbar {
     padding: 12px 16px;
     gap: 12px;
+  }
+
+  /* Mobile shrunk state */
+  .navbar-shrunk {
+    padding: 8px 12px;
+    border-radius: 16px;
+    width: 280px !important;
+    margin: 0 auto;
   }
 
   .mobile-menu-btn {
@@ -819,9 +858,12 @@ footer {
 
 .copyright {
   text-align: center;
-  padding-top: var(--spacing-lg);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  margin-top: var(--spacing-lg);
+}
+
+.copyright p {
+  font-size: 21rem;
+  padding: 0;
 }
 
 /* ===== HOME SECTION STYLES ===== */

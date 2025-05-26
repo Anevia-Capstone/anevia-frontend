@@ -3,12 +3,16 @@
 export default class Navigation {
   constructor() {
     this.header = document.getElementById("header");
+    this.isScrolled = false;
+    this.scrollThreshold = 100; // Pixels to scroll before triggering animation
+    this.scrollTimeout = null;
     this.init();
   }
 
   init() {
     this.render();
     this.setupEventListeners();
+    this.setupScrollAnimation();
   }
 
   render() {
@@ -65,5 +69,141 @@ export default class Navigation {
         navLinks.classList.remove("active");
       });
     });
+  }
+
+  setupScrollAnimation() {
+    // Check if animations should be enabled (disable on mobile for performance)
+    this.enableAnimations = window.innerWidth > 768;
+
+    // Throttled scroll handler for better performance
+    const handleScroll = () => {
+      if (this.scrollTimeout) {
+        clearTimeout(this.scrollTimeout);
+      }
+
+      this.scrollTimeout = setTimeout(() => {
+        const scrollY = window.scrollY;
+        const shouldShrink = scrollY > this.scrollThreshold;
+
+        if (shouldShrink !== this.isScrolled) {
+          this.isScrolled = shouldShrink;
+          this.animateNavbar(shouldShrink);
+        }
+      }, 10); // Small delay for throttling
+    };
+
+    // Store the handler reference for cleanup
+    this.scrollHandler = handleScroll;
+
+    // Add scroll event listener
+    window.addEventListener("scroll", this.scrollHandler, { passive: true });
+
+    // Listen for window resize to update animation settings
+    window.addEventListener("resize", () => {
+      this.enableAnimations = window.innerWidth > 768;
+    });
+
+    // Initial check in case page is already scrolled
+    handleScroll();
+  }
+
+  animateNavbar(shrink) {
+    const navbar = this.header.querySelector(".navbar");
+    const logo = this.header.querySelector(".logo");
+    const navLinks = this.header.querySelectorAll(".nav-links li a");
+    const loginBtn = this.header.querySelector(".login-btn");
+
+    if (!navbar) return;
+
+    // Always add/remove the CSS class for styling
+    if (shrink) {
+      navbar.classList.add("navbar-shrunk");
+    } else {
+      navbar.classList.remove("navbar-shrunk");
+    }
+
+    // Only run anime.js animations on desktop for better performance
+    if (!this.enableAnimations) return;
+
+    if (shrink) {
+      // Animate navbar to shrink to center with reduced width
+      anime({
+        targets: navbar,
+        width: window.innerWidth <= 768 ? "400px" : "900px",
+        duration: 100,
+        easing: "easeOutQuad",
+      });
+
+      anime({
+        targets: logo,
+        duration: 100,
+        easing: "easeOutQuad",
+      });
+
+      // Only animate nav links on desktop (they're hidden on mobile)
+      if (window.innerWidth > 768) {
+        anime({
+          targets: navLinks,
+          duration: 100,
+          easing: "easeOutQuad",
+        });
+      }
+
+      if (loginBtn && window.innerWidth > 768) {
+        anime({
+          targets: loginBtn,
+          duration: 100,
+          easing: "easeOutQuad",
+        });
+      }
+    } else {
+      // Animate back to original full width
+      anime({
+        targets: navbar,
+        width: "100%",
+        padding: window.innerWidth <= 768 ? "12px 16px" : "16px 24px",
+        duration: 100,
+        easing: "easeOutQuad",
+      });
+
+      anime({
+        targets: logo,
+        fontSize: "18px",
+        duration: 100,
+        easing: "easeOutQuad",
+      });
+
+      // Only animate nav links on desktop
+      if (window.innerWidth > 768) {
+        anime({
+          targets: navLinks,
+          fontSize: "16px",
+          duration: 100,
+          easing: "easeOutQuad",
+        });
+      }
+
+      if (loginBtn && window.innerWidth > 768) {
+        anime({
+          targets: loginBtn,
+          padding: "8px 24px",
+          fontSize: "16px",
+          duration: 100,
+          easing: "easeOutQuad",
+        });
+      }
+    }
+  }
+
+  // Cleanup method to remove event listeners
+  destroy() {
+    if (this.scrollTimeout) {
+      clearTimeout(this.scrollTimeout);
+    }
+
+    // Remove scroll event listener
+    if (this.scrollHandler) {
+      window.removeEventListener("scroll", this.scrollHandler);
+    }
   }
 }

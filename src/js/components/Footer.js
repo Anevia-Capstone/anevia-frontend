@@ -18,7 +18,7 @@ export default class Footer {
         <div class="footer-content">
           <div class="footer-section">
             <h3 class="footer-title">Anevia</h3>
-            <p>Early anemia detection through advanced eye scanning technology.</p>
+            <p>Anevia is an innovative artificial intelligence-based platform designed to help detect anemia quickly and accurately. With cutting-edge technology, Anevia offers two main features, Image Detection and Interactive Chat Assistant, Provides guidance and information related to anemia in real time 100% process scanning</p>
             <div class="social-links">
               <a href="#"><i class="fab fa-facebook"></i></a>
               <a href="#"><i class="fab fa-twitter"></i></a>
@@ -48,7 +48,7 @@ export default class Footer {
         </div>
         
         <div class="copyright">
-          <p>&copy; ${currentYear} Anevia. All rights reserved.</p>
+          <p>ANEVIA</p>
         </div>
       </div>
     `;
