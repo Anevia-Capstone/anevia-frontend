@@ -188,9 +188,18 @@ export default class ProfileModel extends BaseModel {
         throw new Error("Passwords do not match");
       }
 
-      await resetUserPassword(this.currentUser.uid, newPassword);
+      const response = await resetUserPassword(this.currentUser.uid, newPassword);
 
-      return { success: true };
+      // Update backend user data with the response
+      if (response.user) {
+        this.backendUser = response.user;
+        this.setData("backendUser", this.backendUser);
+      }
+
+      return {
+        success: true,
+        user: response.user
+      };
     } catch (error) {
       console.error("Error changing password:", error);
       return {
@@ -223,9 +232,18 @@ export default class ProfileModel extends BaseModel {
         throw new Error("Passwords do not match");
       }
 
-      await linkEmailPassword(this.currentUser.uid, password);
+      const response = await linkEmailPassword(this.currentUser.uid, password);
 
-      return { success: true };
+      // Update backend user data with the response
+      if (response.user) {
+        this.backendUser = response.user;
+        this.setData("backendUser", this.backendUser);
+      }
+
+      return {
+        success: true,
+        user: response.user
+      };
     } catch (error) {
       console.error("Error linking password:", error);
       return {

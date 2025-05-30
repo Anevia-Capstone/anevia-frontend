@@ -134,6 +134,9 @@ export default class ProfilePresenter extends BasePresenter {
       if (result.success) {
         this.view.updateUserData(this.model.getCurrentUser(), result.user);
         this.view.showSuccess("Profile image updated successfully");
+
+        // Notify the main app about the profile update so navbar can be refreshed
+        this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
       } else {
         this.view.showError(result.error);
       }
@@ -153,8 +156,11 @@ export default class ProfilePresenter extends BasePresenter {
 
       if (result.success) {
         this.view.updateUserData(this.model.getCurrentUser(), result.user);
-        this.view.cancelEdit();
+        this.view.onSaveSuccess();
         this.view.showSuccess("Profile updated successfully");
+
+        // Notify the main app about the profile update so navbar can be refreshed
+        this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
       } else {
         this.view.showError(result.error);
       }
@@ -201,8 +207,20 @@ export default class ProfilePresenter extends BasePresenter {
     );
 
     const confirmBtn = modal.querySelector("#confirmChangePassword");
+    const newPasswordInput = modal.querySelector("#newPassword");
+    const confirmPasswordInput = modal.querySelector("#confirmPassword");
+
     confirmBtn.addEventListener("click", () => {
       this.handleChangePasswordConfirm(modal);
+    });
+
+    // Add Enter key support
+    [newPasswordInput, confirmPasswordInput].forEach(input => {
+      input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          this.handleChangePasswordConfirm(modal);
+        }
+      });
     });
   }
 
@@ -221,6 +239,13 @@ export default class ProfilePresenter extends BasePresenter {
       if (result.success) {
         modal.remove();
         this.view.showSuccess("Password changed successfully");
+
+        // Update user data if the API returned updated user info
+        if (result.user) {
+          this.view.updateUserData(this.model.getCurrentUser(), result.user);
+          // Notify the main app about the profile update so navbar can be refreshed
+          this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
+        }
       } else {
         this.view.showError(result.error);
       }
@@ -281,6 +306,13 @@ export default class ProfilePresenter extends BasePresenter {
         this.view.showSuccess(
           "Email/password authentication linked successfully"
         );
+
+        // Update user data if the API returned updated user info
+        if (result.user) {
+          this.view.updateUserData(this.model.getCurrentUser(), result.user);
+          // Notify the main app about the profile update so navbar can be refreshed
+          this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
+        }
       } else {
         this.view.showError(result.error);
       }
@@ -390,5 +422,17 @@ export default class ProfilePresenter extends BasePresenter {
     } else if (data.key === "backendUser") {
       this.view.updateUserData(this.model.getCurrentUser(), data.value);
     }
+  }
+
+  // Notify the main app about profile updates
+  notifyProfileUpdate(currentUser, backendUser) {
+    // Dispatch a custom event that the main app can listen to
+    const profileUpdateEvent = new CustomEvent('profileUpdated', {
+      detail: {
+        currentUser,
+        backendUser
+      }
+    });
+    document.dispatchEvent(profileUpdateEvent);
   }
 }

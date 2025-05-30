@@ -103,6 +103,38 @@ header {
   background-color: #1a6be0;
 }
 
+/* Navigation Install Button */
+.nav-install-btn {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 12px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.nav-install-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  background: linear-gradient(135deg, #45a049 0%, #388e3c 100%);
+}
+
+.nav-install-btn i {
+  font-size: 12px;
+}
+
+.nav-install-btn span {
+  font-size: 14px;
+}
+
 .mobile-login {
   display: none;
 }
@@ -291,4 +323,44 @@ header {
   margin-top: 8px;
   left: 0;
   right: auto;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .nav-install-btn {
+    display: none !important; /* Hide on mobile to save space */
+  }
+
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    flex-direction: column;
+    padding: 20px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .nav-links.active {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-login {
+    display: block;
+  }
 }

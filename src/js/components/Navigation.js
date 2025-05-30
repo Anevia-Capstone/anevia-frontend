@@ -33,6 +33,11 @@ export default class Navigation {
             <li class="mobile-login"><button class="login-btn">Login</button></li>
           </ul>
           <div class="nav-right">
+            <!-- PWA Install Button -->
+            <button class="nav-install-btn desktop-only" id="navInstallBtn" style="display: none;" title="Install Anevia App">
+              <i class="fas fa-download"></i>
+              <span>Install</span>
+            </button>
             <button class="login-btn desktop-only">Login</button>
           </div>
         </div>
@@ -45,6 +50,7 @@ export default class Navigation {
     const navLinks = this.header.querySelector(".nav-links");
     const links = this.header.querySelectorAll(".nav-links a");
     const loginBtns = this.header.querySelectorAll(".login-btn");
+    const installBtn = this.header.querySelector("#navInstallBtn");
 
     // Mobile menu toggle
     mobileMenuBtn.addEventListener("click", () => {
@@ -69,6 +75,39 @@ export default class Navigation {
         navLinks.classList.remove("active");
       });
     });
+
+    // PWA Install button click event
+    if (installBtn) {
+      installBtn.addEventListener("click", () => {
+        // Trigger PWA install prompt
+        if (window.pwaManager) {
+          window.pwaManager.promptInstall();
+        }
+      });
+    }
+
+    // Listen for PWA install prompt availability
+    this.setupPWAInstallButton();
+  }
+
+  setupPWAInstallButton() {
+    const installBtn = this.header.querySelector("#navInstallBtn");
+    if (!installBtn) return;
+
+    // Show install button when PWA can be installed
+    window.addEventListener('beforeinstallprompt', () => {
+      installBtn.style.display = 'flex';
+    });
+
+    // Hide install button after app is installed
+    window.addEventListener('appinstalled', () => {
+      installBtn.style.display = 'none';
+    });
+
+    // Check if app is already installed (standalone mode)
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      installBtn.style.display = 'none';
+    }
   }
 
   setupScrollAnimation() {

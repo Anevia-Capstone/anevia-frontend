@@ -891,7 +891,7 @@
 } */
 
 .recommendations-list li:before {
-  content: "-";
+  /* content: "-"; */
   position: absolute;
   left: -2px;
   top: 20px;

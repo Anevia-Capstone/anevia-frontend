@@ -64,6 +64,9 @@ class App {
     // PWA is automatically initialized by importing pwaManager
     console.log('PWA functionality initialized');
 
+    // Make pwaManager globally available
+    window.pwaManager = pwaManager;
+
     // Setup offline/online event handlers for the app
     window.addEventListener('online', () => {
       console.log('App is back online');
@@ -77,6 +80,9 @@ class App {
 
     // Cache user data when available
     this.setupDataCaching();
+
+    // Setup PWA install prompts
+    this.setupPWAInstallPrompts();
   }
 
   handleOnlineStatus(isOnline) {
@@ -126,6 +132,68 @@ class App {
     // This would be implemented based on your specific offline data storage needs
   }
 
+  setupPWAInstallPrompts() {
+    // Show install notification for eligible users
+    let installPromptShown = localStorage.getItem('pwa-install-prompt-shown');
+
+    // Show install prompt after 30 seconds if not shown before and app is installable
+    if (!installPromptShown) {
+      setTimeout(() => {
+        if (window.pwaManager && window.pwaManager.deferredPrompt) {
+          this.showInstallPrompt();
+          localStorage.setItem('pwa-install-prompt-shown', 'true');
+        }
+      }, 30000); // 30 seconds
+    }
+
+    // Listen for successful installation
+    window.addEventListener('appinstalled', () => {
+      console.log('PWA was installed successfully');
+      this.showInstallSuccessMessage();
+    });
+  }
+
+  showInstallPrompt() {
+    const prompt = document.createElement('div');
+    prompt.className = 'pwa-install-prompt show';
+    prompt.innerHTML = `
+      <h3>Install Anevia App</h3>
+      <p>Get faster access and work offline by installing our app on your device.</p>
+      <div class="btn-group">
+        <button class="btn-primary" onclick="this.parentElement.parentElement.remove(); window.pwaManager.promptInstall();">Install Now</button>
+        <button class="btn-secondary" onclick="this.parentElement.parentElement.remove();">Maybe Later</button>
+      </div>
+    `;
+    document.body.appendChild(prompt);
+
+    // Auto-hide after 10 seconds
+    setTimeout(() => {
+      if (prompt.parentElement) {
+        prompt.remove();
+      }
+    }, 10000);
+  }
+
+  showInstallSuccessMessage() {
+    const message = document.createElement('div');
+    message.className = 'pwa-install-notification';
+    message.innerHTML = `
+      <div class="pwa-notification-content">
+        <i class="fas fa-check-circle"></i>
+        <span>Anevia app installed successfully! You can now access it from your home screen.</span>
+        <button class="pwa-dismiss-btn" onclick="this.parentElement.parentElement.remove()">×</button>
+      </div>
+    `;
+    document.body.appendChild(message);
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      if (message.parentElement) {
+        message.remove();
+      }
+    }, 5000);
+  }
+
   setupRoutes() {
     // Define routes with their corresponding presenters
     this.router.addRoute("", () => this.showHome());
@@ -171,6 +239,13 @@ class App {
     window.addEventListener("navigateToTools", (event) => {
       console.log("Navigate to tools event received:", event.detail);
       this.router.navigate("tools");
+    });
+
+    // Listen for profile updates (e.g., image upload, profile save)
+    document.addEventListener("profileUpdated", (event) => {
+      const { currentUser, backendUser } = event.detail;
+      console.log("Profile updated event received, updating navbar...");
+      this.updateUIForLoggedInUser(currentUser, backendUser);
     });
   }
 
@@ -380,11 +455,8 @@ class App {
         ...(backendUser && {
           username: backendUser.username,
           displayName: backendUser.username || user.displayName,
-          // Only use backend photoUrl if it's a full URL, otherwise keep Firebase photoURL
-          photoURL:
-            backendUser.photoUrl && backendUser.photoUrl.startsWith("http")
-              ? backendUser.photoUrl
-              : user.photoURL,
+          // Handle backend photoUrl properly - convert relative paths to full URLs
+          photoURL: this.getProfileImageUrl(backendUser, user),
         }),
       };
 
@@ -402,11 +474,8 @@ class App {
         ...(backendUser && {
           username: backendUser.username,
           displayName: backendUser.username || user.displayName,
-          // Only use backend photoUrl if it's a full URL, otherwise keep Firebase photoURL
-          photoURL:
-            backendUser.photoUrl && backendUser.photoUrl.startsWith("http")
-              ? backendUser.photoUrl
-              : user.photoURL,
+          // Handle backend photoUrl properly - convert relative paths to full URLs
+          photoURL: this.getProfileImageUrl(backendUser, user),
         }),
       };
 
@@ -508,6 +577,27 @@ class App {
         loadingElement.remove();
       }
     }
+  }
+
+  // Helper method to get the correct profile image URL
+  getProfileImageUrl(backendUser, currentUser) {
+    // Priority: backend photoUrl > Firebase photoURL > default
+    if (backendUser?.photoUrl) {
+      // Check if backend photoUrl is a full URL or relative path
+      if (backendUser.photoUrl.startsWith("http")) {
+        // It's already a full URL (e.g., Google Photos URL)
+        return backendUser.photoUrl;
+      } else {
+        // It's a relative path, prepend backend URL
+        return `https://server.anevia.my.id${backendUser.photoUrl}`;
+      }
+    } else if (currentUser?.photoURL) {
+      // Firebase photoURL is always a full URL
+      return currentUser.photoURL;
+    }
+
+    // Default avatar
+    return "./src/assets/default-avatar.svg";
   }
 }
 
