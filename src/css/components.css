@@ -35,6 +35,16 @@
   box-shadow: var(--shadow-md);
 }
 
+.fa-camera {
+  margin-right: 8px;
+}
+
+.fa-folder-open:before {
+  margin-right: 8px;
+}
+
+
+
 /* Action button styles */
 .action-btn {
   display: inline-flex;

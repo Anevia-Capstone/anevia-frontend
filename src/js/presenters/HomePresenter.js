@@ -25,18 +25,10 @@ export default class HomePresenter extends BasePresenter {
         this.navigate("tools");
         break;
       case "learnMore":
-        this.scrollToAbout();
+        this.navigate("about");
         break;
       default:
         super.handleUserAction(action, data);
-    }
-  }
-
-  scrollToAbout() {
-    // Scroll to about section within the home page
-    const aboutSection = document.querySelector(".how-it-works");
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: "smooth" });
     }
   }
 
@@ -44,9 +36,6 @@ export default class HomePresenter extends BasePresenter {
     let targetElement = null;
 
     switch (section) {
-      case "about":
-        targetElement = document.querySelector(".how-it-works");
-        break;
       case "faq":
         targetElement = document.querySelector(".faq-section");
         break;

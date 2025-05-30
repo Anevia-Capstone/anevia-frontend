@@ -15,4 +15,6 @@
 @import url('./auth.css');
 @import url('./chat.css');
 @import url('./profile.css');
+@import url('./scan-history.css');
+@import url('./pwa.css');
 @import url('./responsive.css');

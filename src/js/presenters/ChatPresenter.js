@@ -68,8 +68,8 @@ export default class ChatPresenter extends BasePresenter {
   }
 
   // Load existing chat session
-  async loadChatSession(sessionId) {
-    console.log("Loading chat session:", sessionId);
+  async loadChatSession(sessionId, existingMessages = null) {
+    console.log("Loading chat session:", sessionId, "with existing messages:", existingMessages ? existingMessages.length : 0);
 
     // Get current user
     const user = getCurrentUser();
@@ -81,7 +81,26 @@ export default class ChatPresenter extends BasePresenter {
     // Set user ID in model
     this.model.setUserId(user.uid);
 
-    // Show loading
+    // If we already have messages from history, use them directly
+    if (existingMessages && existingMessages.length > 0) {
+      console.log("Using existing messages from history");
+
+      // Clear any existing scan data since we're loading from history
+      this.scanData = null;
+
+      // Set the current session in model
+      this.model.setCurrentSession({ sessionId, userId: user.uid });
+
+      // Display the existing messages
+      this.view.displayMessages(existingMessages);
+
+      // Update model with the messages
+      this.model.setData("messages", existingMessages);
+
+      return;
+    }
+
+    // Otherwise, load from API
     this.view.showLoading("Loading chat messages...");
 
     try {
@@ -111,6 +130,9 @@ export default class ChatPresenter extends BasePresenter {
         break;
       case "refresh":
         this.handleRefresh();
+        break;
+      case "back":
+        this.handleBack();
         break;
       default:
         super.handleUserAction(action, data);
@@ -162,14 +184,34 @@ export default class ChatPresenter extends BasePresenter {
       return;
     }
 
-    console.log("Refreshing chat session");
+    console.log("Refreshing chat session:", currentSession.sessionId);
 
     try {
-      // Reload current session
-      await this.loadChatSession(currentSession.sessionId);
+      // Reload current session from API (don't use existing messages)
+      await this.loadChatSession(currentSession.sessionId, null);
     } catch (error) {
       console.error("Error refreshing chat:", error);
       this.view.showError("Failed to refresh chat");
+    }
+  }
+
+  // Handle back action
+  handleBack() {
+    console.log("ChatPresenter: handleBack called");
+
+    // Determine where to navigate back to based on how we got here
+    if (this.scanData) {
+      // If we came from a scan, go back to tools
+      const navigationEvent = new CustomEvent("navigateToTools", {
+        detail: { from: "chat" }
+      });
+      window.dispatchEvent(navigationEvent);
+    } else {
+      // If we came from chat history, go back to scan history
+      const navigationEvent = new CustomEvent("navigateToScanHistory", {
+        detail: { from: "chat" }
+      });
+      window.dispatchEvent(navigationEvent);
     }
   }
 

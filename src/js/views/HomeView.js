@@ -166,91 +166,6 @@ export default class HomeView extends BaseView {
         </div>
       </div>
 
-      <!-- About Section -->
-      <div class="about-section" data-animation="aboutSection">
-        <div class="container about-container">
-          <h2 class="section-title">About Anevia</h2>
-          <p class="section-subtitle">We're on a mission to make anemia detection accessible to everyone through innovative technology.</p>
-
-          <div class="mission-vision">
-            <div class="mission">
-              <h3 class="mission-title"><i class="fas fa-bullseye"></i> Our Mission</h3>
-              <p class="mission-text">To revolutionize anemia detection by making it accessible, affordable, and non-invasive for everyone, especially in underserved communities where traditional testing methods are limited.</p>
-            </div>
-
-            <div class="vision">
-              <h3 class="vision-title"><i class="fas fa-eye"></i> Our Vision</h3>
-              <p class="vision-text">A world where no one suffers from undiagnosed anemia, and where early detection leads to timely treatment and improved quality of life for millions of people globally.</p>
-            </div>
-          </div>
-
-          <div class="team-section" data-animation="teamMembers">
-            <h2 class="section-title">Meet Our Team</h2>
-            <div class="team-container">
-              <div class="team-member">
-                <img src="/src/assets/team-placeholder.svg" alt="Team Member" class="member-image">
-                <h3 class="member-name">Yonathan Tirza K.</h3>
-                <p class="member-role">Leader & Machine Learning</p>
-                <div class="member-social">
-                  <a href="#"><i class="fab fa-linkedin"></i></a>
-                  <a href="#"><i class="fab fa-github"></i></a>
-                </div>
-              </div>
-
-              <div class="team-member">
-                <img src="/src/assets/team-placeholder.svg" alt="Team Member" class="member-image">
-                <h3 class="member-name">Dearni Lambardo S.</h3>
-                <p class="member-role">Machine Learning</p>
-                <div class="member-social">
-                  <a href="#"><i class="fab fa-linkedin"></i></a>
-                  <a href="#"><i class="fab fa-github"></i></a>
-                </div>
-              </div>
-
-              <div class="team-member">
-                <img src="/src/assets/team-placeholder.svg" alt="Team Member" class="member-image">
-                <h3 class="member-name">Wiefran Varenzo</h3>
-                <p class="member-role">Machine Learning</p>
-                <div class="member-social">
-                  <a href="#"><i class="fab fa-linkedin"></i></a>
-                  <a href="#"><i class="fab fa-github"></i></a>
-                </div>
-              </div>
-
-              <div class="team-member">
-                <img src="/src/assets/team-placeholder.svg" alt="Team Member" class="member-image">
-                <h3 class="member-name">Muhammad Irza A.</h3>
-                <p class="member-role">Front End & Back End Developer</p>
-                <div class="member-social">
-                  <a href="#"><i class="fab fa-linkedin"></i></a>
-                  <a href="#"><i class="fab fa-github"></i></a>
-                </div>
-              </div>
-
-              <div class="team-member">
-                <img src="/src/assets/team-placeholder.svg" alt="Team Member" class="member-image">
-                <h3 class="member-name">Oatse Rizqy H.</h3>
-                <p class="member-role">Front End & Back End Developer</p>
-                <div class="member-social">
-                  <a href="#"><i class="fab fa-linkedin"></i></a>
-                  <a href="#"><i class="fab fa-github"></i></a>
-                </div>
-              </div>
-
-              <div class="team-member">
-                <img src="/src/assets/team-placeholder.svg" alt="Team Member" class="member-image">
-                <h3 class="member-name">Rayina Ilham</h3>
-                <p class="member-role">Front End & Back End Developer</p>
-                <div class="member-social">
-                  <a href="#"><i class="fab fa-linkedin"></i></a>
-                  <a href="#"><i class="fab fa-github"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- FAQ Section -->
       <div class="faq-section" data-animation="faqSection">
         <div class="container faq-container">
@@ -379,14 +294,6 @@ export default class HomeView extends BaseView {
         }
       });
     });
-  }
-
-  scrollToAboutSection() {
-    // Since about is part of the home page, we scroll to it
-    const aboutSection = document.querySelector(".how-it-works");
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: "smooth" });
-    }
   }
 
   onShow() {

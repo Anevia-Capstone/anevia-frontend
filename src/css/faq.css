@@ -2,17 +2,19 @@
 /* Styles specific to the FAQ page */
 
 #faq {
-  background-color: var(--background-color);
-  padding-top: 100px;
+  background-color: #f3f3f3;
+  height: 100vh;
 }
 
 .faq-section {
-  background-color: var(--card-bg);
+  background-color: #f8f8f8;
+  padding-top:36px
 }
 
 .faq-container {
-  max-width: 800px;
+  max-width: 1186px;
   margin: 0 auto;
+
 }
 
 .faq-categories {
@@ -25,14 +27,14 @@
 
 .faq-category {
   padding: var(--spacing-md) var(--spacing-lg);
-  background-color: var(--primary-color);
+  background-color: #ffffff;
   border-radius: var(--border-radius-lg);
-  color: var(--light-text);
+  color: #646464;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  border: 2px solid transparent;
+  border: 1px solid #d2d6db;
   font-weight: 500;
-  box-shadow: var(--shadow-sm);
+  /* box-shadow: var(--shadow-sm); */
   position: relative;
   overflow: hidden;
 }
@@ -81,7 +83,7 @@
   box-shadow: var(--shadow-sm);
   overflow: hidden;
   border: 1px solid rgba(26, 35, 126, 0.1);
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .accordion-item:hover {
@@ -101,10 +103,16 @@
 
 /* Header hover effects are now handled by JavaScript */
 
-.accordion-title {
-  font-weight: 500;
+.accordion-title::before {
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+.accordion-title::active {
+  font-weight: 800;
   color: var(--primary-color);
 }
+
 
 .accordion-icon {
   color: var(--primary-color);
@@ -118,7 +126,7 @@
 .accordion-content {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: max-height 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   background-color: var(--card-bg);
 }
 
@@ -127,13 +135,14 @@
 }
 
 .accordion-body {
-  padding: 0 var(--spacing-lg) var(--spacing-lg);
+  padding: 16px 32px;
   color: var(--text-color);
   text-align: left;
+  justify-content: center;
   line-height: 1.7;
   opacity: 0;
   transform: translateY(-10px);
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .accordion-item.active .accordion-body {

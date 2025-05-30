@@ -48,7 +48,7 @@ export default class Footer {
         </div>
         
         <div class="copyright">
-          <p>ANEVIA</p>
+          <p class=footer-text-product>ANEVIA</p>
         </div>
       </div>
     `;

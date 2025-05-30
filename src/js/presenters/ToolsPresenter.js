@@ -63,6 +63,9 @@ export default class ToolsPresenter extends BasePresenter {
       case "downloadReport":
         this.handleDownloadReport();
         break;
+      case "scanHistory":
+        this.handleScanHistory();
+        break;
       default:
         super.handleUserAction(action, data);
     }
@@ -70,10 +73,25 @@ export default class ToolsPresenter extends BasePresenter {
 
   async handleCameraEnable() {
     try {
+      // Show loading state
+      this.showMessage("Requesting camera access...", "info");
       await this.view.startCamera();
+      this.hideMessage();
     } catch (error) {
       console.error("Error enabling camera:", error);
-      this.showError("Failed to enable camera. Please check your permissions.");
+      let errorMessage = "Failed to enable camera. ";
+
+      if (error.name === "NotAllowedError") {
+        errorMessage += "Please allow camera access and try again.";
+      } else if (error.name === "NotFoundError") {
+        errorMessage += "No camera found on this device.";
+      } else if (error.name === "NotSupportedError") {
+        errorMessage += "Camera is not supported on this browser.";
+      } else {
+        errorMessage += "Please check your camera permissions and try again.";
+      }
+
+      this.showError(errorMessage);
     }
   }
 
@@ -100,23 +118,31 @@ export default class ToolsPresenter extends BasePresenter {
   }
 
   handleFileUpload(file) {
-    // Validate file
-    const validation = this.model.validateImageFile(file);
+    try {
+      // Validate file
+      const validation = this.model.validateImageFile(file);
 
-    if (!validation.valid) {
-      alert(validation.error);
-      return;
+      if (!validation.valid) {
+        this.showError(validation.error);
+        return;
+      }
+
+      // Show success message
+      this.showSuccess(`File "${file.name}" uploaded successfully!`);
+
+      // Show preview
+      const imageUrl = URL.createObjectURL(file);
+      this.view.capturedImage = file;
+      this.view.showPreview(imageUrl);
+    } catch (error) {
+      console.error("Error handling file upload:", error);
+      this.showError("Failed to process the uploaded file. Please try again.");
     }
-
-    // Show preview
-    const imageUrl = URL.createObjectURL(file);
-    this.view.capturedImage = file;
-    this.view.showPreview(imageUrl);
   }
 
   async handleScanImage() {
     if (!this.view.capturedImage) {
-      alert("No image captured or uploaded");
+      this.showError("No image captured or uploaded. Please take a photo or upload an image first.");
       return;
     }
 
@@ -128,14 +154,17 @@ export default class ToolsPresenter extends BasePresenter {
       const result = await this.model.scanImage(this.view.capturedImage);
 
       if (result.success) {
-        // Show scan result
+        // Get the current scan data from model
+        const currentScan = this.model.getCurrentScan();
+
+        // Show scan result with scan data
         const scanResult = result.result;
         this.view.showScanResult({
           isLoading: false,
           isAnemic: scanResult.isAnemic,
           description: scanResult.description,
-          details: this.formatResultDetails(scanResult.details),
-        });
+          details: this.formatResultDetails(scanResult.details, scanResult.isAnemic),
+        }, currentScan);
       } else {
         this.showError(result.error || "Failed to scan image");
       }
@@ -159,7 +188,7 @@ export default class ToolsPresenter extends BasePresenter {
     const currentScan = this.model.getCurrentScan();
 
     if (!currentScan || !currentScan.scanId) {
-      alert("No scan data available for chat");
+      this.showError("No scan data available for chat. Please complete a scan first.");
       return;
     }
 
@@ -184,24 +213,50 @@ export default class ToolsPresenter extends BasePresenter {
     const result = this.model.downloadReport();
 
     if (!result.success) {
-      alert(result.error || "Failed to download report");
+      this.showError(result.error || "Failed to download report");
+    } else {
+      this.showSuccess("Report downloaded successfully!");
     }
   }
 
+  handleScanHistory() {
+    console.log("ToolsPresenter: handleScanHistory called");
+    // Navigate to scan history page
+    const navigationEvent = new CustomEvent("navigateToScanHistory", {
+      detail: { from: "tools" }
+    });
+    console.log("ToolsPresenter: Dispatching navigateToScanHistory event");
+    window.dispatchEvent(navigationEvent);
+  }
+
   // Format result details for display
-  formatResultDetails(details) {
+  formatResultDetails(details, isAnemic = false) {
     return `
-      <div class="result-detail">
-        <span class="result-detail-label">Confidence Level:</span>
-        <span>${details.confidenceLevel}</span>
-      </div>
-      <div class="result-detail">
-        <span class="result-detail-label">Scan Date:</span>
-        <span>${details.scanDate}</span>
-      </div>
-      <div class="result-detail">
-        <span class="result-detail-label">Scan ID:</span>
-        <span>${details.scanId}</span>
+
+      <div class="scan-details-container">
+        <div class="scan-info-grid">
+          <div class="scan-info-item">
+            <span class="scan-info-label">Confidence Level:</span>
+            <span class="scan-info-value">${details.confidenceLevel}</span>
+          </div>
+          <div class="scan-info-item">
+            <span class="scan-info-label">Scan Date:</span>
+            <span class="scan-info-value">${details.scanDate}</span>
+          </div>
+          <div class="scan-info-item">
+            <span class="scan-info-label">Scan ID:</span>
+            <span class="scan-info-value">${details.scanId}</span>
+          </div>
+        </div>
+
+        ${isAnemic ? `
+        <div class="recommendations-section">
+          <h5 class="recommendations-title">Recommendations:</h5>
+          <ul class="recommendations-list">
+            ${details.recommendations ? details.recommendations.map((rec) => `<li>${rec}</li>`).join("") : ''}
+          </ul>
+        </div>
+        ` : ''}
       </div>
     `;
   }
@@ -259,8 +314,8 @@ export default class ToolsPresenter extends BasePresenter {
           isLoading: false,
           isAnemic: scan.result.isAnemic,
           description: scan.result.description,
-          details: this.formatResultDetails(scan.result.details),
-        });
+          details: this.formatResultDetails(scan.result.details, scan.result.isAnemic),
+        }, scan);
       }
     }
   }
@@ -273,5 +328,90 @@ export default class ToolsPresenter extends BasePresenter {
   // Get scan history
   getScanHistory() {
     return this.model.getScanHistory();
+  }
+
+  // Load scan history from API
+  async loadScanHistory() {
+    try {
+      const result = await this.model.loadScanHistory();
+      if (result.success) {
+        console.log("Scan history loaded successfully:", result.scans);
+        return result;
+      } else {
+        this.showError(result.error || "Failed to load scan history");
+        return result;
+      }
+    } catch (error) {
+      console.error("Error loading scan history:", error);
+      this.showError("Failed to load scan history");
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Load specific scan by ID
+  async loadScanById(scanId) {
+    try {
+      const result = await this.model.loadScanById(scanId);
+      if (result.success) {
+        console.log("Scan loaded successfully:", result.scan);
+        return result;
+      } else {
+        this.showError(result.error || "Failed to load scan");
+        return result;
+      }
+    } catch (error) {
+      console.error("Error loading scan:", error);
+      this.showError("Failed to load scan");
+      return { success: false, error: error.message };
+    }
+  }
+
+  // Show message to user
+  showMessage(message, type = "info") {
+    // Remove existing messages
+    this.hideMessage();
+
+    const messageElement = document.createElement("div");
+    messageElement.className = `message ${type}-message`;
+    messageElement.textContent = message;
+    messageElement.id = "tools-message";
+
+    const container = document.querySelector(".tools-container");
+    if (container) {
+      container.insertBefore(messageElement, container.firstChild);
+
+      // Add animation
+      setTimeout(() => {
+        messageElement.classList.add("fade-in");
+      }, 10);
+    }
+  }
+
+  // Hide message
+  hideMessage() {
+    const existingMessage = document.getElementById("tools-message");
+    if (existingMessage) {
+      existingMessage.remove();
+    }
+  }
+
+  // Show error message
+  showError(message) {
+    this.showMessage(message, "error");
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      this.hideMessage();
+    }, 5000);
+  }
+
+  // Show success message
+  showSuccess(message) {
+    this.showMessage(message, "success");
+
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      this.hideMessage();
+    }, 3000);
   }
 }

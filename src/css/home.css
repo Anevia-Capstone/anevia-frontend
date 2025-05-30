@@ -12,6 +12,7 @@
   background-position: center;
   position: relative;
   display: flex;
+  height: 100vh;
   flex-direction: column;
   padding: 85px 0;
 }
@@ -23,6 +24,8 @@
   padding: 42px 84px;
   flex: 1;
   position: relative;
+  justify-content: center;
+  align-items: center;
 }
 
 .hero-text-section {
@@ -138,6 +141,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100vh;
 }
 
 .statement-text {
