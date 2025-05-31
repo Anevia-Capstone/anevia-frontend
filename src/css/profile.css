@@ -181,6 +181,60 @@
   color: #4285f4;
 }
 
+/* Password Warning */
+.password-warning {
+  margin-bottom: 0;
+  padding: var(--spacing-md);
+  background-color: #fffbeb;
+  border: 1px solid #fbbf24;
+  border-radius: var(--border-radius-md);
+}
+
+.warning-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: #92400e;
+  font-size: 0.9rem;
+}
+
+.warning-content i {
+  font-size: 1.1rem;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.warning-content span {
+  flex: 1;
+}
+
+.warning-action-btn {
+  background-color: #f59e0b;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: var(--spacing-sm);
+}
+
+.warning-action-btn:hover {
+  background-color: #d97706;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.warning-action-btn i {
+  font-size: 0.8rem;
+}
+
 /* Profile Information Section */
 .profile-info-section {
   background-color: var(--card-bg);

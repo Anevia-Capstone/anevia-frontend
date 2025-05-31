@@ -601,6 +601,17 @@ class App {
   }
 }
 
+// Global error handlers
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('Unhandled promise rejection:', event.reason);
+  // Prevent the default browser behavior (logging to console)
+  event.preventDefault();
+});
+
+window.addEventListener('error', (event) => {
+  console.error('Global error:', event.error);
+});
+
 // Initialize the application when the DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   new App();

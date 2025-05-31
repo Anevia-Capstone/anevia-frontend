@@ -33,11 +33,13 @@ export default class Navigation {
             <li class="mobile-login"><button class="login-btn">Login</button></li>
           </ul>
           <div class="nav-right">
-            <!-- PWA Install Button -->
+            <!-- PWA Install Button - Removed/Hidden -->
+            <!--
             <button class="nav-install-btn desktop-only" id="navInstallBtn" style="display: none;" title="Install Anevia App">
               <i class="fas fa-download"></i>
               <span>Install</span>
             </button>
+            -->
             <button class="login-btn desktop-only">Login</button>
           </div>
         </div>
@@ -76,7 +78,8 @@ export default class Navigation {
       });
     });
 
-    // PWA Install button click event
+    // PWA Install button click event - Disabled (button removed)
+    /*
     if (installBtn) {
       installBtn.addEventListener("click", () => {
         // Trigger PWA install prompt
@@ -85,15 +88,21 @@ export default class Navigation {
         }
       });
     }
+    */
 
-    // Listen for PWA install prompt availability
-    this.setupPWAInstallButton();
+    // Listen for PWA install prompt availability - Disabled
+    // this.setupPWAInstallButton();
   }
 
   setupPWAInstallButton() {
     const installBtn = this.header.querySelector("#navInstallBtn");
     if (!installBtn) return;
 
+    // Keep install button hidden - disabled functionality
+    installBtn.style.display = 'none';
+
+    // Commented out - install button functionality disabled
+    /*
     // Show install button when PWA can be installed
     window.addEventListener('beforeinstallprompt', () => {
       installBtn.style.display = 'flex';
@@ -108,6 +117,7 @@ export default class Navigation {
     if (window.matchMedia('(display-mode: standalone)').matches) {
       installBtn.style.display = 'none';
     }
+    */
   }
 
   setupScrollAnimation() {

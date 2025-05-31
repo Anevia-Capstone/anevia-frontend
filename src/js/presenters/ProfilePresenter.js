@@ -238,13 +238,28 @@ export default class ProfilePresenter extends BasePresenter {
 
       if (result.success) {
         modal.remove();
-        this.view.showSuccess("Password changed successfully");
+
+        // Hide password warning since user now has password
+        const passwordWarning = this.view.findElement("#passwordWarning");
+        if (passwordWarning) {
+          passwordWarning.style.display = "none";
+        }
+
+        this.view.showSuccess("Password changed successfully! Page will refresh to update authentication state.");
 
         // Update user data if the API returned updated user info
         if (result.user) {
-          this.view.updateUserData(this.model.getCurrentUser(), result.user);
+          // Get the refreshed Firebase user data
+          const refreshedFirebaseUser = this.model.getCurrentUser();
+          this.view.updateUserData(refreshedFirebaseUser, result.user);
           // Notify the main app about the profile update so navbar can be refreshed
-          this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
+          this.notifyProfileUpdate(refreshedFirebaseUser, result.user);
+
+          // Force a page reload after a short delay to ensure auth state is properly updated
+          setTimeout(() => {
+            console.log("Reloading page to ensure auth state consistency...");
+            window.location.reload();
+          }, 2000);
         }
       } else {
         this.view.showError(result.error);
@@ -303,15 +318,30 @@ export default class ProfilePresenter extends BasePresenter {
         if (linkPasswordSection) {
           linkPasswordSection.style.display = "none";
         }
+
+        // Hide password warning since user now has password
+        const passwordWarning = this.view.findElement("#passwordWarning");
+        if (passwordWarning) {
+          passwordWarning.style.display = "none";
+        }
+
         this.view.showSuccess(
-          "Email/password authentication linked successfully"
+          "Email/password authentication linked successfully! Page will refresh to update authentication state."
         );
 
         // Update user data if the API returned updated user info
         if (result.user) {
-          this.view.updateUserData(this.model.getCurrentUser(), result.user);
+          // Get the refreshed Firebase user data
+          const refreshedFirebaseUser = this.model.getCurrentUser();
+          this.view.updateUserData(refreshedFirebaseUser, result.user);
           // Notify the main app about the profile update so navbar can be refreshed
-          this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
+          this.notifyProfileUpdate(refreshedFirebaseUser, result.user);
+
+          // Force a page reload after a short delay to ensure auth state is properly updated
+          setTimeout(() => {
+            console.log("Reloading page to ensure auth state consistency...");
+            window.location.reload();
+          }, 2000);
         }
       } else {
         this.view.showError(result.error);

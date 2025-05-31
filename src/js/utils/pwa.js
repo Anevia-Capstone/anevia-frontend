@@ -12,11 +12,13 @@ class PWAManager {
   async init() {
     // Register service worker
     if ('serviceWorker' in navigator) {
-      this.wb = new Workbox('/sw.js');
-      
+      // Use different service worker paths for dev and production
+      const swPath = import.meta.env.DEV ? '/dev-sw.js?dev-sw' : '/sw.js';
+      this.wb = new Workbox(swPath);
+
       // Add event listeners
       this.setupEventListeners();
-      
+
       // Register the service worker
       try {
         await this.wb.register();
@@ -28,10 +30,10 @@ class PWAManager {
 
     // Setup online/offline detection
     this.setupNetworkDetection();
-    
+
     // Setup update notification
     this.setupUpdateNotification();
-    
+
     // Cache critical resources
     await this.cacheEssentialResources();
   }
@@ -87,7 +89,7 @@ class PWAManager {
   }
 
   async cacheEssentialResources() {
-    if ('caches' in window) {
+    if ('caches' in window && !import.meta.env.DEV) {
       try {
         const cache = await caches.open('anevia-essential-v1');
         const essentialResources = [
@@ -97,12 +99,14 @@ class PWAManager {
           '/src/assets/logo.svg',
           '/src/assets/favicon.svg'
         ];
-        
+
         await cache.addAll(essentialResources);
         console.log('Essential resources cached');
       } catch (error) {
         console.error('Failed to cache essential resources:', error);
       }
+    } else if (import.meta.env.DEV) {
+      console.log('Skipping cache in development mode');
     }
   }
 
@@ -180,7 +184,7 @@ class PWAManager {
     const statusElement = document.getElementById('network-status') || this.createNetworkStatusElement();
     statusElement.className = `network-status ${status}`;
     statusElement.textContent = status === 'online' ? 'Back online' : 'You are offline';
-    
+
     if (status === 'online') {
       setTimeout(() => {
         statusElement.style.display = 'none';

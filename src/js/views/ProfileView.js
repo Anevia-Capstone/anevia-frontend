@@ -82,6 +82,17 @@ export default class ProfileView extends BaseView {
             </div>
           </div>
 
+          <!-- Password Warning Notice -->
+          <div class="password-warning" id="passwordWarning" style="display: none;">
+            <div class="warning-content">
+              <i class="fas fa-exclamation-triangle"></i>
+              <span>Your account doesn't have a password set. Consider adding a password for additional security.</span>
+              <button class="warning-action-btn" id="setPasswordBtn">
+                <i class="fas fa-key"></i> Set Password
+              </button>
+            </div>
+          </div>
+
           <!-- Profile Information Section -->
           <div class="profile-info-section">
             <div class="section-header">
@@ -306,6 +317,7 @@ export default class ProfileView extends BaseView {
     const changePasswordBtn = this.findElement("#changePassword");
     const linkPasswordBtn = this.findElement("#linkPassword");
     const deleteAccountBtn = this.findElement("#deleteAccount");
+    const setPasswordBtn = this.findElement("#setPasswordBtn");
 
     if (changePasswordBtn) {
       this.addEventListener(changePasswordBtn, "click", () => {
@@ -315,6 +327,12 @@ export default class ProfileView extends BaseView {
 
     if (linkPasswordBtn) {
       this.addEventListener(linkPasswordBtn, "click", () => {
+        this.onLinkPassword();
+      });
+    }
+
+    if (setPasswordBtn) {
+      this.addEventListener(setPasswordBtn, "click", () => {
         this.onLinkPassword();
       });
     }
@@ -433,18 +451,26 @@ export default class ProfileView extends BaseView {
 
     // Show Google notice and link password option for Google users
     const providers = this.currentUser.providerData.map((p) => p.providerId);
+    const hasPassword = providers.includes("password");
+
     if (providers.includes("google.com")) {
       const googleNotice = this.findElement("#googleNotice");
       if (googleNotice) {
         googleNotice.style.display = "block";
       }
 
-      if (!providers.includes("password")) {
+      if (!hasPassword) {
         const linkPasswordSection = this.findElement("#linkPasswordSection");
         if (linkPasswordSection) {
           linkPasswordSection.style.display = "block";
         }
       }
+    }
+
+    // Show password warning if user doesn't have password authentication
+    const passwordWarning = this.findElement("#passwordWarning");
+    if (passwordWarning) {
+      passwordWarning.style.display = hasPassword ? "none" : "block";
     }
   }
 

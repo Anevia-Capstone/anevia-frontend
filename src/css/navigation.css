@@ -103,7 +103,7 @@ header {
   background-color: #1a6be0;
 }
 
-/* Navigation Install Button */
+/* Navigation Install Button - Hidden */
 .nav-install-btn {
   background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
   color: white;
@@ -114,7 +114,7 @@ header {
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 14px;
-  display: flex;
+  display: none !important; /* Hidden by default */
   align-items: center;
   gap: 6px;
   margin-right: 12px;

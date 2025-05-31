@@ -8,7 +8,7 @@ import {
   resetUserPassword,
   deleteUserProfile,
 } from "../api.js";
-import { getCurrentUser, logoutUser } from "../firebase/auth.js";
+import { getCurrentUser, logoutUser, getCurrentUserToken } from "../firebase/auth.js";
 
 export default class ProfileModel extends BaseModel {
   constructor() {
@@ -25,21 +25,37 @@ export default class ProfileModel extends BaseModel {
 
       this.currentUser = getCurrentUser();
       if (!this.currentUser) {
-        throw new Error("Please log in to view your profile");
+        return {
+          success: false,
+          error: "Please log in to view your profile"
+        };
       }
 
-      // Get user profile from backend
-      const response = await getUserProfile(this.currentUser.uid);
-      this.backendUser = response.user;
+      // Get user profile from backend with better error handling
+      try {
+        const response = await getUserProfile(this.currentUser.uid);
+        this.backendUser = response.user;
 
-      this.setData("currentUser", this.currentUser);
-      this.setData("backendUser", this.backendUser);
+        this.setData("currentUser", this.currentUser);
+        this.setData("backendUser", this.backendUser);
 
-      return {
-        success: true,
-        currentUser: this.currentUser,
-        backendUser: this.backendUser,
-      };
+        return {
+          success: true,
+          currentUser: this.currentUser,
+          backendUser: this.backendUser,
+        };
+      } catch (backendError) {
+        console.warn("Backend profile fetch failed, using Firebase user only:", backendError);
+        // Return Firebase user even if backend fails
+        this.setData("currentUser", this.currentUser);
+        this.setData("backendUser", null);
+
+        return {
+          success: true,
+          currentUser: this.currentUser,
+          backendUser: null,
+        };
+      }
     } catch (error) {
       console.error("Error loading user profile:", error);
       return {
@@ -196,6 +212,9 @@ export default class ProfileModel extends BaseModel {
         this.setData("backendUser", this.backendUser);
       }
 
+      // Refresh Firebase user data to get updated provider information
+      await this.refreshFirebaseUserData();
+
       return {
         success: true,
         user: response.user
@@ -239,6 +258,9 @@ export default class ProfileModel extends BaseModel {
         this.backendUser = response.user;
         this.setData("backendUser", this.backendUser);
       }
+
+      // Refresh Firebase user data to get updated provider information
+      await this.refreshFirebaseUserData();
 
       return {
         success: true,
@@ -374,5 +396,37 @@ export default class ProfileModel extends BaseModel {
       return new Date(this.backendUser.birthdate).toISOString().split("T")[0];
     }
     return "";
+  }
+
+  // Refresh Firebase user data to get updated provider information
+  async refreshFirebaseUserData() {
+    try {
+      if (!this.currentUser) return;
+
+      console.log("Refreshing Firebase user data...");
+
+      // Add a small delay to allow backend changes to propagate
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Reload the user to get updated provider data
+      await this.currentUser.reload();
+
+      // Get a fresh token to ensure backend sync
+      await getCurrentUserToken(true);
+
+      // Update current user reference
+      this.currentUser = getCurrentUser();
+      this.setData("currentUser", this.currentUser);
+
+      console.log("Firebase user data refreshed successfully");
+      console.log("Updated providers:", this.currentUser?.providerData?.map(p => p.providerId));
+
+      // Force a small delay to ensure UI updates properly
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+    } catch (error) {
+      console.error("Error refreshing Firebase user data:", error);
+      // Don't throw error, just log it as this is not critical
+    }
   }
 }
