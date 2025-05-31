@@ -324,18 +324,28 @@ export class AnimationManager {
   staggerFadeIn(target) {
     const children = target.children;
 
+    if (children.length === 0) return;
+
     anime.set(children, {
       opacity: 0,
       translateY: 20,
+      scale: 0.9,
     });
 
     anime({
       targets: children,
       opacity: 1,
       translateY: 0,
-      duration: 600,
+      scale: 1,
+      duration: 800,
       easing: "easeOutExpo",
-      delay: anime.stagger(100),
+      delay: anime.stagger(150, { start: 200 }),
+      complete: () => {
+        // Mark children as animated
+        Array.from(children).forEach(child => {
+          child.classList.add('animated');
+        });
+      }
     });
   }
 

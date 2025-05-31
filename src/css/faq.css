@@ -8,12 +8,20 @@
 
 .faq-section {
   background-color: #f8f8f8;
-  padding-top:36px
+  padding-top:36px;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
 }
 
 .faq-container {
+  display: flex;
+  flex-direction: column;
   max-width: 1186px;
+  height: 100%;
   margin: 0 auto;
+  justify-content: center;
+  align-items: center;
 
 }
 

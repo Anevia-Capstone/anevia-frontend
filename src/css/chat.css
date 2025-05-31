@@ -110,13 +110,20 @@
 }
 
 .chat-bubble {
-  max-width: 70%;
+  max-width: 60%;
   padding: 8px 12px;
   border-radius: 8px;
   word-wrap: break-word;
 }
 
-.chat-message.user-message .chat-bubble {
+.chat-bubble-grid {
+  max-width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  word-wrap: break-word;
+}
+
+.chat-message.user-message .chat-bubble  {
   background: #5f9bfe;
   color: #ffffff;
 }

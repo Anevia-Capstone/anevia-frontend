@@ -104,37 +104,227 @@ export default class HomeView extends BaseView {
 
       <div class="innovation-statement" data-animation="fadeInUp">
         <div class="container">
-          <p class="statement-text" data-animation="typeWriter">Innovative AI-powered anemia detection technology applied to tackle real-world healthcare challenges.</p>
+          <p class="statement-text typing-animation animated" data-animation="typeWriter">Innovative AI-powered anemia detection technology applied to tackle real-world healthcare challenges.</p>
+        </div>
+      </div>
+
+      <!-- What can Anevia do for you Section -->
+      <div class="what-can-anevia-do" data-animation="fadeInUp">
+        <div class="container">
+          <div class="what-can-anevia-content">
+            <div class="what-can-anevia-text">
+              <h2 class="what-can-anevia-title">What can Anevia <span class="title-highlight">do for you?</span></h2>
+              <p class="what-can-anevia-description">
+                Anevia revolutionizes anemia detection by providing fast, accurate, and non-invasive screening through advanced AI technology. Our innovative approach makes healthcare more accessible and convenient for everyone.
+              </p>
+
+              <div class="capabilities-list">
+                <div class="capability-item expanded" data-animation="slideInUp">
+                  <div class="capability-header" data-capability="1">
+                    <div class="capability-number">1.</div>
+                    <div class="capability-title-container">
+                      <h3 class="capability-title">Instant AI-Powered Analysis</h3>
+                      <div class="capability-toggle">
+                        <i class="fas fa-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="capability-description-container">
+                    <p class="capability-description">
+                      Get immediate anemia screening results through our advanced machine learning algorithms that analyze eye conjunctiva patterns with medical-grade accuracy.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="capability-item" data-animation="slideInUp">
+                  <div class="capability-header" data-capability="2">
+                    <div class="capability-number">2.</div>
+                    <div class="capability-title-container">
+                      <h3 class="capability-title">Non-Invasive Detection Technology</h3>
+                      <div class="capability-toggle">
+                        <i class="fas fa-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="capability-description-container">
+                    <p class="capability-description">
+                      Experience painless screening without needles or blood samples. Simply capture an image of your eye using any smartphone or camera device.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="capability-item" data-animation="slideInUp">
+                  <div class="capability-header" data-capability="3">
+                    <div class="capability-number">3.</div>
+                    <div class="capability-title-container">
+                      <h3 class="capability-title">Comprehensive Health Insights</h3>
+                      <div class="capability-toggle">
+                        <i class="fas fa-chevron-down"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="capability-description-container">
+                    <p class="capability-description">
+                      Receive detailed analysis reports with personalized recommendations and guidance for maintaining optimal iron levels and overall health.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="what-can-anevia-image">
+              <div class="eye-image-container">
+                <img src="/src/assets/Eye-face.jpg" alt="Eye analysis for anemia detection" class="eye-analysis-image" />
+                <div class="analysis-overlay">
+                  <div class="analysis-point point-1"></div>
+                  <div class="analysis-point point-2"></div>
+                  <div class="analysis-point point-3"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="features" data-animation="fadeInUp">
         <div class="container">
-          <h2 class="section-title">Why Choose Anevia?</h2>
-          <div class="features-container" data-animation="staggerFadeIn">
-            <div class="feature-card" data-animation="scaleIn">
-              <div class="feature-icon">
-                <i class="fas fa-bolt"></i>
+          <div class="features-header">
+            <h2 class="section-title">Why Choose Anevia?</h2>
+            <p class="section-subtitle">Discover the advantages that make Anevia the leading choice for non-invasive anemia detection technology.</p>
+          </div>
+
+          <div class="bento-grid" data-animation="staggerFadeIn">
+            <!-- Quick & Easy Detection - Large Card -->
+            <div class="bento-card bento-card-large" data-animation="scaleIn">
+              <div class="bento-content">
+                <div class="bento-header">
+                  <div class="bento-icon">
+                    <i class="fas fa-eye"></i>
+                  </div>
+                  <h3 class="bento-title">Quick & Easy Detection</h3>
+                </div>
+                <p class="bento-description">
+                  Detect anemia in seconds with just a photo of your eye. Our AI analyzes conjunctiva color patterns to provide instant, accurate results without any invasive procedures.
+                </p>
+                <div class="bento-stats">
+                  <div class="stat-item">
+                    <span class="stat-number">< 30s</span>
+                    <span class="stat-label">Analysis Time</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-number">95%</span>
+                    <span class="stat-label">Accuracy</span>
+                  </div>
+                </div>
               </div>
-              <h3 class="feature-title">Fast Results</h3>
-              <p class="feature-description">Get your anemia screening results in seconds, not days. No more waiting for lab tests.</p>
             </div>
 
-            <div class="feature-card" data-animation="scaleIn">
-              <div class="feature-icon">
-                <i class="fas fa-shield-alt"></i>
+            <!-- Real-time Analysis -->
+            <div class="bento-card bento-card-medium" data-animation="scaleIn">
+              <div class="bento-content">
+                <div class="notification-demo">
+                  <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                  </div>
+                  <div class="notification-content">
+                    <h4>Analysis Complete!</h4>
+                    <p>Your scan results are ready</p>
+                    <span class="notification-time">Just now</span>
+                  </div>
+                </div>
+                <h3 class="bento-title">Real-time Analysis & Alerts</h3>
+                <p class="bento-description">
+                  Get instant notifications when your analysis is complete with detailed results and personalized recommendations.
+                </p>
               </div>
-              <h3 class="feature-title">Non-Invasive</h3>
-              <p class="feature-description">No needles, no blood samples. Just a simple scan of your eye's conjunctiva.</p>
             </div>
 
-            <div class="feature-card" data-animation="scaleIn">
-              <div class="feature-icon">
-                <i class="fas fa-chart-line"></i>
+            <!-- Mobile Scanning -->
+            <div class="bento-card bento-card-small" data-animation="scaleIn">
+              <div class="bento-content">
+                <div class="mobile-demo">
+                  <div class="phone-frame">
+                    <div class="camera-viewfinder">
+                      <div class="scan-overlay"></div>
+                    </div>
+                  </div>
+                </div>
+                <h3 class="bento-title">Mobile-First Design</h3>
+                <p class="bento-description">Optimized for smartphones with intuitive camera integration.</p>
               </div>
-              <h3 class="feature-title">Accurate Detection</h3>
-              <p class="feature-description">Our AI-powered technology provides reliable anemia detection with high accuracy.</p>
             </div>
+
+            <!-- Fast Results -->
+            <div class="bento-card bento-card-small" data-animation="scaleIn">
+              <div class="bento-content">
+                <div class="speed-icon-container">
+                  <div class="speed-icon">
+                    <i class="fas fa-bolt"></i>
+                  </div>
+                </div>
+                <h3 class="bento-title">Lightning Fast</h3>
+                <p class="bento-description">Get your anemia screening results in under 30 seconds.</p>
+                <div class="speed-indicator">
+                    <div class="speed-bar">
+                      <div class="speed-fill"></div>
+                    </div>
+                    <span class="speed-text">< 30s</span>
+                  </div>
+              </div>
+            </div>
+
+            <!-- AI Consultation -->
+            <div class="bento-card bento-card-wide" data-animation="scaleIn">
+              <div class="bento-content">
+                <div class="ai-consultation-demo">
+                  <div class="ai-avatar">
+                    <i class="fas fa-robot"></i>
+                  </div>
+                  <div class="chat-bubble-grid">
+                    <p>Berdasarkan hasil scan Anda, saya merekomendasikan untuk meningkatkan asupan zat besi...</p>
+                  </div>
+                </div>
+                <h3 class="bento-title">Konsultasi dengan AI</h3>
+                <p class="bento-description">
+                  Dapatkan saran kesehatan personal dari AI assistant yang dapat membantu menganalisis hasil scan dan memberikan rekomendasi yang tepat.
+                </p>
+              </div>
+            </div>
+
+            <!-- Secure Data -->
+            <div class="bento-card bento-card-small" data-animation="scaleIn">
+              <div class="bento-content">
+                <div class="security-icon-container">
+                  <div class="security-icon">
+                    <i class="fas fa-shield-alt"></i>
+                  </div>
+                </div>
+                <h3 class="bento-title">Secure & Private</h3>
+                <p class="bento-description">Your health data is encrypted and protected with enterprise-grade security.</p>
+                
+              </div>
+            </div>
+
+            <!-- Easy to Use -->
+            <div class="bento-card bento-card-small" data-animation="scaleIn">
+              <div class="bento-content">
+                <div class=ease-icon-container>
+                    <div class="ease-icon">
+                      <i class="fas fa-hand-point-up"></i>
+                    </div>
+                </div>
+                <h3 class="bento-title">Easy to Use</h3>
+                <p class="bento-description">Simple one-tap scanning with intuitive interface designed for everyone.</p>
+                <div class="ease-steps">
+                  <div class="step-dot active"></div>
+                  <div class="step-dot active"></div>
+                  <div class="step-dot active"></div>
+                </div>
+              </div>
+            </div>
+
+
+
           </div>
         </div>
       </div>
@@ -302,6 +492,9 @@ export default class HomeView extends BaseView {
 
     // Initialize animations
     this.initializeAnimations();
+
+    // Setup capability accordion functionality
+    this.setupCapabilityAccordion();
   }
 
   initializeAnimations() {
@@ -312,6 +505,51 @@ export default class HomeView extends BaseView {
 
     // Setup scroll-triggered animations for other sections
     animationManager.observeElements("[data-animation]");
+  }
+
+  setupCapabilityAccordion() {
+    // Get all capability headers
+    const capabilityHeaders = document.querySelectorAll('.capability-header');
+
+    capabilityHeaders.forEach(header => {
+      header.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const capabilityItem = header.closest('.capability-item');
+        const isExpanded = capabilityItem.classList.contains('expanded');
+
+        // Close all other capability items
+        document.querySelectorAll('.capability-item').forEach(item => {
+          if (item !== capabilityItem) {
+            item.classList.remove('expanded');
+          }
+        });
+
+        // Toggle current item
+        if (isExpanded) {
+          capabilityItem.classList.remove('expanded');
+        } else {
+          capabilityItem.classList.add('expanded');
+        }
+
+        // Add a small delay for smooth animation
+        setTimeout(() => {
+          // Optional: scroll to item if needed
+          if (!isExpanded) {
+            const rect = capabilityItem.getBoundingClientRect();
+            const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+
+            if (!isVisible) {
+              capabilityItem.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+              });
+            }
+          }
+        }, 200);
+      });
+    });
   }
 
   update(data) {

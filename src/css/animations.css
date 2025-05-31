@@ -22,6 +22,19 @@
   opacity: 1;
 }
 
+/* Ensure bento cards are visible initially */
+.bento-card {
+  opacity: 1;
+}
+
+.bento-card[data-animation] {
+  opacity: 0;
+}
+
+.bento-card[data-animation].animated {
+  opacity: 1;
+}
+
 /* Loading animations */
 @keyframes pulse {
   0%,
