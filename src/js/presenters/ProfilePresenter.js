@@ -245,21 +245,26 @@ export default class ProfilePresenter extends BasePresenter {
           passwordWarning.style.display = "none";
         }
 
-        this.view.showSuccess("Password changed successfully! Page will refresh to update authentication state.");
+        // Show success popup modal instead of regular message
+        this.showSuccessPopup("Password Changed Successfully", "Your password has been updated successfully. You can now use your new password to log in.");
 
         // Update user data if the API returned updated user info
         if (result.user) {
-          // Get the refreshed Firebase user data
-          const refreshedFirebaseUser = this.model.getCurrentUser();
-          this.view.updateUserData(refreshedFirebaseUser, result.user);
-          // Notify the main app about the profile update so navbar can be refreshed
-          this.notifyProfileUpdate(refreshedFirebaseUser, result.user);
+          try {
+            // Refresh Firebase user data to get updated provider information
+            await this.model.refreshFirebaseUserData();
 
-          // Force a page reload after a short delay to ensure auth state is properly updated
-          setTimeout(() => {
-            console.log("Reloading page to ensure auth state consistency...");
-            window.location.reload();
-          }, 2000);
+            // Get the refreshed Firebase user data
+            const refreshedFirebaseUser = this.model.getCurrentUser();
+            this.view.updateUserData(refreshedFirebaseUser, result.user);
+            // Notify the main app about the profile update so navbar can be refreshed
+            this.notifyProfileUpdate(refreshedFirebaseUser, result.user);
+          } catch (refreshError) {
+            console.warn("Error refreshing user data, but password change was successful:", refreshError);
+            // Still update with available data
+            this.view.updateUserData(this.model.getCurrentUser(), result.user);
+            this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
+          }
         }
       } else {
         this.view.showError(result.error);
@@ -325,23 +330,26 @@ export default class ProfilePresenter extends BasePresenter {
           passwordWarning.style.display = "none";
         }
 
-        this.view.showSuccess(
-          "Email/password authentication linked successfully! Page will refresh to update authentication state."
-        );
+        // Show success popup modal instead of regular message
+        this.showSuccessPopup("Password Linked Successfully", "Email/password authentication has been linked to your account successfully. You can now use email and password to log in.");
 
         // Update user data if the API returned updated user info
         if (result.user) {
-          // Get the refreshed Firebase user data
-          const refreshedFirebaseUser = this.model.getCurrentUser();
-          this.view.updateUserData(refreshedFirebaseUser, result.user);
-          // Notify the main app about the profile update so navbar can be refreshed
-          this.notifyProfileUpdate(refreshedFirebaseUser, result.user);
+          try {
+            // Refresh Firebase user data to get updated provider information
+            await this.model.refreshFirebaseUserData();
 
-          // Force a page reload after a short delay to ensure auth state is properly updated
-          setTimeout(() => {
-            console.log("Reloading page to ensure auth state consistency...");
-            window.location.reload();
-          }, 2000);
+            // Get the refreshed Firebase user data
+            const refreshedFirebaseUser = this.model.getCurrentUser();
+            this.view.updateUserData(refreshedFirebaseUser, result.user);
+            // Notify the main app about the profile update so navbar can be refreshed
+            this.notifyProfileUpdate(refreshedFirebaseUser, result.user);
+          } catch (refreshError) {
+            console.warn("Error refreshing user data, but password link was successful:", refreshError);
+            // Still update with available data
+            this.view.updateUserData(this.model.getCurrentUser(), result.user);
+            this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
+          }
         }
       } else {
         this.view.showError(result.error);
@@ -436,6 +444,31 @@ export default class ProfilePresenter extends BasePresenter {
     `;
 
     document.body.appendChild(modal);
+    return modal;
+  }
+
+  // Show success popup modal
+  showSuccessPopup(title, message) {
+    const modal = this.createModal(
+      title,
+      `
+      <div class="success-popup">
+        <div class="success-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="success-message">
+          <p>${message}</p>
+        </div>
+        <div class="modal-actions">
+          <button class="action-btn primary-btn" onclick="this.closest('.modal').remove()">OK</button>
+        </div>
+      </div>
+    `
+    );
+
+    // Set modal width for success popup
+    modal.querySelector('.modal-content').style.maxWidth = '400px';
+
     return modal;
   }
 

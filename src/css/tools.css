@@ -1239,6 +1239,8 @@
 .success-message {
   background-color: rgba(76, 175, 80, 0.1);
   border: 1px solid rgba(76, 175, 80, 0.3);
+  padding: 24px 4px;
+  border-radius: 4px;
   color: #388e3c;
 }
 

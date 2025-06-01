@@ -710,6 +710,59 @@
   color: #388e3c;
 }
 
+/* Success popup modal styles */
+.success-popup {
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.success-popup .success-icon {
+  margin-bottom: 16px;
+  padding: 12px 0px;
+}
+
+.success-popup .success-icon i {
+  font-size: 48px;
+  color: #4CAF50;
+  animation: successPulse 0.6s ease-in-out;
+}
+
+.success-popup .success-message {
+  margin: 16px 0 24px 0;
+}
+
+.success-popup .success-message p {
+  color: var(--text-color);
+  line-height: 1.5;
+  margin: 0;
+  font-size: 16px;
+}
+
+.success-popup .modal-actions {
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.success-popup .action-btn {
+  min-width: 100px;
+}
+
+/* Success pulse animation */
+@keyframes successPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .message.info {
   background-color: rgba(33, 150, 243, 0.1);
   border: 1px solid rgba(33, 150, 243, 0.3);
