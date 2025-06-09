@@ -25,13 +25,22 @@
 }
 
 .tools-header-actions {
-  position: absolute;
+  /* position: absolute;
   top: 0;
   right: 0;
-  z-index: 10;
+  z-index: 10; */
+  bottom: 20px; 
+  right: 20px; 
+  z-index: 10; 
+  padding: 10px 20px; 
+  color: #fff; 
+  border: none; 
+  border-radius: 5px; 
+  cursor: pointer; 
 }
 
 .scan-history-btn {
+  position: fixed; 
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
@@ -116,7 +125,7 @@
   align-items: center;
   width: 60%;
   gap: 12px;
-  padding: 32px 0px 0px 0px;
+  padding: 32px 32px 0px 32px;
   border-radius: 12px;
   border: 1px solid #d2d6db;
 }
@@ -133,7 +142,7 @@
 
 .scan-option {
   flex: 1;
-  max-width: 328px;
+  /* max-width: 328px; */
   height: 200px;
   background-color: var(--card-bg);
   border-radius: var(--border-radius-md);
@@ -1357,7 +1366,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .tools-container {
-    padding: 80px var(--spacing-md);
+    padding: 110px 32px;
     gap: var(--spacing-xl);
   }
 
@@ -1375,17 +1384,22 @@
     padding: 0 var(--spacing-md);
   }
 
+  .tools-file-upload{
+    
+    width: 100%;
+  }
   .scan-options {
-    flex-direction: column;
-    gap: var(--spacing-md);
+    /* display: flex;
+    flex-direction: column; */
+    /* gap: var(--spacing-md); */
   }
 
   .scan-option {
-    max-width: 100%;
+    max-width: 50%;
   }
 
   .scan-interface {
-    padding: var(--spacing-md);
+    padding: 0px;
   }
 
   .camera-container {
@@ -1500,8 +1514,13 @@
 }
 
 @media (max-width: 480px) {
+  .section{
+    max-width:100%;
+    
+  }
   .tools-container {
     padding: 60px var(--spacing-sm);
+    max-width:100%;
   }
 
   .tools-title {

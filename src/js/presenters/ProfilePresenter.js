@@ -228,8 +228,20 @@ export default class ProfilePresenter extends BasePresenter {
     const newPassword = modal.querySelector("#newPassword").value;
     const confirmPassword = modal.querySelector("#confirmPassword").value;
 
+    // Import the flag setter
+    const { setPasswordChangeInProgress } = await import("../firebase/auth.js");
+
     try {
       this.view.setLoading(true);
+
+      // Store current user data before password change
+      const currentUserData = {
+        user: this.model.getCurrentUser(),
+        backendUser: this.model.getBackendUser()
+      };
+
+      // Set flag to prevent logout during password change and store user data
+      setPasswordChangeInProgress(true, currentUserData);
 
       const result = await this.model.changePassword(
         newPassword,
@@ -250,21 +262,11 @@ export default class ProfilePresenter extends BasePresenter {
 
         // Update user data if the API returned updated user info
         if (result.user) {
-          try {
-            // Refresh Firebase user data to get updated provider information
-            await this.model.refreshFirebaseUserData();
+          // Update UI with available data
+          this.view.updateUserData(this.model.getCurrentUser(), result.user);
+          this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
 
-            // Get the refreshed Firebase user data
-            const refreshedFirebaseUser = this.model.getCurrentUser();
-            this.view.updateUserData(refreshedFirebaseUser, result.user);
-            // Notify the main app about the profile update so navbar can be refreshed
-            this.notifyProfileUpdate(refreshedFirebaseUser, result.user);
-          } catch (refreshError) {
-            console.warn("Error refreshing user data, but password change was successful:", refreshError);
-            // Still update with available data
-            this.view.updateUserData(this.model.getCurrentUser(), result.user);
-            this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
-          }
+          console.log("Password change successful, UI updated. Token refresh will happen naturally via auth state change.");
         }
       } else {
         this.view.showError(result.error);
@@ -274,6 +276,11 @@ export default class ProfilePresenter extends BasePresenter {
       this.view.showError("Failed to change password. Please try again.");
     } finally {
       this.view.setLoading(false);
+
+      // Clear the flag after a longer delay to allow auth state to stabilize
+      setTimeout(() => {
+        setPasswordChangeInProgress(false);
+      }, 5000); // 5 second delay to ensure auth state stabilizes
     }
   }
 
@@ -310,8 +317,20 @@ export default class ProfilePresenter extends BasePresenter {
     const password = modal.querySelector("#linkPassword").value;
     const confirmPassword = modal.querySelector("#confirmLinkPassword").value;
 
+    // Import the flag setter
+    const { setPasswordChangeInProgress } = await import("../firebase/auth.js");
+
     try {
       this.view.setLoading(true);
+
+      // Store current user data before password link
+      const currentUserData = {
+        user: this.model.getCurrentUser(),
+        backendUser: this.model.getBackendUser()
+      };
+
+      // Set flag to prevent logout during password link and store user data
+      setPasswordChangeInProgress(true, currentUserData);
 
       const result = await this.model.linkPassword(password, confirmPassword);
 
@@ -335,21 +354,11 @@ export default class ProfilePresenter extends BasePresenter {
 
         // Update user data if the API returned updated user info
         if (result.user) {
-          try {
-            // Refresh Firebase user data to get updated provider information
-            await this.model.refreshFirebaseUserData();
+          // Update UI with available data
+          this.view.updateUserData(this.model.getCurrentUser(), result.user);
+          this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
 
-            // Get the refreshed Firebase user data
-            const refreshedFirebaseUser = this.model.getCurrentUser();
-            this.view.updateUserData(refreshedFirebaseUser, result.user);
-            // Notify the main app about the profile update so navbar can be refreshed
-            this.notifyProfileUpdate(refreshedFirebaseUser, result.user);
-          } catch (refreshError) {
-            console.warn("Error refreshing user data, but password link was successful:", refreshError);
-            // Still update with available data
-            this.view.updateUserData(this.model.getCurrentUser(), result.user);
-            this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
-          }
+          console.log("Password link successful, UI updated. Token refresh will happen naturally via auth state change.");
         }
       } else {
         this.view.showError(result.error);
@@ -359,6 +368,11 @@ export default class ProfilePresenter extends BasePresenter {
       this.view.showError("Failed to link password. Please try again.");
     } finally {
       this.view.setLoading(false);
+
+      // Clear the flag after a longer delay to allow auth state to stabilize
+      setTimeout(() => {
+        setPasswordChangeInProgress(false);
+      }, 5000); // 5 second delay to ensure auth state stabilizes
     }
   }
 

@@ -313,3 +313,153 @@
 .message-close:hover {
   opacity: 1;
 }
+
+/* ===== COMPONENT RESPONSIVE STYLES ===== */
+
+@media (max-width: 768px) {
+  /* Button responsive */
+  .btn {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+
+  .action-btn {
+    padding: 10px 16px;
+    font-size: 14px;
+    gap: var(--spacing-xs);
+  }
+
+  /* Modal responsive */
+  .modal-content {
+    width: 95%;
+    max-width: none;
+    margin: var(--spacing-sm);
+  }
+
+  .modal-header {
+    padding: var(--spacing-md);
+  }
+
+  .modal-body {
+    padding: var(--spacing-md);
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .modal-actions .action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Message container responsive */
+  .message-container {
+    top: 80px;
+    right: var(--spacing-sm);
+    left: var(--spacing-sm);
+    max-width: none;
+  }
+
+  .message {
+    padding: var(--spacing-sm);
+    font-size: 14px;
+  }
+}
+
+/* Very small mobile devices - 425px and below */
+@media (max-width: 425px) {
+  /* Button adjustments for very small screens */
+  .btn {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .action-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+    gap: 4px;
+  }
+
+  /* Modal adjustments for very small screens */
+  .modal-content {
+    width: 98%;
+    margin: 4px;
+    border-radius: 12px;
+  }
+
+  .modal-header {
+    padding: 10px;
+  }
+
+  .modal-body {
+    padding: 10px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-actions .action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .modal-form input,
+  .modal-form textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: 8px 12px;
+  }
+
+  /* Message container adjustments */
+  .message-container {
+    top: 70px;
+    right: 8px;
+    left: 8px;
+    max-width: none;
+  }
+
+  .message {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  /* Login button specific adjustments */
+  .login-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small adjustments */
+  .btn {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .action-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .modal-content {
+    width: 98%;
+    margin: var(--spacing-xs);
+  }
+
+  .modal-header {
+    padding: var(--spacing-sm);
+  }
+
+  .modal-body {
+    padding: var(--spacing-sm);
+  }
+
+  .modal-form input {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+}

@@ -17,7 +17,7 @@ export default class Navigation {
 
   render() {
     this.header.innerHTML = `
-      <div class="container nav-container">
+      <div class="nav-container">
         <div class="navbar">
           <a href="#home" class="logo">
             Anevia
@@ -122,7 +122,9 @@ export default class Navigation {
 
   setupScrollAnimation() {
     // Check if animations should be enabled (disable on mobile for performance)
+    // Disable animations completely for screens 425px and below
     this.enableAnimations = window.innerWidth > 768;
+    this.enableScrollEffects = window.innerWidth > 425;
 
     // Throttled scroll handler for better performance
     const handleScroll = () => {
@@ -136,7 +138,10 @@ export default class Navigation {
 
         if (shouldShrink !== this.isScrolled) {
           this.isScrolled = shouldShrink;
-          this.animateNavbar(shouldShrink);
+          // Only animate if scroll effects are enabled (not on very small screens)
+          if (this.enableScrollEffects) {
+            this.animateNavbar(shouldShrink);
+          }
         }
       }, 10); // Small delay for throttling
     };
@@ -144,16 +149,40 @@ export default class Navigation {
     // Store the handler reference for cleanup
     this.scrollHandler = handleScroll;
 
-    // Add scroll event listener
-    window.addEventListener("scroll", this.scrollHandler, { passive: true });
+    // Add scroll event listener only if scroll effects are enabled
+    if (this.enableScrollEffects) {
+      window.addEventListener("scroll", this.scrollHandler, { passive: true });
+    }
 
     // Listen for window resize to update animation settings
     window.addEventListener("resize", () => {
+      const oldEnableScrollEffects = this.enableScrollEffects;
       this.enableAnimations = window.innerWidth > 768;
+      this.enableScrollEffects = window.innerWidth > 425;
+
+      // Close mobile menu on resize to prevent layout issues
+      const navLinks = this.header.querySelector(".nav-links");
+      if (navLinks) {
+        navLinks.classList.remove("active");
+      }
+
+      // Add or remove scroll listener based on screen size
+      if (this.enableScrollEffects && !oldEnableScrollEffects) {
+        window.addEventListener("scroll", this.scrollHandler, { passive: true });
+      } else if (!this.enableScrollEffects && oldEnableScrollEffects) {
+        window.removeEventListener("scroll", this.scrollHandler);
+        // Reset navbar to default state when disabling scroll effects
+        const navbar = this.header.querySelector(".navbar");
+        if (navbar) {
+          navbar.classList.remove("navbar-shrunk");
+        }
+      }
     });
 
-    // Initial check in case page is already scrolled
-    handleScroll();
+    // Initial check in case page is already scrolled (only if scroll effects enabled)
+    if (this.enableScrollEffects) {
+      handleScroll();
+    }
   }
 
   animateNavbar(shrink) {
@@ -163,6 +192,40 @@ export default class Navigation {
     const loginBtn = this.header.querySelector(".login-btn");
 
     if (!navbar) return;
+
+    // Get current screen width for responsive behavior
+    // Use both window.innerWidth and screen.width for better device detection
+    const screenWidth = Math.min(window.innerWidth, window.screen?.width || window.innerWidth);
+    const viewportWidth = window.innerWidth;
+
+    // Check if we're in a small screen environment (including device emulation)
+    const isSmallScreen = screenWidth <= 425 || viewportWidth <= 425 ||
+                         window.matchMedia('(max-width: 425px)').matches ||
+                         window.matchMedia('(max-device-width: 425px)').matches;
+
+    // Debug logging for device emulation issues
+    if (screenWidth <= 425 || viewportWidth <= 425) {
+      console.log('Small screen detected:', {
+        screenWidth,
+        viewportWidth,
+        innerWidth: window.innerWidth,
+        screenAvailWidth: window.screen?.availWidth,
+        matchMedia425: window.matchMedia('(max-width: 425px)').matches,
+        matchMediaDevice425: window.matchMedia('(max-device-width: 425px)').matches,
+        isSmallScreen
+      });
+    }
+
+    // For very small screens (425px and below), completely disable animations
+    if (isSmallScreen) {
+      // Only apply CSS classes, no animations
+      if (shrink) {
+        navbar.classList.add("navbar-shrunk");
+      } else {
+        navbar.classList.remove("navbar-shrunk");
+      }
+      return; // Exit early, no animations
+    }
 
     // Always add/remove the CSS class for styling
     if (shrink) {
@@ -175,13 +238,22 @@ export default class Navigation {
     if (!this.enableAnimations) return;
 
     if (shrink) {
-      // Animate navbar to shrink to center with reduced width
-      anime({
-        targets: navbar,
-        width: window.innerWidth <= 768 ? "400px" : "900px",
-        duration: 100,
-        easing: "easeOutQuad",
-      });
+      // Only animate width on larger screens (above 768px)
+      if (screenWidth > 768) {
+        // Determine navbar width based on screen size
+        let navbarWidth = "900px";
+        if (screenWidth <= 1024) {
+          navbarWidth = "700px";
+        }
+
+        // Animate navbar to shrink to center with reduced width
+        anime({
+          targets: navbar,
+          width: navbarWidth,
+          duration: 100,
+          easing: "easeOutQuad",
+        });
+      }
 
       anime({
         targets: logo,
@@ -190,7 +262,7 @@ export default class Navigation {
       });
 
       // Only animate nav links on desktop (they're hidden on mobile)
-      if (window.innerWidth > 768) {
+      if (screenWidth > 768) {
         anime({
           targets: navLinks,
           duration: 100,
@@ -198,7 +270,7 @@ export default class Navigation {
         });
       }
 
-      if (loginBtn && window.innerWidth > 768) {
+      if (loginBtn && screenWidth > 768) {
         anime({
           targets: loginBtn,
           duration: 100,
@@ -206,33 +278,50 @@ export default class Navigation {
         });
       }
     } else {
-      // Animate back to original full width
-      anime({
-        targets: navbar,
-        width: "100%",
-        padding: window.innerWidth <= 768 ? "12px 16px" : "16px 24px",
-        duration: 100,
-        easing: "easeOutQuad",
-      });
-
-      anime({
-        targets: logo,
-        fontSize: "18px",
-        duration: 100,
-        easing: "easeOutQuad",
-      });
-
-      // Only animate nav links on desktop
-      if (window.innerWidth > 768) {
+      // Only animate width and padding on larger screens
+      if (screenWidth > 768) {
+        // Animate back to original full width
         anime({
-          targets: navLinks,
-          fontSize: "16px",
+          targets: navbar,
+          width: "100%",
           duration: 100,
           easing: "easeOutQuad",
         });
       }
 
-      if (loginBtn && window.innerWidth > 768) {
+      // Determine logo font size based on screen size
+      let logoFontSize = "18px";
+      if (screenWidth <= 480) {
+        logoFontSize = "16px";
+      } else if (screenWidth <= 768) {
+        logoFontSize = "16px";
+      } else if (screenWidth <= 1024) {
+        logoFontSize = "17px";
+      }
+
+      anime({
+        targets: logo,
+        fontSize: logoFontSize,
+        duration: 100,
+        easing: "easeOutQuad",
+      });
+
+      // Only animate nav links on desktop
+      if (screenWidth > 768) {
+        let linkFontSize = "16px";
+        if (screenWidth <= 1024) {
+          linkFontSize = "15px";
+        }
+
+        anime({
+          targets: navLinks,
+          fontSize: linkFontSize,
+          duration: 100,
+          easing: "easeOutQuad",
+        });
+      }
+
+      if (loginBtn && screenWidth > 768) {
         anime({
           targets: loginBtn,
           padding: "8px 24px",
@@ -253,6 +342,12 @@ export default class Navigation {
     // Remove scroll event listener
     if (this.scrollHandler) {
       window.removeEventListener("scroll", this.scrollHandler);
+    }
+
+    // Reset navbar state
+    const navbar = this.header.querySelector(".navbar");
+    if (navbar) {
+      navbar.classList.remove("navbar-shrunk");
     }
   }
 }

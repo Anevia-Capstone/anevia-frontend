@@ -184,11 +184,11 @@ export default class ScanHistoryView extends BaseView {
         <div class="chat-item-info">
           <div class="chat-item-header">
             <h4 class="chat-item-title">${session.title}</h4>
-            <span class="chat-item-date">${formattedDate} ${formattedTime}</span>
+            
           </div>
           <div class="chat-item-type">
-            <i class="fas fa-tag"></i>
-            <span>${sessionType}</span>
+            <i class="fas fa-clock"></i>
+            <span>${formattedDate} ${formattedTime}</span>
           </div>
           ${scanId !== 'N/A' ? `
           <div class="chat-item-scan">
