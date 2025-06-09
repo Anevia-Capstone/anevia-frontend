@@ -134,6 +134,9 @@ export default class ProfilePresenter extends BasePresenter {
       if (result.success) {
         this.view.updateUserData(this.model.getCurrentUser(), result.user);
         this.view.showSuccess("Profile image updated successfully");
+
+        // Notify the main app about the profile update so navbar can be refreshed
+        this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
       } else {
         this.view.showError(result.error);
       }
@@ -153,8 +156,11 @@ export default class ProfilePresenter extends BasePresenter {
 
       if (result.success) {
         this.view.updateUserData(this.model.getCurrentUser(), result.user);
-        this.view.cancelEdit();
+        this.view.onSaveSuccess();
         this.view.showSuccess("Profile updated successfully");
+
+        // Notify the main app about the profile update so navbar can be refreshed
+        this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
       } else {
         this.view.showError(result.error);
       }
@@ -201,8 +207,20 @@ export default class ProfilePresenter extends BasePresenter {
     );
 
     const confirmBtn = modal.querySelector("#confirmChangePassword");
+    const newPasswordInput = modal.querySelector("#newPassword");
+    const confirmPasswordInput = modal.querySelector("#confirmPassword");
+
     confirmBtn.addEventListener("click", () => {
       this.handleChangePasswordConfirm(modal);
+    });
+
+    // Add Enter key support
+    [newPasswordInput, confirmPasswordInput].forEach(input => {
+      input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          this.handleChangePasswordConfirm(modal);
+        }
+      });
     });
   }
 
@@ -210,8 +228,20 @@ export default class ProfilePresenter extends BasePresenter {
     const newPassword = modal.querySelector("#newPassword").value;
     const confirmPassword = modal.querySelector("#confirmPassword").value;
 
+    // Import the flag setter
+    const { setPasswordChangeInProgress } = await import("../firebase/auth.js");
+
     try {
       this.view.setLoading(true);
+
+      // Store current user data before password change
+      const currentUserData = {
+        user: this.model.getCurrentUser(),
+        backendUser: this.model.getBackendUser()
+      };
+
+      // Set flag to prevent logout during password change and store user data
+      setPasswordChangeInProgress(true, currentUserData);
 
       const result = await this.model.changePassword(
         newPassword,
@@ -220,7 +250,24 @@ export default class ProfilePresenter extends BasePresenter {
 
       if (result.success) {
         modal.remove();
-        this.view.showSuccess("Password changed successfully");
+
+        // Hide password warning since user now has password
+        const passwordWarning = this.view.findElement("#passwordWarning");
+        if (passwordWarning) {
+          passwordWarning.style.display = "none";
+        }
+
+        // Show success popup modal instead of regular message
+        this.showSuccessPopup("Password Changed Successfully", "Your password has been updated successfully. You can now use your new password to log in.");
+
+        // Update user data if the API returned updated user info
+        if (result.user) {
+          // Update UI with available data
+          this.view.updateUserData(this.model.getCurrentUser(), result.user);
+          this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
+
+          console.log("Password change successful, UI updated. Token refresh will happen naturally via auth state change.");
+        }
       } else {
         this.view.showError(result.error);
       }
@@ -229,6 +276,11 @@ export default class ProfilePresenter extends BasePresenter {
       this.view.showError("Failed to change password. Please try again.");
     } finally {
       this.view.setLoading(false);
+
+      // Clear the flag after a longer delay to allow auth state to stabilize
+      setTimeout(() => {
+        setPasswordChangeInProgress(false);
+      }, 5000); // 5 second delay to ensure auth state stabilizes
     }
   }
 
@@ -265,8 +317,20 @@ export default class ProfilePresenter extends BasePresenter {
     const password = modal.querySelector("#linkPassword").value;
     const confirmPassword = modal.querySelector("#confirmLinkPassword").value;
 
+    // Import the flag setter
+    const { setPasswordChangeInProgress } = await import("../firebase/auth.js");
+
     try {
       this.view.setLoading(true);
+
+      // Store current user data before password link
+      const currentUserData = {
+        user: this.model.getCurrentUser(),
+        backendUser: this.model.getBackendUser()
+      };
+
+      // Set flag to prevent logout during password link and store user data
+      setPasswordChangeInProgress(true, currentUserData);
 
       const result = await this.model.linkPassword(password, confirmPassword);
 
@@ -278,9 +342,24 @@ export default class ProfilePresenter extends BasePresenter {
         if (linkPasswordSection) {
           linkPasswordSection.style.display = "none";
         }
-        this.view.showSuccess(
-          "Email/password authentication linked successfully"
-        );
+
+        // Hide password warning since user now has password
+        const passwordWarning = this.view.findElement("#passwordWarning");
+        if (passwordWarning) {
+          passwordWarning.style.display = "none";
+        }
+
+        // Show success popup modal instead of regular message
+        this.showSuccessPopup("Password Linked Successfully", "Email/password authentication has been linked to your account successfully. You can now use email and password to log in.");
+
+        // Update user data if the API returned updated user info
+        if (result.user) {
+          // Update UI with available data
+          this.view.updateUserData(this.model.getCurrentUser(), result.user);
+          this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
+
+          console.log("Password link successful, UI updated. Token refresh will happen naturally via auth state change.");
+        }
       } else {
         this.view.showError(result.error);
       }
@@ -289,6 +368,11 @@ export default class ProfilePresenter extends BasePresenter {
       this.view.showError("Failed to link password. Please try again.");
     } finally {
       this.view.setLoading(false);
+
+      // Clear the flag after a longer delay to allow auth state to stabilize
+      setTimeout(() => {
+        setPasswordChangeInProgress(false);
+      }, 5000); // 5 second delay to ensure auth state stabilizes
     }
   }
 
@@ -377,6 +461,31 @@ export default class ProfilePresenter extends BasePresenter {
     return modal;
   }
 
+  // Show success popup modal
+  showSuccessPopup(title, message) {
+    const modal = this.createModal(
+      title,
+      `
+      <div class="success-popup">
+        <div class="success-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="success-message">
+          <p>${message}</p>
+        </div>
+        <div class="modal-actions">
+          <button class="action-btn primary-btn" onclick="this.closest('.modal').remove()">OK</button>
+        </div>
+      </div>
+    `
+    );
+
+    // Set modal width for success popup
+    modal.querySelector('.modal-content').style.maxWidth = '400px';
+
+    return modal;
+  }
+
   // Update user data from external source (e.g., auth state change)
   updateUserData(currentUser, backendUser) {
     this.model.updateUserData(currentUser, backendUser);
@@ -390,5 +499,17 @@ export default class ProfilePresenter extends BasePresenter {
     } else if (data.key === "backendUser") {
       this.view.updateUserData(this.model.getCurrentUser(), data.value);
     }
+  }
+
+  // Notify the main app about profile updates
+  notifyProfileUpdate(currentUser, backendUser) {
+    // Dispatch a custom event that the main app can listen to
+    const profileUpdateEvent = new CustomEvent('profileUpdated', {
+      detail: {
+        currentUser,
+        backendUser
+      }
+    });
+    document.dispatchEvent(profileUpdateEvent);
   }
 }

@@ -17,6 +17,18 @@ export default class ChatView extends BaseView {
   render() {
     const html = `
       <div class="container chat-container">
+        <!-- Chat Header with Back Button -->
+        <div class="chat-header">
+          <button class="chat-back-btn" id="chat-back-btn" title="Back">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back</span>
+          </button>
+          <div class="chat-title">
+            <h2>Chat with ChatVia</h2>
+            <p>Ask anything about your health scan</p>
+          </div>
+        </div>
+
         <div class="chat-content">
           <!-- Chat Messages Area -->
           <div class="chat-messages" id="chat-messages">
@@ -73,6 +85,7 @@ export default class ChatView extends BaseView {
     const sendBtn = this.findElement("#send-btn");
     const refreshBtn = this.findElement("#refresh-btn");
     const attachBtn = this.findElement("#attach-btn");
+    const backBtn = this.findElement("#chat-back-btn");
 
     // Send message on button click
     if (sendBtn) {
@@ -107,6 +120,13 @@ export default class ChatView extends BaseView {
     if (attachBtn) {
       this.addEventListener(attachBtn, "click", () => {
         this.onAttach();
+      });
+    }
+
+    // Back button
+    if (backBtn) {
+      this.addEventListener(backBtn, "click", () => {
+        this.onBack();
       });
     }
   }
@@ -153,6 +173,10 @@ export default class ChatView extends BaseView {
     console.log("Attach functionality not implemented yet");
   }
 
+  onBack() {
+    this.notifyPresenter("back");
+  }
+
   // Method to notify presenter of user actions
   notifyPresenter(action, data = {}) {
     if (
@@ -197,22 +221,114 @@ export default class ChatView extends BaseView {
 
     // Add image if present
     if (message.photoUrl) {
+      let imageUrl = message.photoUrl;
+
+      // Convert relative URLs to absolute URLs
+      if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('blob:')) {
+        const API_BASE_URL = "https://server.anevia.my.id";
+        imageUrl = imageUrl.startsWith('/') ? `${API_BASE_URL}${imageUrl}` : `${API_BASE_URL}/${imageUrl}`;
+      }
+
       const img = document.createElement("img");
-      img.src = message.photoUrl;
+      img.src = imageUrl;
       img.alt = "Scan image";
       img.className = "chat-image";
+
+      // Add error handling for image loading
+      img.onerror = () => {
+        console.warn("Failed to load chat image:", imageUrl);
+        // Create a placeholder for failed images
+        const placeholder = document.createElement("div");
+        placeholder.className = "chat-image-placeholder";
+        placeholder.innerHTML = '<i class="fas fa-image"></i><span>Image not available</span>';
+        bubbleDiv.replaceChild(placeholder, img);
+      };
+
+      // Add loading indicator
+      img.onload = () => {
+        console.log("Chat image loaded successfully:", imageUrl);
+      };
+
       bubbleDiv.appendChild(img);
     }
 
     // Add message text
     const textDiv = document.createElement("div");
     textDiv.className = "chat-text";
-    textDiv.textContent = message.message;
+
+    // Format message content based on sender
+    if (message.sender === "ai") {
+      textDiv.innerHTML = this.formatAIMessage(message.message);
+    } else {
+      textDiv.textContent = message.message;
+    }
+
     bubbleDiv.appendChild(textDiv);
 
     messageDiv.appendChild(bubbleDiv);
 
     return messageDiv;
+  }
+
+  // Format AI message content with proper line breaks and formatting
+  formatAIMessage(message) {
+    if (!message) return "";
+
+    // Escape HTML to prevent XSS attacks
+    const escapeHtml = (text) => {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    };
+
+    let formattedMessage = escapeHtml(message);
+
+    // Convert double line breaks to paragraph breaks
+    formattedMessage = formattedMessage.replace(/\n\n/g, '</p><p>');
+
+    // Convert single line breaks to <br> tags
+    formattedMessage = formattedMessage.replace(/\n/g, '<br>');
+
+    // Format bullet points (lines starting with *, -, or •)
+    formattedMessage = formattedMessage.replace(/^(\*|\-|•)\s+(.+)$/gm, '<li>$2</li>');
+
+    // Wrap consecutive list items in <ul> tags
+    formattedMessage = formattedMessage.replace(/(<li>.*<\/li>)(\s*<br>\s*<li>.*<\/li>)*/g, (match) => {
+      // Remove <br> tags between list items
+      const cleanMatch = match.replace(/<br>\s*/g, '');
+      return '<ul>' + cleanMatch + '</ul>';
+    });
+
+    // Format numbered lists (lines starting with numbers)
+    formattedMessage = formattedMessage.replace(/^(\d+)\.\s+(.+)$/gm, '<li>$2</li>');
+
+    // Wrap consecutive numbered list items in <ol> tags
+    formattedMessage = formattedMessage.replace(/(<li>.*<\/li>)(\s*<br>\s*<li>.*<\/li>)*/g, (match) => {
+      // Check if this is part of a numbered list by looking for the pattern before it
+      const beforeMatch = formattedMessage.substring(0, formattedMessage.indexOf(match));
+      if (beforeMatch.match(/\d+\.\s+[^<]*$/)) {
+        const cleanMatch = match.replace(/<br>\s*/g, '');
+        return '<ol>' + cleanMatch + '</ol>';
+      }
+      return match;
+    });
+
+    // Format bold text (**text** or __text__)
+    formattedMessage = formattedMessage.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    formattedMessage = formattedMessage.replace(/__(.*?)__/g, '<strong>$1</strong>');
+
+    // Format italic text (*text* or _text_)
+    formattedMessage = formattedMessage.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    formattedMessage = formattedMessage.replace(/_(.*?)_/g, '<em>$1</em>');
+
+    // Wrap in paragraph tags if not already wrapped
+    if (!formattedMessage.startsWith('<p>') && !formattedMessage.startsWith('<ul>') && !formattedMessage.startsWith('<ol>')) {
+      formattedMessage = '<p>' + formattedMessage + '</p>';
+    } else if (formattedMessage.includes('</p><p>')) {
+      formattedMessage = '<p>' + formattedMessage + '</p>';
+    }
+
+    return formattedMessage;
   }
 
   // Add a single message

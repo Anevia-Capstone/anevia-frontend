@@ -1,0 +1,570 @@
+/* ===== RESPONSIVE STYLES ===== */
+/* Media queries and responsive design */
+
+/* Mobile Navigation */
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+    order: 3;
+  }
+
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    background-color: #ffffff;
+    padding: 16px;
+    box-shadow: var(--shadow-md);
+    border-radius: 16px;
+    margin-top: 8px;
+  }
+
+  .nav-links.active {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .mobile-login {
+    display: block;
+    width: 100%;
+  }
+
+  .mobile-login .login-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+
+  /* Header adjustments */
+  header {
+    padding: 16px 12px;
+  }
+
+  .navbar {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  /* Navbar shrunk state for mobile */
+  .navbar-shrunk {
+    padding: 8px 12px;
+    border-radius: 16px;
+    width: 280px !important;
+    margin: 0 auto;
+  }
+
+  /* Hero section mobile */
+  .hero-section {
+    padding: 16px 0;
+    min-height: 100vh;
+  }
+
+  .hero-body-container {
+    padding: 24px 16px;
+    min-height: calc(100vh - 32px);
+  }
+
+  .hero-title {
+    font-size: 42px;
+    width: 100%;
+    max-width: 600px;
+    line-height: 1.1em;
+  }
+
+  .hero-title-container {
+    padding: 24px 0;
+  }
+
+  .hero-try-now-btn {
+    padding: 14px 32px;
+    font-size: 16px;
+  }
+
+  /* Innovation statement mobile */
+  .innovation-statement .container {
+    padding: 80px 24px;
+  }
+
+  .statement-text {
+    font-size: 32px;
+    line-height: 1.3em;
+  }
+
+  .statement-text .typing-cursor {
+    height: 1em;
+    width: 2px;
+  }
+}
+
+/* Small mobile devices - 425px and below */
+@media (max-width: 425px) {
+  /* Note: Navbar styles are handled in navigation.css */
+
+  /* Hero section adjustments */
+  .hero-title {
+    font-size: 28px;
+    line-height: 1.1em;
+  }
+
+  .hero-try-now-btn {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+
+  .hero-try-now-btn span {
+    font-size: 14px;
+  }
+
+  /* Innovation statement adjustments */
+  .innovation-statement .container {
+    padding: 50px 12px;
+  }
+
+  .statement-text {
+    font-size: 20px;
+    line-height: 1.3em;
+  }
+
+  .statement-text .typing-cursor {
+    height: 0.8em;
+    width: 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Note: Navbar styles are handled in navigation.css */
+
+  /* Extra small mobile adjustments */
+  .innovation-statement .container {
+    padding: 60px 16px;
+  }
+
+  .statement-text {
+    font-size: 24px;
+    line-height: 1.3em;
+  }
+
+  .statement-text .typing-cursor {
+    height: 0.9em;
+    width: 2px;
+  }
+
+  .hero-title {
+    font-size: 32px;
+    line-height: 1.1em;
+  }
+
+  .hero-try-now-btn {
+    padding: 12px 28px;
+    font-size: 15px;
+  }
+
+  .hero-try-now-btn span {
+    font-size: 15px;
+  }
+
+  /* Innovation statement extra small */
+  .innovation-statement .container {
+    padding: 60px 16px;
+  }
+
+  .statement-text {
+    font-size: 22px;
+    line-height: 1.3em;
+  }
+
+  .scan-options {
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 12px;
+  }
+
+  .scan-option {
+    max-width: 100%;
+  }
+
+  .camera-message {
+    font-size: 1.0rem;
+  }
+
+  .camera-hint {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 375px) {
+  .camera-overlay {
+    padding: 8px;
+  }
+  .camera-message {
+    font-size: 0.9rem;
+  }
+
+  .camera-hint {
+    font-size: 0.7rem;
+  }
+}
+
+/* Features responsive */
+@media (max-width: 768px) {
+  .features-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .feature-card {
+    max-width: 500px;
+  }
+}
+
+/* Steps responsive */
+@media (max-width: 768px) {
+  .steps-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .step {
+    max-width: 400px;
+  }
+}
+
+/* Team section responsive */
+@media (max-width: 768px) {
+  .team-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .team-member {
+    flex: none;
+    max-width: 400px;
+  }
+}
+
+/* Timeline responsive */
+@media (max-width: 768px) {
+  .timeline::after {
+    left: 20px;
+  }
+
+  .timeline-item {
+    width: 100%;
+    left: 0 !important;
+    padding-left: 50px !important;
+    padding-right: 0 !important;
+    text-align: left !important;
+  }
+
+  .timeline-item:nth-child(odd) .timeline-content::after,
+  .timeline-item:nth-child(even) .timeline-content::after {
+    left: -40px !important;
+    right: auto !important;
+  }
+}
+
+/* FAQ responsive */
+@media (max-width: 768px) {
+  .faq-categories {
+    flex-direction: row;
+    align-items: center;
+    max-width: 100%;
+  }
+
+  .faq-category {
+    width: 100%;
+    
+    text-align: center;
+  }
+}
+
+/* Tools responsive */
+@media (max-width: 768px) {
+  .tools-title {
+    font-size: 40px;
+  }
+
+  .tools-content-title {
+    font-size: 24px;
+  }
+
+  .tools-content-description {
+    font-size: 18px;
+  }
+
+  .scan-options {
+    /* flex-direction: column; */
+    align-items: center;
+    padding-bottom: 12px;
+    
+  }
+
+  .scan-option-description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+  }
+  
+
+  .camera-controls {
+    flex-wrap: wrap;
+  }
+
+  .result-details {
+    grid-template-columns: 1fr;
+  }
+
+  .result-actions {
+    flex-direction: column;
+  }
+
+  .result-actions .btn {
+    width: 100%;
+  }
+}
+
+/* General responsive utilities */
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .section-subtitle {
+    font-size: 1rem;
+  }
+
+  /* Button responsive */
+  .btn {
+    padding: 0.7rem 1.2rem;
+  }
+
+  /* Modal responsive */
+  .modal-content {
+    width: 95%;
+    margin: 0 auto;
+  }
+
+  .modal-header {
+    padding: var(--spacing-md);
+  }
+
+  .modal-body {
+    padding: var(--spacing-md);
+  }
+}
+
+/* Very small mobile devices - 425px and below */
+@media (max-width: 425px) {
+  .section-title {
+    font-size: 1.6rem;
+    line-height: 1.1;
+  }
+
+  .section-subtitle {
+    font-size: 0.85rem;
+    line-height: 1.3;
+  }
+
+  /* Button adjustments for very small screens */
+  .btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .action-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  /* Modal adjustments for very small screens */
+  .modal-content {
+    width: 98%;
+    margin: 4px;
+  }
+
+  .modal-header {
+    padding: 12px;
+  }
+
+  .modal-body {
+    padding: 12px;
+  }
+
+  /* Container adjustments */
+  .container {
+    padding: 8px 12px;
+  }
+
+  .section {
+    padding: var(--spacing-sm) 0;
+  }
+
+  .tools-file-upload{
+    width:100%;
+  }
+
+  .scan-options{
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 1.8rem;
+  }
+
+  .section-subtitle {
+    font-size: 0.9rem;
+  }
+
+  /* Extra small adjustments */
+  .btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .modal-content {
+    width: 98%;
+  }
+
+  .modal-header {
+    padding: var(--spacing-sm);
+  }
+
+  .modal-body {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* ===== ADDITIONAL RESPONSIVE IMPROVEMENTS ===== */
+
+/* Large tablets and small desktops */
+@media (max-width: 1200px) {
+  .hero-title {
+    font-size: 52px;
+  }
+
+  .statement-text {
+    font-size: 42px;
+    padding: 140px 0;
+  }
+
+  .tools-file-upload{
+    width: 90%;
+    margin: 24px;
+  }
+}
+
+/* Medium tablets */
+@media (max-width: 1024px) {
+  .hero-section {
+    min-height: 100vh;
+  }
+
+  .hero-body-container {
+    padding: 40px 24px;
+  }
+
+  .hero-title {
+    font-size: 46px;
+  }
+
+  .statement-text {
+    font-size: 38px;
+    padding: 100px 0;
+  }
+}
+
+/* Small tablets and large phones */
+@media (max-width: 768px) {
+  /* Ensure proper spacing for all sections */
+  .section {
+    padding: var(--spacing-lg) 0;
+  }
+
+  /* Better button sizing */
+  .btn, .action-btn {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+
+  /* Improved text readability */
+  .section-title {
+    font-size: 28px;
+    line-height: 1.2;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .section-subtitle {
+    font-size: 16px;
+    line-height: 1.4;
+    margin-bottom: var(--spacing-lg);
+  }
+}
+
+/* Extra small phones */
+@media (max-width: 360px) {
+  .hero-title {
+    font-size: 28px;
+  }
+
+  .statement-text {
+    font-size: 20px;
+  }
+
+  .section-title {
+    font-size: 24px;
+  }
+
+  .section-subtitle {
+    font-size: 14px;
+  }
+}
+
+/* Print styles */
+@media print {
+  header,
+  footer,
+  .mobile-menu-btn,
+  .nav-links,
+  .hero-try-now-btn,
+  .btn,
+  .action-btn {
+    display: none !important;
+  }
+
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  .section {
+    page-break-inside: avoid;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  :root {
+    --primary-color: #000000;
+    --secondary-color: #0000ff;
+    --text-color: #000000;
+    --background-color: #ffffff;
+    --card-bg: #ffffff;
+  }
+
+  .btn,
+  .action-btn {
+    border: 2px solid currentColor;
+  }
+}
+
+

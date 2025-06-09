@@ -1,6 +1,9 @@
 // Import CSS file
 import "./css/styles.css";
 
+// Import PWA utilities
+import pwaManager from "./js/utils/pwa.js";
+
 // Import Firebase
 import { auth, app } from "./js/firebase/config.js";
 import { onAuthStateChanged, setupTokenRefresh } from "./js/firebase/auth.js";
@@ -11,10 +14,12 @@ import Router from "./js/router/Router.js";
 // Import Presenters
 import HomePresenter from "./js/presenters/HomePresenter.js";
 import ToolsPresenter from "./js/presenters/ToolsPresenter.js";
+import AboutPresenter from "./js/presenters/AboutPresenter.js";
 import LoginPresenter from "./js/presenters/LoginPresenter.js";
 import RegisterPresenter from "./js/presenters/RegisterPresenter.js";
 import ProfilePresenter from "./js/presenters/ProfilePresenter.js";
 import ChatPresenter from "./js/presenters/ChatPresenter.js";
+import ScanHistoryPresenter from "./js/presenters/ScanHistoryPresenter.js";
 
 // Import Navigation and Footer components (these remain as components)
 import Navigation from "./js/components/Navigation.js";
@@ -33,6 +38,9 @@ class App {
   }
 
   init() {
+    // Initialize PWA functionality
+    this.initializePWA();
+
     // Initialize navigation and footer components
     this.navigation = new Navigation();
     this.footer = new Footer();
@@ -52,17 +60,152 @@ class App {
     this.router.start();
   }
 
+  initializePWA() {
+    // PWA is automatically initialized by importing pwaManager
+    console.log('PWA functionality initialized');
+
+    // Make pwaManager globally available
+    window.pwaManager = pwaManager;
+
+    // Setup offline/online event handlers for the app
+    window.addEventListener('online', () => {
+      console.log('App is back online');
+      this.handleOnlineStatus(true);
+    });
+
+    window.addEventListener('offline', () => {
+      console.log('App is offline');
+      this.handleOnlineStatus(false);
+    });
+
+    // Cache user data when available
+    this.setupDataCaching();
+
+    // Setup PWA install prompts
+    this.setupPWAInstallPrompts();
+  }
+
+  handleOnlineStatus(isOnline) {
+    // Update UI based on online/offline status
+    const offlineIndicator = document.getElementById('offline-indicator') || this.createOfflineIndicator();
+
+    if (isOnline) {
+      offlineIndicator.classList.remove('show');
+      // Sync any pending offline data
+      this.syncOfflineData();
+    } else {
+      offlineIndicator.classList.add('show');
+    }
+  }
+
+  createOfflineIndicator() {
+    const indicator = document.createElement('div');
+    indicator.id = 'offline-indicator';
+    indicator.className = 'offline-indicator';
+    indicator.innerHTML = '<i class="fas fa-wifi"></i>You are currently offline';
+    document.body.appendChild(indicator);
+    return indicator;
+  }
+
+  setupDataCaching() {
+    // Cache important user data for offline access
+    if ('serviceWorker' in navigator) {
+      // Listen for user data changes and cache them
+      document.addEventListener('userDataUpdated', (event) => {
+        if (event.detail && pwaManager) {
+          pwaManager.cacheUserData('user-profile', event.detail);
+        }
+      });
+
+      // Listen for scan results and cache them
+      document.addEventListener('scanResultCached', (event) => {
+        if (event.detail && pwaManager) {
+          pwaManager.cacheUserData(`scan-${event.detail.scanId}`, event.detail);
+        }
+      });
+    }
+  }
+
+  async syncOfflineData() {
+    // Sync any offline data when back online
+    console.log('Syncing offline data...');
+    // This would be implemented based on your specific offline data storage needs
+  }
+
+  setupPWAInstallPrompts() {
+    // Show install notification for eligible users
+    let installPromptShown = localStorage.getItem('pwa-install-prompt-shown');
+
+    // Show install prompt after 30 seconds if not shown before and app is installable
+    if (!installPromptShown) {
+      setTimeout(() => {
+        if (window.pwaManager && window.pwaManager.deferredPrompt) {
+          this.showInstallPrompt();
+          localStorage.setItem('pwa-install-prompt-shown', 'true');
+        }
+      }, 30000); // 30 seconds
+    }
+
+    // Listen for successful installation
+    window.addEventListener('appinstalled', () => {
+      console.log('PWA was installed successfully');
+      this.showInstallSuccessMessage();
+    });
+  }
+
+  showInstallPrompt() {
+    const prompt = document.createElement('div');
+    prompt.className = 'pwa-install-prompt show';
+    prompt.innerHTML = `
+      <h3>Install Anevia App</h3>
+      <p>Get faster access and work offline by installing our app on your device.</p>
+      <div class="btn-group">
+        <button class="btn-primary" onclick="this.parentElement.parentElement.remove(); window.pwaManager.promptInstall();">Install Now</button>
+        <button class="btn-secondary" onclick="this.parentElement.parentElement.remove();">Maybe Later</button>
+      </div>
+    `;
+    document.body.appendChild(prompt);
+
+    // Auto-hide after 10 seconds
+    setTimeout(() => {
+      if (prompt.parentElement) {
+        prompt.remove();
+      }
+    }, 10000);
+  }
+
+  showInstallSuccessMessage() {
+    const message = document.createElement('div');
+    message.className = 'pwa-install-notification';
+    message.innerHTML = `
+      <div class="pwa-notification-content">
+        <i class="fas fa-check-circle"></i>
+        <span>Anevia app installed successfully! You can now access it from your home screen.</span>
+        <button class="pwa-dismiss-btn" onclick="this.parentElement.parentElement.remove()">×</button>
+      </div>
+    `;
+    document.body.appendChild(message);
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      if (message.parentElement) {
+        message.remove();
+      }
+    }, 5000);
+  }
+
   setupRoutes() {
     // Define routes with their corresponding presenters
     this.router.addRoute("", () => this.showHome());
     this.router.addRoute("home", () => this.showHome());
-    this.router.addRoute("about", () => this.showHomeWithScroll("about"));
+    this.router.addRoute("about", () => this.showAbout());
     this.router.addRoute("faq", () => this.showHomeWithScroll("faq"));
     this.router.addRoute("tools", () => this.showTools());
     this.router.addRoute("login", () => this.showLogin());
     this.router.addRoute("register", () => this.showRegister());
     this.router.addRoute("profile", () => this.showProfile());
     this.router.addRoute("chat", () => this.showChat());
+    this.router.addRoute("scan-history", () => this.showScanHistory());
   }
 
   setupCustomEventListeners() {
@@ -82,8 +225,27 @@ class App {
     // Listen for navigate to chat event from tools page
     window.addEventListener("navigateToChat", (event) => {
       console.log("Navigate to chat event received:", event.detail);
-      this.pendingScanData = event.detail;
+      this.pendingChatData = event.detail;
       this.router.navigate("chat");
+    });
+
+    // Listen for navigate to scan history event
+    window.addEventListener("navigateToScanHistory", (event) => {
+      console.log("Navigate to scan history event received:", event.detail);
+      this.router.navigate("scan-history");
+    });
+
+    // Listen for navigate to tools event from scan history
+    window.addEventListener("navigateToTools", (event) => {
+      console.log("Navigate to tools event received:", event.detail);
+      this.router.navigate("tools");
+    });
+
+    // Listen for profile updates (e.g., image upload, profile save)
+    document.addEventListener("profileUpdated", (event) => {
+      const { currentUser, backendUser } = event.detail;
+      console.log("Profile updated event received, updating navbar...");
+      this.updateUIForLoggedInUser(currentUser, backendUser);
     });
   }
 
@@ -117,6 +279,15 @@ class App {
       this.toolsPresenter = new ToolsPresenter();
     }
     this.toolsPresenter.show();
+  }
+
+  showAbout() {
+    this.hideAllPages();
+    this.showHeaderFooter();
+    if (!this.aboutPresenter) {
+      this.aboutPresenter = new AboutPresenter();
+    }
+    this.aboutPresenter.show();
   }
 
   showLogin() {
@@ -153,13 +324,45 @@ class App {
       this.chatPresenter = new ChatPresenter();
     }
 
-    // If we have pending scan data, initialize chat with it
-    if (this.pendingScanData) {
-      this.chatPresenter.initializeWithScanData(this.pendingScanData);
-      this.pendingScanData = null; // Clear after use
+    // Handle different types of chat initialization
+    if (this.pendingChatData) {
+      console.log("Main: Initializing chat with pending data:", this.pendingChatData);
+
+      if (this.pendingChatData.sessionId) {
+        // Loading existing chat session from history
+        console.log("Main: Loading existing chat session:", this.pendingChatData.sessionId);
+        this.chatPresenter.loadChatSession(this.pendingChatData.sessionId, this.pendingChatData.messages);
+      } else if (this.pendingChatData.scanId) {
+        // Starting new chat from scan
+        console.log("Main: Starting new chat from scan:", this.pendingChatData.scanId);
+        this.chatPresenter.initializeWithScanData(this.pendingChatData);
+      }
+
+      this.pendingChatData = null; // Clear after use
     }
 
     this.chatPresenter.show();
+  }
+
+  showScanHistory() {
+    console.log("Main: showScanHistory called");
+    this.hideAllPages();
+    this.showHeaderFooter();
+    if (!this.scanHistoryPresenter) {
+      console.log("Main: Creating new ScanHistoryPresenter");
+      this.scanHistoryPresenter = new ScanHistoryPresenter();
+    }
+
+    // Set user ID if available
+    if (this.currentUser) {
+      console.log("Main: Setting user ID:", this.currentUser.uid);
+      this.scanHistoryPresenter.setUserId(this.currentUser.uid);
+    } else {
+      console.log("Main: No current user available");
+    }
+
+    console.log("Main: Showing scan history presenter");
+    this.scanHistoryPresenter.show();
   }
 
   hideAllPages() {
@@ -171,10 +374,12 @@ class App {
     // Hide any presenter-created pages
     if (this.homePresenter) this.homePresenter.hide();
     if (this.toolsPresenter) this.toolsPresenter.hide();
+    if (this.aboutPresenter) this.aboutPresenter.hide();
     if (this.loginPresenter) this.loginPresenter.hide();
     if (this.registerPresenter) this.registerPresenter.hide();
     if (this.profilePresenter) this.profilePresenter.hide();
     if (this.chatPresenter) this.chatPresenter.hide();
+    if (this.scanHistoryPresenter) this.scanHistoryPresenter.hide();
   }
 
   showHeaderFooter() {
@@ -250,11 +455,8 @@ class App {
         ...(backendUser && {
           username: backendUser.username,
           displayName: backendUser.username || user.displayName,
-          // Only use backend photoUrl if it's a full URL, otherwise keep Firebase photoURL
-          photoURL:
-            backendUser.photoUrl && backendUser.photoUrl.startsWith("http")
-              ? backendUser.photoUrl
-              : user.photoURL,
+          // Handle backend photoUrl properly - convert relative paths to full URLs
+          photoURL: this.getProfileImageUrl(backendUser, user),
         }),
       };
 
@@ -272,11 +474,8 @@ class App {
         ...(backendUser && {
           username: backendUser.username,
           displayName: backendUser.username || user.displayName,
-          // Only use backend photoUrl if it's a full URL, otherwise keep Firebase photoURL
-          photoURL:
-            backendUser.photoUrl && backendUser.photoUrl.startsWith("http")
-              ? backendUser.photoUrl
-              : user.photoURL,
+          // Handle backend photoUrl properly - convert relative paths to full URLs
+          photoURL: this.getProfileImageUrl(backendUser, user),
         }),
       };
 
@@ -379,7 +578,39 @@ class App {
       }
     }
   }
+
+  // Helper method to get the correct profile image URL
+  getProfileImageUrl(backendUser, currentUser) {
+    // Priority: backend photoUrl > Firebase photoURL > default
+    if (backendUser?.photoUrl) {
+      // Check if backend photoUrl is a full URL or relative path
+      if (backendUser.photoUrl.startsWith("http")) {
+        // It's already a full URL (e.g., Google Photos URL)
+        return backendUser.photoUrl;
+      } else {
+        // It's a relative path, prepend backend URL
+        return `https://server.anevia.my.id${backendUser.photoUrl}`;
+      }
+    } else if (currentUser?.photoURL) {
+      // Firebase photoURL is always a full URL
+      return currentUser.photoURL;
+    }
+
+    // Default avatar
+    return "./src/assets/default-avatar.svg";
+  }
 }
+
+// Global error handlers
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('Unhandled promise rejection:', event.reason);
+  // Prevent the default browser behavior (logging to console)
+  event.preventDefault();
+});
+
+window.addEventListener('error', (event) => {
+  console.error('Global error:', event.error);
+});
 
 // Initialize the application when the DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {

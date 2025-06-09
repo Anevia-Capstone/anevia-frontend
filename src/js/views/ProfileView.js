@@ -42,17 +42,18 @@ export default class ProfileView extends BaseView {
   render() {
     const html = `
       <div class="profile-container">
-        <div class="profile-header">
-          <h1>User Profile</h1>
-          <button class="back-btn" id="backToHome">
-            <i class="fas fa-arrow-left"></i> Back to Home
-          </button>
-        </div>
+        <!-- Clean Header -->
 
-        <div class="profile-content">
-          <!-- Profile Information Card -->
-          <div class="profile-card">
-            <div class="profile-image-section">
+        <!-- Main Profile Content Wrapper -->
+        <div class="profile-main-content">
+          <!-- Profile Picture Section -->
+          <div class="profile-picture-section">
+          <div class="header-content">
+            <h1>Profile</h1>
+            <p class="header-subtitle">Settings for your personal profile</p>
+          </div>
+            <br>
+            <div class="picture-container">
               <div class="profile-image-container">
                 <img src="./src/assets/default-avatar.svg" alt="Profile" class="profile-image-page" id="profileImage">
                 <div class="image-overlay">
@@ -60,57 +61,134 @@ export default class ProfileView extends BaseView {
                   <span>Change Photo</span>
                 </div>
               </div>
-              <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+              <div class="picture-info">
+                <div class="picture-details">
+                  <h4 id="profileNameDisplay">User Name</h4>
+                  <p class="picture-role">Workspace admin</p>
+                </div>
+                <button class="upload-btn" id="uploadPhotoBtn">
+                  <i class="fas fa-upload"></i> Upload photo
+                </button>
+              </div>
+            </div>
+            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+          </div>
+
+          <!-- Google Account Notice -->
+          <div class="google-notice" id="googleNotice" style="display: none;">
+            <div class="notice-content">
+              <i class="fab fa-google"></i>
+              <span>This account is connected to your Google account. Your details can only be changed from the Google account.</span>
+            </div>
+          </div>
+
+          <!-- Password Warning Notice -->
+          <div class="password-warning" id="passwordWarning" style="display: none;">
+            <div class="warning-content">
+              <i class="fas fa-exclamation-triangle"></i>
+              <span>Your account doesn't have a password set. Consider adding a password for additional security.</span>
+              <button class="warning-action-btn" id="setPasswordBtn">
+                <i class="fas fa-key"></i> Set Password
+              </button>
+            </div>
+          </div>
+
+          <!-- Profile Information Section -->
+          <div class="profile-info-section">
+            <div class="section-header">
+              <div class="section-title">
+                <h3>Profile Information</h3>
+                <p>Manage your personal information</p>
+              </div>
+              <!-- Profile Actions -->
+              <div class="section-actions">
+                <!-- View Mode Actions -->
+                <div id="profileViewActions">
+                  <button class="action-btn primary-btn" id="editProfileBtn">
+                    <i class="fas fa-edit"></i> Edit Profile
+                  </button>
+                </div>
+                <!-- Edit Mode Actions -->
+                <div id="profileEditActions" style="display: none;">
+                  <button class="action-btn cancel-btn" id="cancelEditSection">
+                    <i class="fas fa-times"></i> Cancel
+                  </button>
+                  <button class="action-btn save-btn" id="saveProfileSection">
+                    <i class="fas fa-save"></i> Save
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div class="profile-info">
-              <div class="info-group">
-                <label>Username</label>
-                <div class="input-group">
-                  <input type="text" id="username" readonly>
-                  <button class="edit-btn" data-field="username">
-                    <i class="fas fa-edit"></i>
-                  </button>
+            <div class="profile-content">
+              <!-- Profile View Mode -->
+              <div class="profile-info" id="profileViewMode">
+                <div class="info-group">
+                  <label>Username</label>
+                  <div class="info-display">
+                    <span class="info-value" id="usernameDisplay">-</span>
+                  </div>
+                </div>
+
+                <div class="info-group">
+                  <label>Email</label>
+                  <div class="info-display">
+                    <span class="info-value" id="emailDisplay">-</span>
+                    <span class="readonly-indicator">Cannot be changed</span>
+                  </div>
+                </div>
+
+                <div class="info-group">
+                  <label>Birth Date</label>
+                  <div class="info-display">
+                    <span class="info-value" id="birthdateDisplay">-</span>
+                  </div>
+                </div>
+
+                <div class="info-group">
+                  <label>Member Since</label>
+                  <div class="info-display">
+                    <span class="info-value" id="createdAtDisplay">-</span>
+                    <span class="readonly-indicator">Account creation date</span>
+                  </div>
                 </div>
               </div>
 
-              <div class="info-group">
-                <label>Email</label>
-                <div class="input-group">
-                  <input type="email" id="email" readonly>
-                  <span class="readonly-indicator">Cannot be changed</span>
+              <!-- Profile Edit Mode -->
+              <div class="profile-info" id="profileEditMode" style="display: none;">
+                <div class="info-group">
+                  <label>Username</label>
+                  <div class="input-group">
+                    <input type="text" id="username" placeholder="Enter your username">
+                  </div>
                 </div>
-              </div>
 
-              <div class="info-group">
-                <label>Birth Date</label>
-                <div class="input-group">
-                  <input type="date" id="birthdate" readonly>
-                  <button class="edit-btn" data-field="birthdate">
-                    <i class="fas fa-edit"></i>
-                  </button>
+                <div class="info-group">
+                  <label>Email</label>
+                  <div class="info-display">
+                    <span class="info-value" id="emailDisplayEdit">-</span>
+                    <span class="readonly-indicator">Cannot be changed</span>
+                  </div>
                 </div>
-              </div>
 
-              <div class="info-group">
-                <label>Member Since</label>
-                <div class="input-group">
-                  <input type="text" id="createdAt" readonly>
-                  <span class="readonly-indicator">Account creation date</span>
+                <div class="info-group">
+                  <label>Birth Date</label>
+                  <div class="input-group">
+                    <input type="date" id="birthdate">
+                  </div>
+                </div>
+
+                <div class="info-group">
+                  <label>Member Since</label>
+                  <div class="info-display">
+                    <span class="info-value" id="createdAtDisplayEdit">-</span>
+                    <span class="readonly-indicator">Account creation date</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-
-          <!-- Action Buttons -->
-          <div class="profile-actions">
-            <button class="action-btn save-btn" id="saveProfile" style="display: none;">
-              <i class="fas fa-save"></i> Save Changes
-            </button>
-            <button class="action-btn cancel-btn" id="cancelEdit" style="display: none;">
-              <i class="fas fa-times"></i> Cancel
-            </button>
-          </div>
+        </div>
 
           <!-- Security Section -->
           <div class="security-card">
@@ -123,16 +201,6 @@ export default class ProfileView extends BaseView {
               </div>
               <button class="action-btn secondary-btn" id="changePassword">
                 <i class="fas fa-key"></i> Change Password
-              </button>
-            </div>
-
-            <div class="security-item" id="linkPasswordSection" style="display: none;">
-              <div class="security-info">
-                <h4>Link Email/Password</h4>
-                <p>Add email/password authentication to your account</p>
-              </div>
-              <button class="action-btn secondary-btn" id="linkPassword">
-                <i class="fas fa-link"></i> Link Password
               </button>
             </div>
           </div>
@@ -187,8 +255,10 @@ export default class ProfileView extends BaseView {
       });
     }
 
-    // Profile image click
+    // Profile image click and upload button
     const imageContainer = this.findElement(".profile-image-container");
+    const uploadPhotoBtn = this.findElement("#uploadPhotoBtn");
+
     if (imageContainer) {
       this.addEventListener(imageContainer, "click", () => {
         const imageUpload = this.findElement("#imageUpload");
@@ -196,27 +266,49 @@ export default class ProfileView extends BaseView {
       });
     }
 
-    // Edit buttons
-    const editBtns = this.findElements(".edit-btn");
-    editBtns.forEach((btn) => {
-      this.addEventListener(btn, "click", () => {
-        const field = btn.dataset.field;
-        this.onEditField(field);
+    if (uploadPhotoBtn) {
+      this.addEventListener(uploadPhotoBtn, "click", () => {
+        const imageUpload = this.findElement("#imageUpload");
+        if (imageUpload) imageUpload.click();
       });
-    });
+    }
 
-    // Save and cancel buttons
-    const saveBtn = this.findElement("#saveProfile");
-    const cancelBtn = this.findElement("#cancelEdit");
+    // Edit Profile button
+    const editProfileBtn = this.findElement("#editProfileBtn");
+    if (editProfileBtn) {
+      this.addEventListener(editProfileBtn, "click", () => {
+        this.onEditProfile();
+      });
+    }
 
-    if (saveBtn) {
-      this.addEventListener(saveBtn, "click", () => {
+    // Header save and cancel buttons
+    const saveHeaderBtn = this.findElement("#saveProfileHeader");
+    const cancelHeaderBtn = this.findElement("#cancelEditHeader");
+
+    if (saveHeaderBtn) {
+      this.addEventListener(saveHeaderBtn, "click", () => {
         this.onSaveProfile();
       });
     }
 
-    if (cancelBtn) {
-      this.addEventListener(cancelBtn, "click", () => {
+    if (cancelHeaderBtn) {
+      this.addEventListener(cancelHeaderBtn, "click", () => {
+        this.onCancelEdit();
+      });
+    }
+
+    // Section save and cancel buttons
+    const saveSectionBtn = this.findElement("#saveProfileSection");
+    const cancelSectionBtn = this.findElement("#cancelEditSection");
+
+    if (saveSectionBtn) {
+      this.addEventListener(saveSectionBtn, "click", () => {
+        this.onSaveProfile();
+      });
+    }
+
+    if (cancelSectionBtn) {
+      this.addEventListener(cancelSectionBtn, "click", () => {
         this.onCancelEdit();
       });
     }
@@ -225,6 +317,7 @@ export default class ProfileView extends BaseView {
     const changePasswordBtn = this.findElement("#changePassword");
     const linkPasswordBtn = this.findElement("#linkPassword");
     const deleteAccountBtn = this.findElement("#deleteAccount");
+    const setPasswordBtn = this.findElement("#setPasswordBtn");
 
     if (changePasswordBtn) {
       this.addEventListener(changePasswordBtn, "click", () => {
@@ -234,6 +327,12 @@ export default class ProfileView extends BaseView {
 
     if (linkPasswordBtn) {
       this.addEventListener(linkPasswordBtn, "click", () => {
+        this.onLinkPassword();
+      });
+    }
+
+    if (setPasswordBtn) {
+      this.addEventListener(setPasswordBtn, "click", () => {
         this.onLinkPassword();
       });
     }
@@ -254,8 +353,8 @@ export default class ProfileView extends BaseView {
     this.notifyPresenter("imageUpload", { file });
   }
 
-  onEditField(field) {
-    this.enableEdit(field);
+  onEditProfile() {
+    this.switchToEditMode();
   }
 
   onSaveProfile() {
@@ -264,7 +363,7 @@ export default class ProfileView extends BaseView {
   }
 
   onCancelEdit() {
-    this.cancelEdit();
+    this.switchToViewMode();
   }
 
   onChangePassword() {
@@ -311,42 +410,75 @@ export default class ProfileView extends BaseView {
       this.setProfileImage(profileImage);
     }
 
-    // Populate form fields
+    // Prepare data
     const username =
       this.backendUser?.username || this.currentUser.displayName || "";
     const email = this.backendUser?.email || this.currentUser.email || "";
 
-    const usernameField = this.findElement("#username");
-    const emailField = this.findElement("#email");
-
-    if (usernameField) usernameField.value = username;
-    if (emailField) emailField.value = email;
-
-    // Format birthdate
+    let birthdateFormatted = "";
+    let birthdateValue = "";
     if (this.backendUser?.birthdate) {
       const date = new Date(this.backendUser.birthdate);
-      const birthdateField = this.findElement("#birthdate");
-      if (birthdateField) {
-        birthdateField.value = date.toISOString().split("T")[0];
-      }
+      birthdateFormatted = date.toLocaleDateString();
+      birthdateValue = date.toISOString().split("T")[0];
     }
 
-    // Format creation date
+    let createdAtFormatted = "";
     if (this.backendUser?.createdAt) {
       const date = new Date(this.backendUser.createdAt);
-      const createdAtField = this.findElement("#createdAt");
-      if (createdAtField) {
-        createdAtField.value = date.toLocaleDateString();
+      createdAtFormatted = date.toLocaleDateString();
+    }
+
+    // Populate profile name in picture section
+    this.setElementText("#profileNameDisplay", username || "User Name");
+
+    // Populate view mode displays
+    this.setElementText("#usernameDisplay", username || "Not set");
+    this.setElementText("#emailDisplay", email);
+    this.setElementText("#birthdateDisplay", birthdateFormatted || "Not set");
+    this.setElementText("#createdAtDisplay", createdAtFormatted);
+
+    // Populate edit mode displays (for readonly fields)
+    this.setElementText("#emailDisplayEdit", email);
+    this.setElementText("#createdAtDisplayEdit", createdAtFormatted);
+
+    // Populate edit mode inputs
+    const usernameInput = this.findElement("#username");
+    const birthdateInput = this.findElement("#birthdate");
+
+    if (usernameInput) usernameInput.value = username;
+    if (birthdateInput) birthdateInput.value = birthdateValue;
+
+    // Show Google notice and link password option for Google users
+    const providers = this.currentUser.providerData.map((p) => p.providerId);
+    const hasPassword = providers.includes("password");
+
+    if (providers.includes("google.com")) {
+      const googleNotice = this.findElement("#googleNotice");
+      if (googleNotice) {
+        googleNotice.style.display = "block";
+      }
+
+      if (!hasPassword) {
+        const linkPasswordSection = this.findElement("#linkPasswordSection");
+        if (linkPasswordSection) {
+          linkPasswordSection.style.display = "block";
+        }
       }
     }
 
-    // Show link password option for Google users
-    const providers = this.currentUser.providerData.map((p) => p.providerId);
-    if (providers.includes("google.com") && !providers.includes("password")) {
-      const linkPasswordSection = this.findElement("#linkPasswordSection");
-      if (linkPasswordSection) {
-        linkPasswordSection.style.display = "block";
-      }
+    // Show password warning if user doesn't have password authentication
+    const passwordWarning = this.findElement("#passwordWarning");
+    if (passwordWarning) {
+      passwordWarning.style.display = hasPassword ? "none" : "block";
+    }
+  }
+
+  // Helper method to set element text content
+  setElementText(selector, text) {
+    const element = this.findElement(selector);
+    if (element) {
+      element.textContent = text;
     }
   }
 
@@ -380,54 +512,60 @@ export default class ProfileView extends BaseView {
     };
   }
 
-  // Enable editing for a field
-  enableEdit(field) {
-    const input = this.findElement(`#${field}`);
-    const editBtn = this.findElement(`[data-field="${field}"]`);
+  // Switch to edit mode
+  switchToEditMode() {
+    // Content modes
+    const viewMode = this.findElement("#profileViewMode");
+    const editMode = this.findElement("#profileEditMode");
 
-    if (input) {
-      input.removeAttribute("readonly");
-      input.focus();
-    }
+    // Section actions
+    const profileViewActions = this.findElement("#profileViewActions");
+    const profileEditActions = this.findElement("#profileEditActions");
 
-    if (editBtn) {
-      editBtn.style.display = "none";
-    }
+    // Header actions
+    const viewModeActions = this.findElement("#viewModeActions");
+    const editModeHeaderActions = this.findElement("#editModeHeaderActions");
 
-    // Show save and cancel buttons
-    const saveBtn = this.findElement("#saveProfile");
-    const cancelBtn = this.findElement("#cancelEdit");
+    if (viewMode) viewMode.style.display = "none";
+    if (editMode) editMode.style.display = "flex";
 
-    if (saveBtn) saveBtn.style.display = "inline-block";
-    if (cancelBtn) cancelBtn.style.display = "inline-block";
+    if (profileViewActions) profileViewActions.style.display = "none";
+    if (profileEditActions) profileEditActions.style.display = "flex";
+
+    if (viewModeActions) viewModeActions.style.display = "none";
+    if (editModeHeaderActions) editModeHeaderActions.style.display = "flex";
   }
 
-  // Cancel editing
-  cancelEdit() {
-    // Reset all fields to readonly
-    const editableFields = ["username", "birthdate"];
-    editableFields.forEach((field) => {
-      const input = this.findElement(`#${field}`);
-      if (input) {
-        input.setAttribute("readonly", true);
-      }
-    });
+  // Switch to view mode
+  switchToViewMode() {
+    // Content modes
+    const viewMode = this.findElement("#profileViewMode");
+    const editMode = this.findElement("#profileEditMode");
 
-    // Show edit buttons
-    const editBtns = this.findElements(".edit-btn");
-    editBtns.forEach((btn) => {
-      btn.style.display = "inline-block";
-    });
+    // Section actions
+    const profileViewActions = this.findElement("#profileViewActions");
+    const profileEditActions = this.findElement("#profileEditActions");
 
-    // Hide save and cancel buttons
-    const saveBtn = this.findElement("#saveProfile");
-    const cancelBtn = this.findElement("#cancelEdit");
+    // Header actions
+    const viewModeActions = this.findElement("#viewModeActions");
+    const editModeHeaderActions = this.findElement("#editModeHeaderActions");
 
-    if (saveBtn) saveBtn.style.display = "none";
-    if (cancelBtn) cancelBtn.style.display = "none";
+    if (viewMode) viewMode.style.display = "flex";
+    if (editMode) editMode.style.display = "none";
+
+    if (profileViewActions) profileViewActions.style.display = "flex";
+    if (profileEditActions) profileEditActions.style.display = "none";
+
+    if (viewModeActions) viewModeActions.style.display = "block";
+    if (editModeHeaderActions) editModeHeaderActions.style.display = "none";
 
     // Restore original values
     this.populateProfile();
+  }
+
+  // Cancel editing (alias for switchToViewMode)
+  cancelEdit() {
+    this.switchToViewMode();
   }
 
   // Get form data
@@ -503,6 +641,11 @@ export default class ProfileView extends BaseView {
   // Show success message
   showSuccess(message) {
     this.showMessage(message, "success");
+  }
+
+  // Method to call after successful save
+  onSaveSuccess() {
+    this.switchToViewMode();
   }
 
   // Show the profile view

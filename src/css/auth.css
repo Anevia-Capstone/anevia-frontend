@@ -1,0 +1,321 @@
+/* ===== LOGIN PAGE STYLES ===== */
+/* Styles for login and register pages */
+
+.login-section,
+.register-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  background-color: #ffffff;
+}
+
+.login-container,
+.register-container {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.login-content,
+.register-content {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.login-left-content {
+  flex: 1.5;
+  background-image: url("../assets/hero-bg.jpg");
+  background-size: cover;
+  background-position: right center;
+  position: relative;
+}
+
+.register-right-content {
+  flex: 1.5;
+  background-image: url("../assets/hero-bg.jpg");
+  background-size: cover;
+  background-position: left center;
+  position: relative;
+}
+
+.login-left-content::after,
+.register-right-content::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, 0) 30%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+}
+
+.login-right-content,
+.register-left-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  background-color: #ffffff;
+}
+
+.login-main-content,
+.register-main-content {
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+}
+
+.login-title,
+.register-title {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 600;
+  font-size: 36px;
+  line-height: 1.2;
+  color: #333333;
+  margin-bottom: 30px;
+}
+
+/* Style for when login/register page is active */
+.login-page-active,
+.register-page-active {
+  overflow: hidden;
+}
+
+/* Hide header when login/register page is active */
+.login-page-active #header,
+.register-page-active #header,
+.login-page-active #footer,
+.register-page-active #footer {
+  display: none !important;
+}
+
+.login-form-content,
+.register-form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.login-field,
+.register-field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-field label,
+.register-field label {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  color: #333333;
+}
+
+.login-field input,
+.register-field input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #dddddd;
+  border-radius: 6px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 16px;
+  outline: none;
+}
+
+.login-field input:focus,
+.register-field input:focus {
+  border-color: #297afe;
+}
+
+.sign-in-btn,
+.sign-up-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #297afe;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.sign-in-btn:hover,
+.sign-up-btn:hover {
+  background-color: #1a6be0;
+}
+
+.login-divider,
+.register-divider {
+  text-align: center;
+  position: relative;
+  margin: 20px 0;
+}
+
+.divider-text {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #777777;
+  background-color: #ffffff;
+  padding: 0 10px;
+  position: relative;
+}
+
+.login-divider:before,
+.register-divider:before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #eeeeee;
+  z-index: 0;
+}
+
+.login-suggestion,
+.register-suggestion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.login-suggestion span,
+.register-suggestion span {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: #333333;
+}
+
+.signup-link,
+.signin-link {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #297afe;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.signup-link:hover,
+.signin-link:hover {
+  text-decoration: underline;
+}
+
+/* Login and Register message styles */
+.login-message,
+.register-message {
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 10px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 14px;
+  text-align: center;
+}
+
+.login-message.error,
+.register-message.error {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: var(--error-color);
+  border: 1px solid var(--error-color);
+}
+
+.login-message.success,
+.register-message.success {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: var(--success-color);
+  border: 1px solid var(--success-color);
+}
+
+/* Disabled button styles */
+.sign-in-btn:disabled,
+.sign-up-btn:disabled,
+.google-signin-btn:disabled,
+.google-signup-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.google-signin,
+.google-signup {
+  margin-top: 10px;
+}
+
+.google-signin-btn,
+.google-signup-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 12px;
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 6px;
+  gap: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.google-signin-btn:hover,
+.google-signup-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.google-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.google-signin-btn span,
+.google-signup-btn span {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  color: #333333;
+}
+
+@media (max-width: 768px) {
+  .login-content,
+  .register-content {
+    flex-direction: column;
+  }
+
+  .login-left-content,
+  .register-right-content {
+    display: none;
+  }
+
+  .login-right-content,
+  .register-left-content {
+    padding: 40px 20px;
+  }
+
+  .login-main-content,
+  .register-main-content {
+    padding: 0;
+  }
+
+  .login-title,
+  .register-title {
+    font-size: 36px;
+    margin-bottom: 30px;
+  }
+}

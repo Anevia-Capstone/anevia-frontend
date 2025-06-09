@@ -163,19 +163,72 @@ export const getCurrentUserToken = async (forceRefresh = false) => {
     return token;
   } catch (error) {
     console.error("Error getting current user token:", error);
+
+    // If force refresh failed, try to get cached token as fallback
+    if (forceRefresh) {
+      console.log("Force refresh failed, trying to get cached token...");
+      try {
+        const cachedToken = localStorage.getItem("firebaseToken");
+        const tokenExpiry = localStorage.getItem("firebaseTokenExpiry");
+
+        // Check if cached token is still valid
+        if (cachedToken && tokenExpiry && Date.now() < parseInt(tokenExpiry)) {
+          console.log("Using cached token as fallback");
+          return cachedToken;
+        }
+      } catch (cacheError) {
+        console.error("Error accessing cached token:", cacheError);
+      }
+    }
+
     return null;
   }
+};
+
+// Flag to track if we're in the middle of a password change operation
+let isPasswordChangeInProgress = false;
+let storedUserDataDuringPasswordChange = null;
+
+// Function to set password change flag
+export const setPasswordChangeInProgress = (inProgress, userData = null) => {
+  isPasswordChangeInProgress = inProgress;
+  if (inProgress && userData) {
+    // Store user data before password change
+    storedUserDataDuringPasswordChange = {
+      user: userData.user,
+      backendUser: userData.backendUser,
+      timestamp: Date.now()
+    };
+    console.log("Password change in progress - stored user data:", storedUserDataDuringPasswordChange);
+  } else if (!inProgress) {
+    // Clear stored data when password change is complete
+    storedUserDataDuringPasswordChange = null;
+    console.log("Password change completed - cleared stored user data");
+  }
+  console.log("Password change in progress:", inProgress);
 };
 
 // Listen for authentication state changes
 export const onAuthStateChanged = (callback) => {
   return auth.onAuthStateChanged(async (user) => {
+    console.log("Auth state changed - user:", user ? "exists" : "null", "passwordChangeInProgress:", isPasswordChangeInProgress);
+
     if (user) {
       try {
         // First call callback immediately with Firebase user to prevent logout
         callback(user, null, null);
 
-        // Check if we have a cached token first
+        // If password change is in progress, be more lenient with token handling
+        if (isPasswordChangeInProgress) {
+          console.log("Password change in progress, using minimal token verification");
+
+          // During password change, avoid any backend calls that might fail due to token issues
+          // Just use Firebase user data and let the natural auth flow handle backend sync later
+          console.log("Skipping backend calls during password change to avoid token conflicts");
+          return; // Don't make any backend calls, just keep the user logged in
+        }
+
+        // Normal token handling for non-password-change scenarios
         let token = localStorage.getItem("firebaseToken");
         const tokenExpiry = localStorage.getItem("firebaseTokenExpiry");
 
@@ -184,6 +237,12 @@ export const onAuthStateChanged = (callback) => {
           console.log("Token expired or missing, getting fresh token");
           // Get a fresh token
           token = await getCurrentUserToken(true);
+
+          // If token refresh fails, don't proceed with backend calls
+          if (!token) {
+            console.warn("Failed to get fresh token, continuing with Firebase user only");
+            return;
+          }
         } else {
           console.log("Using cached token");
         }
@@ -211,7 +270,23 @@ export const onAuthStateChanged = (callback) => {
         callback(user, null, null);
       }
     } else {
+      // If password change is in progress and user becomes null, restore the stored user data
+      if (isPasswordChangeInProgress && storedUserDataDuringPasswordChange) {
+        console.log("User became null during password change - restoring stored user data");
+        const storedData = storedUserDataDuringPasswordChange;
+
+        // Check if stored data is not too old (within 30 seconds)
+        if (Date.now() - storedData.timestamp < 30000) {
+          console.log("Restoring user session with stored data:", storedData);
+          callback(storedData.user, storedData.backendUser, null);
+          return;
+        } else {
+          console.warn("Stored user data is too old, proceeding with logout");
+        }
+      }
+
       // User is signed out
+      console.log("User is signed out");
       callback(null, null, null);
     }
   });

@@ -208,7 +208,13 @@ export default class ChatModel extends BaseModel {
       const response = await getUserChatSessions(userId);
 
       if (response.status === "success") {
-        this.chatSessions = response.data.chatSessions;
+        this.chatSessions = response.data.chatSessions.map(session => ({
+          ...session,
+          createdAt: new Date(session.createdAt),
+          updatedAt: new Date(session.updatedAt),
+          // Extract scan ID from title if available
+          scanId: this.extractScanIdFromTitle(session.title),
+        }));
 
         // Update data
         this.setData("chatSessions", this.chatSessions);
@@ -245,6 +251,13 @@ export default class ChatModel extends BaseModel {
     return this.messages;
   }
 
+  // Extract scan ID from chat title
+  extractScanIdFromTitle(title) {
+    // Title format: "Chat with ChatVia! about Scan a1b2c3d4"
+    const match = title.match(/Scan\s+([a-zA-Z0-9]+)/);
+    return match ? match[1] : null;
+  }
+
   // Get chat sessions
   getChatSessions() {
     return this.chatSessions;
@@ -253,6 +266,12 @@ export default class ChatModel extends BaseModel {
   // Check if loading
   isLoadingState() {
     return this.isLoading;
+  }
+
+  // Set current session
+  setCurrentSession(session) {
+    this.currentSession = session;
+    this.setData("currentSession", session);
   }
 
   // Clear current session

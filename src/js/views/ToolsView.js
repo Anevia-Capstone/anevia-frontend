@@ -20,15 +20,15 @@ export default class ToolsView extends BaseView {
     const html = `
       <div class="container tools-container">
         <div class="tools-headline">
-          <h2 class="tools-title">Welcome to Anemia Detection!</h2>
-        </div>
-
-        <div class="tools-content">
-          <div class="tools-content-headline">
-            <h3 class="tools-content-title">Upload a Picture of Your Eye</h3>
-            <p class="tools-content-description">To check for signs of anemia, please upload a clear image of your eye by clicking the button below or dragging and dropping your file into the box.</p>
+          <div class="tools-header-actions">
+            <button class="btn btn-secondary scan-history-btn" id="scan-history-btn">
+              <i class="fas fa-history"></i>
+              View Scan History
+            </button>
           </div>
-
+          <h2 class="tools-title">Capture or Upload Your Eye Image</h2>
+          <p class="tools-subtitle">To check for signs of anemia, please take a clear photo of your eye's conjunctiva (the inner part of your lower eyelid) or upload an existing image.</p>
+        </div>
           <div class="tools-file-upload">
             <div class="scan-options">
               <div class="scan-option active" data-mode="camera">
@@ -53,8 +53,15 @@ export default class ToolsView extends BaseView {
               <div id="camera-interface" class="camera-container">
                 <video class="camera-feed" autoplay playsinline></video>
                 <div class="camera-overlay">
-                  <p class="camera-message">Click to active camera</p>
-                  <button class="btn btn-primary" id="enable-camera">Enable Camera</button>
+                  <div class="camera-icon">
+                    <i class="fas fa-camera"></i>
+                  </div>
+                  <p class="camera-message">Click to activate camera</p>
+                  <p class="camera-hint">Make sure you have good lighting and position your eye clearly</p>
+                  <button class="btn btn-primary" id="enable-camera">
+                    <i class="fas fa-camera"></i>
+                    Enable Camera
+                  </button>
                 </div>
                 <div class="eye-placeholder" id="eye-placeholder">
                   <img src="/src/assets/eye-placeholder.svg" alt="Eye Placement Guide" width="100%" height="100%">
@@ -63,13 +70,19 @@ export default class ToolsView extends BaseView {
 
               <!-- Upload Interface -->
               <div id="upload-interface" class="upload-container" style="display: none;">
-                <div class="upload-icon">
-                  <i class="fas fa-cloud-upload-alt"></i>
+                <div class="file-upload-area" id="file-upload-area">
+                  <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                  </div>
+                  <p class="upload-text">Drag and drop your eye image here</p>
+                  <p class="upload-hint">or click to browse files</p>
+                  <p class="upload-info">Supported formats: JPG, JPEG, PNG (Max size: 10MB)</p>
+                  <button class="btn btn-primary" id="browse-btn">
+                    <i class="fas fa-folder-open"></i>
+                    Choose File
+                  </button>
+                  <input type="file" id="file-input" class="file-input" accept="image/jpeg,image/jpg,image/png">
                 </div>
-                <p class="upload-text">Click to upload or drag and drop</p>
-                <p class="upload-info">Supported formats: JPG, JPEG, PNG (Max size: 10MB)</p>
-                <input type="file" id="file-input" class="file-input" accept="image/jpeg, image/jpg, image/png">
-                <button class="btn btn-primary" id="browse-btn">Browse Files</button>
               </div>
 
               <div class="camera-controls" id="camera-controls">
@@ -77,9 +90,7 @@ export default class ToolsView extends BaseView {
                 <button class="btn btn-secondary" id="switch-camera-btn">Switch Camera</button>
                 <button class="btn btn-secondary" id="stop-camera-btn">Stop Camera</button>
               </div>
-            </div>
-
-            <div class="tools-notes">
+              <div class="tools-notes">
               <div class="warning-circle">
                 <i class="fas fa-exclamation-circle"></i>
               </div>
@@ -90,7 +101,12 @@ export default class ToolsView extends BaseView {
 
         <!-- Preview Container -->
         <div class="preview-container" id="preview-container">
-          <img src="" alt="Preview" class="preview-image" id="preview-image">
+          <div class="heading-preview">
+            <h1> Preview Image</h1>
+          </div>
+          <div class="image-preview">
+            <img src="" alt="Preview" class="preview-image" id="preview-image">
+          </div>
           <div class="preview-controls">
             <button class="btn btn-primary" id="scan-btn">Scan for Anemia</button>
             <button class="btn btn-secondary" id="retake-btn">Retake</button>
@@ -99,25 +115,58 @@ export default class ToolsView extends BaseView {
 
         <!-- Result Container -->
         <div class="result-container" id="result-container">
-          <div class="result-icon" id="result-icon">
-            <i class="fas fa-spinner fa-spin"></i>
+          <div class="result-image-container" id="result-image-container" style="display: none;">
+            <img src="" alt="Scan Image" class="result-image" id="result-image">
           </div>
-          <h3 class="result-title" id="result-title">Analyzing your scan...</h3>
-          <p class="result-description" id="result-description">Please wait while we process your image.</p>
+          <div class="result-box">
+            <div class="result-icon" id="result-icon">
+              <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <div class="result-text">
+              <h3 class="result-title" id="result-title">Analyzing your scan...</h3>
+              <p class="result-description" id="result-description">Please wait while we process your image.</p>
+            </div>
+          </div>
+
+          <!-- Progress Bar Container -->
+          <div class="progress-container" id="progress-container" style="display: none;">
+            <div class="progress-bar-wrapper">
+              <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="progress-text" id="progress-text">0%</div>
+            <div class="progress-steps">
+              <div class="progress-step" id="step-1">
+                <div class="step-icon">1</div>
+                <span>Upload</span>
+              </div>
+              <div class="progress-step" id="step-2">
+                <div class="step-icon">2</div>
+                <span>Process</span>
+              </div>
+              <div class="progress-step" id="step-3">
+                <div class="step-icon">3</div>
+                <span>Analyze</span>
+              </div>
+              <div class="progress-step" id="step-4">
+                <div class="step-icon">4</div>
+                <span>Complete</span>
+              </div>
+            </div>
+          </div>
 
           <div class="result-details" id="result-details">
             <!-- Result details will be inserted here -->
           </div>
 
-          <div class="result-actions">
-            <button class="btn btn-secondary" id="back-btn">
-              <i class="fas fa-arrow-left"></i>
-              Kembali
-            </button>
-            <button class="btn btn-primary" id="chat-ai-btn">
-              <i class="fas fa-robot"></i>
-              Bicarakan dengan AI Sekarang!
-            </button>
+          <div class="result-actions" id="result-actions">
+          <button class="btn btn-primary" id="chat-ai-btn" style="display: none;">
+          <i class="fas fa-robot"></i>
+          Bicarakan dengan AI Sekarang!
+          </button>
+          <button class="btn btn-secondary" id="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Kembali
+          </button>
           </div>
         </div>
       </div>
@@ -127,11 +176,16 @@ export default class ToolsView extends BaseView {
   }
 
   setupEventListeners() {
+    // Scan history button
+    const scanHistoryBtn = this.findElement("#scan-history-btn");
+    if (scanHistoryBtn) {
+      this.addEventListener(scanHistoryBtn, "click", () => {
+        this.onScanHistory();
+      });
+    }
+
     // Scan option selection
     const scanOptions = this.findElements(".scan-option");
-    const cameraInterface = this.findElement("#camera-interface");
-    const uploadInterface = this.findElement("#upload-interface");
-    const cameraControls = this.findElement("#camera-controls");
 
     scanOptions.forEach((option) => {
       this.addEventListener(option, "click", () => {
@@ -172,11 +226,21 @@ export default class ToolsView extends BaseView {
     // Upload functionality
     const fileInput = this.findElement("#file-input");
     const browseBtn = this.findElement("#browse-btn");
-    const uploadContainer = this.findElement("#upload-interface");
+    const fileUploadArea = this.findElement("#file-upload-area");
 
     if (browseBtn) {
-      this.addEventListener(browseBtn, "click", () => {
+      this.addEventListener(browseBtn, "click", (e) => {
+        e.stopPropagation(); // Prevent event bubbling to fileUploadArea
         fileInput.click();
+      });
+    }
+
+    if (fileUploadArea) {
+      this.addEventListener(fileUploadArea, "click", (e) => {
+        // Only trigger file input if the click is not on the browse button
+        if (e.target !== browseBtn && !browseBtn.contains(e.target)) {
+          fileInput.click();
+        }
       });
     }
 
@@ -189,19 +253,23 @@ export default class ToolsView extends BaseView {
     }
 
     // Drag and drop functionality
-    if (uploadContainer) {
-      this.addEventListener(uploadContainer, "dragover", (e) => {
+    if (fileUploadArea) {
+      this.addEventListener(fileUploadArea, "dragover", (e) => {
         e.preventDefault();
-        uploadContainer.classList.add("dragover");
+        e.stopPropagation();
+        fileUploadArea.classList.add("dragover");
       });
 
-      this.addEventListener(uploadContainer, "dragleave", () => {
-        uploadContainer.classList.remove("dragover");
+      this.addEventListener(fileUploadArea, "dragleave", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        fileUploadArea.classList.remove("dragover");
       });
 
-      this.addEventListener(uploadContainer, "drop", (e) => {
+      this.addEventListener(fileUploadArea, "drop", (e) => {
         e.preventDefault();
-        uploadContainer.classList.remove("dragover");
+        e.stopPropagation();
+        fileUploadArea.classList.remove("dragover");
         if (e.dataTransfer.files.length > 0) {
           this.onFileUpload(e.dataTransfer.files[0]);
         }
@@ -360,6 +428,11 @@ export default class ToolsView extends BaseView {
     this.notifyPresenter("downloadReport");
   }
 
+  onScanHistory() {
+    // Notify presenter to handle scan history navigation
+    this.notifyPresenter("scanHistory");
+  }
+
   // Method to notify presenter of user actions
   notifyPresenter(action, data = {}) {
     if (
@@ -444,45 +517,134 @@ export default class ToolsView extends BaseView {
     const uploadInterface = this.findElement("#upload-interface");
     const cameraControls = this.findElement("#camera-controls");
     const eyePlaceholder = this.findElement("#eye-placeholder");
+    const resultContainer = this.findElement("#result-container");
+
+    // Store the image URL for later use in scan result
+    this.capturedImageUrl = imageUrl;
 
     // Hide interfaces
     if (cameraInterface) cameraInterface.style.display = "none";
     if (uploadInterface) uploadInterface.style.display = "none";
     if (cameraControls) cameraControls.style.display = "none";
     if (eyePlaceholder) eyePlaceholder.classList.remove("active");
+    if (resultContainer) resultContainer.style.display = "none";
 
     // Show preview
     if (previewImage) previewImage.src = imageUrl;
-    if (previewContainer) previewContainer.classList.add("active");
+    if (previewContainer) {
+      previewContainer.style.display = "block";
+      previewContainer.classList.add("fade-in");
+    }
   }
 
-  showScanResult(result) {
+  showScanResult(result, scanData = null) {
     const resultContainer = this.findElement("#result-container");
+    const resultBox = this.findElement(".result-box");
     const resultIcon = this.findElement("#result-icon");
     const resultTitle = this.findElement("#result-title");
     const resultDescription = this.findElement("#result-description");
     const resultDetails = this.findElement("#result-details");
+    const resultImageContainer = this.findElement("#result-image-container");
+    const resultImage = this.findElement("#result-image");
+    const chatAiBtn = this.findElement("#chat-ai-btn");
     const previewContainer = this.findElement("#preview-container");
 
-    if (previewContainer) previewContainer.classList.remove("active");
-    if (resultContainer) resultContainer.classList.add("active");
+    // Hide preview and show result
+    if (previewContainer) previewContainer.style.display = "none";
+    if (resultContainer) {
+      resultContainer.style.display = "block";
+      resultContainer.classList.add("fade-in");
+    }
+
+    // Show scan image if available
+    if (scanData && (scanData.photoUrl || scanData.imageUrl)) {
+      let imageUrl = scanData.photoUrl || scanData.imageUrl;
+
+      // Convert relative URLs to absolute URLs
+      if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('blob:')) {
+        const API_BASE_URL = "https://server.anevia.my.id";
+        imageUrl = imageUrl.startsWith('/') ? `${API_BASE_URL}${imageUrl}` : `${API_BASE_URL}/${imageUrl}`;
+      }
+
+      if (resultImage && resultImageContainer) {
+        resultImage.src = imageUrl;
+        resultImageContainer.style.display = "block";
+
+        // Add error handling for image loading
+        resultImage.onerror = () => {
+          console.warn("Failed to load scan image:", imageUrl);
+          resultImageContainer.style.display = "none";
+        };
+
+        // Add loading indicator
+        resultImage.onload = () => {
+          console.log("Scan image loaded successfully:", imageUrl);
+        };
+      }
+    } else if (this.capturedImageUrl) {
+      // Use captured image URL if available
+      if (resultImage && resultImageContainer) {
+        resultImage.src = this.capturedImageUrl;
+        resultImageContainer.style.display = "block";
+      }
+    } else {
+      // Hide image container if no image available
+      if (resultImageContainer) {
+        resultImageContainer.style.display = "none";
+      }
+    }
 
     if (result.isLoading) {
-      if (resultIcon)
+      if (resultIcon) {
         resultIcon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        resultIcon.className = "result-icon loading";
+      }
       if (resultTitle) resultTitle.textContent = "Analyzing your scan...";
       if (resultDescription)
         resultDescription.textContent =
-          "Please wait while we process your image.";
-      if (resultDetails) resultDetails.innerHTML = "";
+          "Please wait while we process your image. This may take a few moments.";
+      if (resultDetails) {
+        resultDetails.innerHTML = "";
+        resultDetails.style.display = "none";
+      }
+
+      // Show and start progress bar
+      this.showProgressBar();
+      this.startProgressAnimation();
+
+      // Hide chat button during loading
+      if (chatAiBtn) {
+        chatAiBtn.style.display = "none";
+      }
     } else {
+      // Hide progress bar when loading is complete
+      this.hideProgressBar();
+
+      // Show result details when loading is complete
+      if (resultDetails) {
+        resultDetails.style.display = "block";
+      }
+
+      // Reset result-box classes
+      if (resultBox) {
+        resultBox.classList.remove("no-anemia", "anemia-detected");
+
+        // Add appropriate class based on result
+        if (result.isAnemic) {
+          resultBox.classList.add("anemia-detected");
+        } else {
+          resultBox.classList.add("no-anemia");
+        }
+      }
+
       if (resultIcon) {
-        resultIcon.innerHTML = result.isAnemic
-          ? '<i class="fas fa-exclamation-circle"></i>'
-          : '<i class="fas fa-check-circle"></i>';
-        resultIcon.className = result.isAnemic
-          ? "result-icon positive"
-          : "result-icon negative";
+        if (result.isAnemic) {
+          resultIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+          resultIcon.className = "result-icon warning";
+        } else {
+          resultIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+          resultIcon.className = "result-icon success";
+        }
       }
 
       if (resultTitle) {
@@ -496,7 +658,19 @@ export default class ToolsView extends BaseView {
       }
 
       if (resultDetails && result.details) {
-        resultDetails.innerHTML = result.details;
+        resultDetails.innerHTML = `
+          <h4 class="scan-details-heading">Scan Details</h4>
+          ${result.details}
+        `;
+      }
+
+      // Show/hide chat AI button based on anemia detection
+      if (chatAiBtn) {
+        if (result.isAnemic) {
+          chatAiBtn.style.display = "inline-flex";
+        } else {
+          chatAiBtn.style.display = "none";
+        }
       }
     }
   }
@@ -504,24 +678,55 @@ export default class ToolsView extends BaseView {
   resetToInitialState() {
     const previewContainer = this.findElement("#preview-container");
     const resultContainer = this.findElement("#result-container");
+    const resultBox = this.findElement(".result-box");
     const cameraInterface = this.findElement("#camera-interface");
     const uploadInterface = this.findElement("#upload-interface");
     const cameraControls = this.findElement("#camera-controls");
     const eyePlaceholder = this.findElement("#eye-placeholder");
+    const fileInput = this.findElement("#file-input");
 
-    if (previewContainer) previewContainer.classList.remove("active");
-    if (resultContainer) resultContainer.classList.remove("active");
+    // Hide preview and result containers
+    if (previewContainer) {
+      previewContainer.style.display = "none";
+      previewContainer.classList.remove("fade-in");
+    }
+    if (resultContainer) {
+      resultContainer.style.display = "none";
+      resultContainer.classList.remove("fade-in");
+    }
 
+    // Hide result details
+    const resultDetails = this.findElement("#result-details");
+    if (resultDetails) {
+      resultDetails.style.display = "none";
+      resultDetails.innerHTML = "";
+    }
+
+    // Reset result-box classes
+    if (resultBox) {
+      resultBox.classList.remove("no-anemia", "anemia-detected");
+    }
+
+    // Reset progress bar
+    this.resetProgressBar();
+    this.hideProgressBar();
+
+    // Clear captured image and file input
     this.capturedImage = null;
+    if (fileInput) fileInput.value = "";
 
+    // Show appropriate interface based on scan mode
     if (this.scanMode === "camera") {
       if (cameraInterface) cameraInterface.style.display = "block";
+      if (uploadInterface) uploadInterface.style.display = "none";
       if (cameraControls) cameraControls.style.display = "flex";
       if (this.stream && this.stream.active && eyePlaceholder) {
         eyePlaceholder.classList.add("active");
       }
     } else {
       if (uploadInterface) uploadInterface.style.display = "block";
+      if (cameraInterface) cameraInterface.style.display = "none";
+      if (cameraControls) cameraControls.style.display = "none";
     }
   }
 
@@ -530,9 +735,190 @@ export default class ToolsView extends BaseView {
     this.stopCamera();
   }
 
+  // Progress bar methods
+  showProgressBar() {
+    const progressContainer = this.findElement("#progress-container");
+    if (progressContainer) {
+      progressContainer.style.display = "block";
+    }
+  }
+
+  hideProgressBar() {
+    const progressContainer = this.findElement("#progress-container");
+    if (progressContainer) {
+      progressContainer.style.display = "none";
+    }
+    // Clear any existing intervals
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+      this.progressInterval = null;
+    }
+  }
+
+  startProgressAnimation() {
+    const progressBar = this.findElement("#progress-bar");
+    const progressText = this.findElement("#progress-text");
+    const steps = [
+      { id: "step-1", text: "Uploading image...", duration: 1000 },
+      { id: "step-2", text: "Processing image...", duration: 2000 },
+      { id: "step-3", text: "Analyzing data...", duration: 2500 },
+      { id: "step-4", text: "Finalizing results...", duration: 1500 }
+    ];
+
+    let progress = 0;
+    let currentStep = 0;
+    let startTime = Date.now();
+    let stepStartTime = startTime;
+
+    // Clear any existing interval
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+    }
+
+    // Reset all steps first
+    steps.forEach(step => {
+      const stepElement = this.findElement(`#${step.id}`);
+      if (stepElement) {
+        stepElement.classList.remove("active", "completed");
+      }
+    });
+
+    // Start with first step
+    const firstStep = this.findElement("#step-1");
+    if (firstStep) {
+      firstStep.classList.add("active");
+    }
+
+    this.progressInterval = setInterval(() => {
+      const currentTime = Date.now();
+      const stepElapsed = currentTime - stepStartTime;
+
+      // Calculate progress based on current step
+      const currentStepData = steps[currentStep];
+      if (currentStepData) {
+        const stepProgress = Math.min(stepElapsed / currentStepData.duration, 1);
+        const baseProgress = (currentStep / steps.length) * 100;
+        const stepContribution = (stepProgress / steps.length) * 100;
+        progress = baseProgress + stepContribution;
+      }
+
+      // Ensure progress doesn't exceed 95% until we're done
+      if (progress > 95 && currentStep < steps.length - 1) {
+        progress = 95;
+      }
+
+      // Update progress bar
+      if (progressBar) {
+        progressBar.style.width = progress + "%";
+      }
+
+      // Update progress text
+      if (progressText) {
+        progressText.textContent = Math.round(progress) + "%";
+      }
+
+      // Check if current step is completed
+      if (stepElapsed >= currentStepData.duration && currentStep < steps.length - 1) {
+        // Mark current step as completed
+        const currentStepElement = this.findElement(`#${currentStepData.id}`);
+        if (currentStepElement) {
+          currentStepElement.classList.remove("active");
+          currentStepElement.classList.add("completed");
+
+          // Update icon to show checkmark
+          const stepIcon = currentStepElement.querySelector('.step-icon');
+          if (stepIcon) {
+            stepIcon.textContent = '';
+          }
+        }
+
+        // Move to next step
+        currentStep++;
+        stepStartTime = currentTime;
+
+        const nextStepData = steps[currentStep];
+        if (nextStepData) {
+          const nextStepElement = this.findElement(`#${nextStepData.id}`);
+          if (nextStepElement) {
+            nextStepElement.classList.add("active");
+          }
+
+          // Update result description with current step
+          const resultDescription = this.findElement("#result-description");
+          if (resultDescription) {
+            resultDescription.textContent = nextStepData.text;
+          }
+        }
+      }
+
+      // Complete the progress when all steps are done
+      if (currentStep >= steps.length - 1 && stepElapsed >= currentStepData.duration) {
+        progress = 100;
+
+        if (progressBar) {
+          progressBar.style.width = "100%";
+        }
+
+        if (progressText) {
+          progressText.textContent = "100%";
+        }
+
+        // Mark final step as completed
+        const finalStepElement = this.findElement(`#${currentStepData.id}`);
+        if (finalStepElement) {
+          finalStepElement.classList.remove("active");
+          finalStepElement.classList.add("completed");
+
+          // Update icon to show checkmark
+          const stepIcon = finalStepElement.querySelector('.step-icon');
+          if (stepIcon) {
+            stepIcon.textContent = '';
+          }
+        }
+
+        clearInterval(this.progressInterval);
+        this.progressInterval = null;
+      }
+    }, 100); // Update every 100ms for smoother animation
+  }
+
+  resetProgressBar() {
+    const progressBar = this.findElement("#progress-bar");
+    const progressText = this.findElement("#progress-text");
+    const steps = ["step-1", "step-2", "step-3", "step-4"];
+
+    if (progressBar) {
+      progressBar.style.width = "0%";
+    }
+
+    if (progressText) {
+      progressText.textContent = "0%";
+    }
+
+    // Reset all steps
+    steps.forEach(stepId => {
+      const stepElement = this.findElement(`#${stepId}`);
+      if (stepElement) {
+        stepElement.classList.remove("active", "completed");
+      }
+    });
+
+    // Clear interval
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+      this.progressInterval = null;
+    }
+  }
+
   destroy() {
     // Stop camera if it's running
     this.stopCamera();
+
+    // Clear progress interval
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+      this.progressInterval = null;
+    }
 
     // Remove cleanup event listeners
     document.removeEventListener(

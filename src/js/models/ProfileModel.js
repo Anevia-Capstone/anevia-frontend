@@ -8,7 +8,7 @@ import {
   resetUserPassword,
   deleteUserProfile,
 } from "../api.js";
-import { getCurrentUser, logoutUser } from "../firebase/auth.js";
+import { getCurrentUser, logoutUser, getCurrentUserToken } from "../firebase/auth.js";
 
 export default class ProfileModel extends BaseModel {
   constructor() {
@@ -25,21 +25,37 @@ export default class ProfileModel extends BaseModel {
 
       this.currentUser = getCurrentUser();
       if (!this.currentUser) {
-        throw new Error("Please log in to view your profile");
+        return {
+          success: false,
+          error: "Please log in to view your profile"
+        };
       }
 
-      // Get user profile from backend
-      const response = await getUserProfile(this.currentUser.uid);
-      this.backendUser = response.user;
+      // Get user profile from backend with better error handling
+      try {
+        const response = await getUserProfile(this.currentUser.uid);
+        this.backendUser = response.user;
 
-      this.setData("currentUser", this.currentUser);
-      this.setData("backendUser", this.backendUser);
+        this.setData("currentUser", this.currentUser);
+        this.setData("backendUser", this.backendUser);
 
-      return {
-        success: true,
-        currentUser: this.currentUser,
-        backendUser: this.backendUser,
-      };
+        return {
+          success: true,
+          currentUser: this.currentUser,
+          backendUser: this.backendUser,
+        };
+      } catch (backendError) {
+        console.warn("Backend profile fetch failed, using Firebase user only:", backendError);
+        // Return Firebase user even if backend fails
+        this.setData("currentUser", this.currentUser);
+        this.setData("backendUser", null);
+
+        return {
+          success: true,
+          currentUser: this.currentUser,
+          backendUser: null,
+        };
+      }
     } catch (error) {
       console.error("Error loading user profile:", error);
       return {
@@ -188,9 +204,23 @@ export default class ProfileModel extends BaseModel {
         throw new Error("Passwords do not match");
       }
 
-      await resetUserPassword(this.currentUser.uid, newPassword);
+      const response = await resetUserPassword(this.currentUser.uid, newPassword);
 
-      return { success: true };
+      // Update backend user data with the response
+      if (response.user) {
+        this.backendUser = response.user;
+        this.setData("backendUser", this.backendUser);
+      }
+
+      // DON'T refresh Firebase user data immediately after password change
+      // The backend password reset might invalidate the current token
+      // Let the natural auth state change handle token refresh later
+      console.log("Password reset successful, skipping immediate token refresh to avoid auth issues");
+
+      return {
+        success: true,
+        user: response.user
+      };
     } catch (error) {
       console.error("Error changing password:", error);
       return {
@@ -223,9 +253,23 @@ export default class ProfileModel extends BaseModel {
         throw new Error("Passwords do not match");
       }
 
-      await linkEmailPassword(this.currentUser.uid, password);
+      const response = await linkEmailPassword(this.currentUser.uid, password);
 
-      return { success: true };
+      // Update backend user data with the response
+      if (response.user) {
+        this.backendUser = response.user;
+        this.setData("backendUser", this.backendUser);
+      }
+
+      // DON'T refresh Firebase user data immediately after password link
+      // The backend password link might invalidate the current token
+      // Let the natural auth state change handle token refresh later
+      console.log("Password link successful, skipping immediate token refresh to avoid auth issues");
+
+      return {
+        success: true,
+        user: response.user
+      };
     } catch (error) {
       console.error("Error linking password:", error);
       return {
@@ -356,5 +400,69 @@ export default class ProfileModel extends BaseModel {
       return new Date(this.backendUser.birthdate).toISOString().split("T")[0];
     }
     return "";
+  }
+
+  // Refresh Firebase user data to get updated provider information
+  async refreshFirebaseUserData() {
+    try {
+      if (!this.currentUser) return;
+
+      console.log("Refreshing Firebase user data...");
+
+      // Add a longer delay to allow backend changes to propagate
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      // Reload the user to get updated provider data (this is less likely to cause auth state changes)
+      try {
+        await this.currentUser.reload();
+        console.log("User reload successful");
+      } catch (reloadError) {
+        console.warn("User reload failed, but continuing:", reloadError);
+        // Continue without throwing error
+      }
+
+      // Try to refresh token with retry logic, but be more conservative
+      let tokenRefreshSuccess = false;
+      let retryCount = 0;
+      const maxRetries = 2; // Reduced retries to minimize auth state changes
+
+      while (!tokenRefreshSuccess && retryCount < maxRetries) {
+        try {
+          console.log(`Attempting token refresh (attempt ${retryCount + 1}/${maxRetries})`);
+
+          // Get a fresh token to ensure backend sync, but with longer delays between attempts
+          await new Promise(resolve => setTimeout(resolve, 2000 * (retryCount + 1)));
+          await getCurrentUserToken(true);
+          tokenRefreshSuccess = true;
+          console.log("Token refresh successful");
+
+        } catch (tokenError) {
+          retryCount++;
+          console.warn(`Token refresh attempt ${retryCount} failed:`, tokenError);
+
+          if (retryCount < maxRetries) {
+            // Wait longer before retrying
+            await new Promise(resolve => setTimeout(resolve, 3000 * retryCount));
+          } else {
+            console.error("All token refresh attempts failed, but continuing...");
+            // Don't throw error, continue with existing token
+          }
+        }
+      }
+
+      // Update current user reference
+      this.currentUser = getCurrentUser();
+      this.setData("currentUser", this.currentUser);
+
+      console.log("Firebase user data refreshed successfully");
+      console.log("Updated providers:", this.currentUser?.providerData?.map(p => p.providerId));
+
+      // Force a small delay to ensure UI updates properly
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+    } catch (error) {
+      console.error("Error refreshing Firebase user data:", error);
+      // Don't throw error, just log it as this is not critical for password change success
+    }
   }
 }

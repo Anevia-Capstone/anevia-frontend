@@ -1,6 +1,6 @@
 // Tools Model for managing anemia detection functionality
 import BaseModel from "./BaseModel.js";
-import { uploadScanImage } from "../api.js";
+import { uploadScanImage, getAllScans, getScanById } from "../api.js";
 
 export default class ToolsModel extends BaseModel {
   constructor() {
@@ -26,27 +26,28 @@ export default class ToolsModel extends BaseModel {
 
       // Check if the API response is successful and contains scan data
       if (response.status === "success" && response.data) {
-        // Use the actual scan result from the backend
+        // Use the actual scan result from the backend according to API documentation
         const scanData = response.data;
-        const scanId = scanData.scanId || scanData.id;
+        const scanId = scanData.scanId;
+        const scanResult = scanData.scanResult; // boolean value from API
+        const photoUrl = scanData.photoUrl;
+        const scanDate = scanData.scanDate;
 
         this.currentScan = {
           id: scanId,
           scanId: scanId, // Add scanId for compatibility with chat API
-          timestamp: new Date(),
+          photoUrl: photoUrl,
+          timestamp: new Date(scanDate),
           result: {
-            isAnemic: scanData.isAnemic,
-            confidence: scanData.confidence,
-            description:
-              scanData.description ||
-              this.getDefaultDescription(scanData.isAnemic),
+            isAnemic: scanResult, // Use the boolean scanResult from API
+            confidence: 85, // Default confidence since API doesn't provide it
+            description: this.getDefaultDescription(scanResult),
             details: {
-              confidenceLevel: `${scanData.confidence}%`,
-              scanDate: new Date().toLocaleDateString(),
+              confidenceLevel: "85%", // Default since API doesn't provide confidence
+              scanDate: new Date(scanDate).toLocaleDateString(),
               scanId: scanId,
-              recommendations:
-                scanData.recommendations ||
-                this.getDefaultRecommendations(scanData.isAnemic),
+              photoUrl: photoUrl,
+              recommendations: this.getDefaultRecommendations(scanResult),
             },
           },
           imageFile: imageFile,
@@ -113,6 +114,7 @@ export default class ToolsModel extends BaseModel {
         scanId: this.generateScanId(),
         recommendations: isAnemic
           ? [
+              "Based on your scan results, it is recommended to consult with a healthcare professional for further evaluation and guidance. Anemia may require medical attention andtreatment.",
               "Consult with a healthcare professional",
               "Consider iron-rich foods in your diet",
               "Schedule a complete blood count test",
@@ -260,6 +262,86 @@ Please consult with a healthcare professional for proper diagnosis and treatment
     } catch (error) {
       console.error("Error downloading report:", error);
       return { success: false, error: "Failed to download report" };
+    }
+  }
+
+  // Load scan history from API
+  async loadScanHistory() {
+    try {
+      const response = await getAllScans();
+      console.log("Scan history loaded from API:", response);
+
+      if (response && !response.error && response.listScans) {
+        // Transform API response to match internal data structure
+        this.scanHistory = response.listScans.map(scan => ({
+          id: scan.scanId,
+          scanId: scan.scanId,
+          photoUrl: scan.photoUrl,
+          timestamp: new Date(scan.scanDate),
+          result: {
+            isAnemic: scan.scanResult,
+            confidence: 85, // Default since API doesn't provide confidence
+            description: this.getDefaultDescription(scan.scanResult),
+            details: {
+              confidenceLevel: "85%",
+              scanDate: new Date(scan.scanDate).toLocaleDateString(),
+              scanId: scan.scanId,
+              photoUrl: scan.photoUrl,
+              recommendations: this.getDefaultRecommendations(scan.scanResult),
+            },
+          },
+          backendData: scan,
+        }));
+
+        this.setData("scanHistory", this.scanHistory);
+        return { success: true, scans: this.scanHistory };
+      } else {
+        console.warn("No scan history found or API error:", response);
+        return { success: false, error: response?.message || "Failed to load scan history" };
+      }
+    } catch (error) {
+      console.error("Error loading scan history:", error);
+      return { success: false, error: error.message || "Failed to load scan history" };
+    }
+  }
+
+  // Load specific scan by ID from API
+  async loadScanById(scanId) {
+    try {
+      const response = await getScanById(scanId);
+      console.log("Scan loaded from API:", response);
+
+      if (response && !response.error && response.scan) {
+        const scan = response.scan;
+        // Transform API response to match internal data structure
+        const transformedScan = {
+          id: scan.scanId,
+          scanId: scan.scanId,
+          photoUrl: scan.photoUrl,
+          timestamp: new Date(scan.scanDate),
+          result: {
+            isAnemic: scan.scanResult,
+            confidence: 85, // Default since API doesn't provide confidence
+            description: this.getDefaultDescription(scan.scanResult),
+            details: {
+              confidenceLevel: "85%",
+              scanDate: new Date(scan.scanDate).toLocaleDateString(),
+              scanId: scan.scanId,
+              photoUrl: scan.photoUrl,
+              recommendations: this.getDefaultRecommendations(scan.scanResult),
+            },
+          },
+          backendData: scan,
+        };
+
+        return { success: true, scan: transformedScan };
+      } else {
+        console.warn("Scan not found or API error:", response);
+        return { success: false, error: response?.message || "Scan not found" };
+      }
+    } catch (error) {
+      console.error("Error loading scan:", error);
+      return { success: false, error: error.message || "Failed to load scan" };
     }
   }
 

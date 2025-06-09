@@ -4,6 +4,7 @@ export default class BaseView {
     this.container = document.getElementById(containerId);
     this.isVisible = false;
     this.eventListeners = [];
+    this.presenter = null;
   }
 
   // Render the view
@@ -60,7 +61,7 @@ export default class BaseView {
   // Create element with attributes and content
   createElement(tag, attributes = {}, content = '') {
     const element = document.createElement(tag);
-    
+
     Object.keys(attributes).forEach(key => {
       if (key === 'className') {
         element.className = attributes[key];
@@ -70,11 +71,11 @@ export default class BaseView {
         element.setAttribute(key, attributes[key]);
       }
     });
-    
+
     if (content) {
       element.textContent = content;
     }
-    
+
     return element;
   }
 
@@ -139,5 +140,15 @@ export default class BaseView {
         <p class="error-message">${message}</p>
       </div>
     `);
+  }
+
+  // Set presenter reference
+  setPresenter(presenter) {
+    this.presenter = presenter;
+  }
+
+  // Get presenter reference
+  getPresenter() {
+    return this.presenter;
   }
 }
