@@ -223,8 +223,8 @@ export default class ProfileView extends BaseView {
         <!-- Loading Overlay -->
         <div class="loading-overlay" id="loadingOverlay" style="display: none;">
           <div class="loading-spinner">
-            <i class="fas fa-spinner fa-spin"></i>
-            <p>Loading...</p>
+            <div class="loading-spinner-circle"></div>
+            <p class="loading-text">Loading user data...</p>
           </div>
         </div>
 
@@ -594,11 +594,24 @@ export default class ProfileView extends BaseView {
   }
 
   // Set loading state
-  setLoading(isLoading) {
+  setLoading(isLoading, message = "Loading user data...") {
     this.isLoading = isLoading;
     const loadingOverlay = this.findElement("#loadingOverlay");
+    const loadingText = loadingOverlay?.querySelector(".loading-text");
+    const spinnerCircle = loadingOverlay?.querySelector(".loading-spinner-circle");
+
     if (loadingOverlay) {
       loadingOverlay.style.display = isLoading ? "flex" : "none";
+    }
+
+    if (loadingText && isLoading) {
+      loadingText.textContent = message;
+    }
+
+    // Debug: Ensure spinner circle exists and has correct styles
+    if (spinnerCircle && isLoading) {
+      console.log("Spinner circle found:", spinnerCircle);
+      console.log("Spinner circle computed styles:", window.getComputedStyle(spinnerCircle));
     }
   }
 
