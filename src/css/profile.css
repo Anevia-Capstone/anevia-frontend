@@ -649,8 +649,8 @@
   margin: 0;
 }
 
-/* Loading Overlay */
-.loading-overlay {
+/* Profile Loading Overlay - Specific to profile page */
+#profile .loading-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -663,24 +663,68 @@
   align-items: center;
   z-index: 1000;
   border-radius: var(--border-radius-lg);
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-.loading-spinner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-md);
+#profile .loading-spinner {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  transform: none !important; /* Ensure no transform inheritance */
+  animation: none !important; /* Prevent any animation on container */
+  justify-content: center !important;
+  width: auto !important;
+  height: auto !important;
+  background: transparent !important;
+  border: none !important;
 }
 
-.loading-spinner i {
-  font-size: 2rem;
-  color: var(--primary-color);
+#profile .loading-spinner-circle {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  position: relative !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  margin: 0 auto 16px !important;
+  animation: profileSpinner 1s linear infinite !important;
+  transform-origin: center center !important;
+  /* Create spinner using pseudo-element to avoid conflicts */
 }
 
-.loading-spinner p {
-  color: var(--primary-color);
-  font-weight: 500;
+#profile .loading-spinner-circle::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -4px !important;
+  left: -4px !important;
+  right: -4px !important;
+  bottom: -4px !important;
+  border: 4px solid #e0e0e0 !important;
+  border-top: 4px solid #1a237e !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+}
+
+@keyframes profileSpinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+#profile .loading-spinner .loading-text {
+  color: #666;
+  font-size: 14px;
+  font-weight: 400;
   margin: 0;
+  transform: none !important; /* Explicitly prevent any transform on text */
+  animation: none !important; /* Explicitly prevent any animation on text */
+  position: static; /* Ensure text doesn't inherit positioning */
+  display: block; /* Ensure proper display */
 }
 
 /* Message Styles */

@@ -54,7 +54,7 @@ export default class ProfilePresenter extends BasePresenter {
 
   async loadProfile() {
     try {
-      this.view.setLoading(true);
+      this.view.setLoading(true, "Loading profile data...");
 
       // Wait a bit for auth state to stabilize on page refresh
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -127,7 +127,7 @@ export default class ProfilePresenter extends BasePresenter {
 
   async handleImageUpload(file) {
     try {
-      this.view.setLoading(true);
+      this.view.setLoading(true, "Uploading profile image...");
 
       const result = await this.model.uploadImage(file);
 
@@ -150,7 +150,7 @@ export default class ProfilePresenter extends BasePresenter {
 
   async handleSaveProfile(profileData) {
     try {
-      this.view.setLoading(true);
+      this.view.setLoading(true, "Saving profile changes...");
 
       const result = await this.model.updateProfile(profileData);
 
@@ -232,7 +232,7 @@ export default class ProfilePresenter extends BasePresenter {
     const { setPasswordChangeInProgress } = await import("../firebase/auth.js");
 
     try {
-      this.view.setLoading(true);
+      this.view.setLoading(true, "Changing password...");
 
       // Store current user data before password change
       const currentUserData = {
@@ -321,7 +321,7 @@ export default class ProfilePresenter extends BasePresenter {
     const { setPasswordChangeInProgress } = await import("../firebase/auth.js");
 
     try {
-      this.view.setLoading(true);
+      this.view.setLoading(true, "Linking password to account...");
 
       // Store current user data before password link
       const currentUserData = {
@@ -414,7 +414,7 @@ export default class ProfilePresenter extends BasePresenter {
     const confirmText = modal.querySelector("#confirmDelete").value;
 
     try {
-      this.view.setLoading(true);
+      this.view.setLoading(true, "Deleting account...");
 
       const result = await this.model.deleteAccount(confirmText);
 
