@@ -225,6 +225,11 @@
   margin-left: var(--spacing-sm);
 }
 
+.fa-key:before {
+  margin-right: 4px;
+  color: white;
+}
+
 .warning-action-btn:hover {
   background-color: #d97706;
   transform: translateY(-1px);
@@ -394,6 +399,7 @@
   padding: 14px 16px;
   border: 2px solid #e1e5e9;
   border-radius: var(--border-radius-md);
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1rem;
   transition: all 0.3s ease;
   background-color: white;
@@ -486,7 +492,7 @@
 }
 
 .save-btn {
-  background-color: var(--success-color);
+  background-color: var(--primary-color);
   color: white;
 }
 
@@ -497,7 +503,7 @@
 }
 
 .cancel-btn {
-  background-color: #6c757d;
+  background-color: #aaaaaa;
   color: white;
 }
 
@@ -722,7 +728,7 @@
 }
 
 .success-popup .success-icon i {
-  font-size: 48px;
+  font-size: 80px;
   color: #4CAF50;
   animation: successPulse 0.6s ease-in-out;
 }
@@ -744,7 +750,7 @@
 }
 
 .success-popup .action-btn {
-  min-width: 100px;
+  width: 100%;
 }
 
 /* Success pulse animation */

@@ -55,7 +55,7 @@ export default class ProfileView extends BaseView {
             <br>
             <div class="picture-container">
               <div class="profile-image-container">
-                <img src="./src/assets/default-avatar.svg" alt="Profile" class="profile-image-page" id="profileImage">
+                <img src="/src/assets/default-avatar.svg" alt="Profile" class="profile-image-page" id="profileImage">
                 <div class="image-overlay">
                   <i class="fas fa-camera"></i>
                   <span>Change Photo</span>
@@ -484,7 +484,8 @@ export default class ProfileView extends BaseView {
 
   // Set profile image with fallback
   setProfileImage(imageElement) {
-    let imageUrl = "./src/assets/default-avatar.svg";
+    let imageUrl = "/src/assets/default-avatar.svg";
+    let imageSource = "default";
 
     // Priority: backend photoUrl > Firebase photoURL > default
     if (this.backendUser?.photoUrl) {
@@ -492,24 +493,29 @@ export default class ProfileView extends BaseView {
       if (this.backendUser.photoUrl.startsWith("http")) {
         // It's already a full URL (e.g., Google Photos URL)
         imageUrl = this.backendUser.photoUrl;
+        imageSource = "backend (external)";
       } else {
         // It's a relative path, prepend backend URL
         imageUrl = `https://server.anevia.my.id${this.backendUser.photoUrl}`;
+        imageSource = "backend (uploaded)";
       }
     } else if (this.currentUser?.photoURL) {
       // Firebase photoURL is always a full URL
       imageUrl = this.currentUser.photoURL;
+      imageSource = "Firebase provider";
     }
 
-    console.log("Setting profile image URL:", imageUrl);
+    console.log(`Setting profile image from ${imageSource}:`, imageUrl);
     imageElement.src = imageUrl;
 
     // Add error handler to fallback to default avatar
-    imageElement.onerror = () => {
-      console.warn("Failed to load profile image, using default avatar");
-      imageElement.src = "./src/assets/default-avatar.svg";
-      imageElement.onerror = null; // Prevent infinite loop
-    };
+    if (imageSource !== "default") {
+      imageElement.onerror = () => {
+        console.info(`${imageSource} image unavailable, using default avatar`);
+        imageElement.src = "/src/assets/default-avatar.svg";
+        imageElement.onerror = null; // Prevent infinite loop
+      };
+    }
   }
 
   // Switch to edit mode

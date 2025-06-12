@@ -25,23 +25,18 @@
 }
 
 .tools-header-actions {
-  /* position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 10; */
-  bottom: 20px; 
-  right: 20px; 
-  z-index: 10; 
-  padding: 10px 20px; 
-  color: #fff; 
-  border: none; 
-  border-radius: 5px; 
-  cursor: pointer; 
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
 }
 
-.scan-history-btn {
-  position: fixed; 
-  display: flex;
+#scan-history-btn {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  z-index: 1000 !important;
+  display: none;
   align-items: center;
   gap: var(--spacing-xs);
   padding: var(--spacing-sm) var(--spacing-md);
@@ -50,9 +45,14 @@
   transition: all 0.3s ease;
 }
 
-.scan-history-btn:hover {
+#scan-history-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Show scan history button only when tools section is visible */
+#tools:not([style*="display: none"]) #scan-history-btn {
+  display: flex !important;
 }
 
 .tools-title {
@@ -137,7 +137,7 @@
   gap: var(--spacing-lg);
   /* margin-bottom: var(--spacing-lg); */
   width: 100%;
-  max-width: 689px;
+  max-width: 800px;
 }
 
 .scan-option {
@@ -186,7 +186,7 @@
   max-width: 800px;
   background-color: var(--card-bg);
   border-radius: var(--border-radius-md);
-  padding: var(--spacing-lg);
+  padding-top: 12px;
   /* box-shadow: var(--shadow-md); */
   margin-bottom: var(--spacing-lg);
 }
@@ -614,7 +614,7 @@
   border-radius: 16px;
   margin-bottom: 32px;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid #297afe;
 }
 
 /* Background hijau untuk No Anemia Detected */
@@ -947,7 +947,7 @@
   border: 1px solid rgba(255, 193, 7, 0.3);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-md);
-  margin-top: var(--spacing-lg);
+  margin-top: 4px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -1021,8 +1021,8 @@
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.95) 100%);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  /* box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); */
+  /* border: 1px solid #d2d6db; */
   backdrop-filter: blur(10px);
 }
 
@@ -1388,11 +1388,6 @@
     
     width: 100%;
   }
-  .scan-options {
-    /* display: flex;
-    flex-direction: column; */
-    /* gap: var(--spacing-md); */
-  }
 
   .scan-option {
     max-width: 50%;
@@ -1521,10 +1516,17 @@
   .tools-container {
     padding: 60px var(--spacing-sm);
     max-width:100%;
+    gap: var(--spacing-md);
   }
 
   .tools-title {
     font-size: 2rem;
+    margin-top: 64px;
+  }
+
+  .tools-subtitle {
+    font-size: 1rem;
+    padding: 4px
   }
 
   .tools-content-title {
@@ -1630,6 +1632,10 @@
   .warning-circle i {
     font-size: 1rem;
   }
+
+  .preview-container {
+    max-width: 90%;
+  }
 }
 
 /* High DPI displays */
@@ -1655,9 +1661,10 @@
   }
 
   .scan-interface,
-  .preview-container,
   .result-container {
     box-shadow: none;
     border: 1px solid #ccc;
   }
+
+
 }

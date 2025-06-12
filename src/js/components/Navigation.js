@@ -27,6 +27,7 @@ export default class Navigation {
           </button>
           <ul class="nav-links">
             <li><a href="#home">Home</a></li>
+            <li><a href="#scan-history">Chat</a></li>
             <li><a href="#tools">Tools</a></li>
             <li><a href="#about">About Us</a></li>
             <li><a href="#faq">FAQ</a></li>
@@ -53,6 +54,8 @@ export default class Navigation {
     const links = this.header.querySelectorAll(".nav-links a");
     const loginBtns = this.header.querySelectorAll(".login-btn");
     const installBtn = this.header.querySelector("#navInstallBtn");
+
+    
 
     // Mobile menu toggle
     mobileMenuBtn.addEventListener("click", () => {

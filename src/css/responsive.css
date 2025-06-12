@@ -30,7 +30,7 @@
   }
 
   .mobile-login {
-    display: block;
+    display: none;
     width: 100%;
   }
 
@@ -102,6 +102,8 @@
     height: 1em;
     width: 2px;
   }
+
+  
 }
 
 /* Small mobile devices - 425px and below */
@@ -211,6 +213,10 @@
   .camera-hint {
     font-size: 0.7rem;
   }
+
+  .btn, .action-btn{
+    font-size: 0.8rem;
+  }
 }
 
 /* Features responsive */
@@ -280,7 +286,7 @@
   }
 
   .faq-category {
-    width: 100%;
+    max-width: 100%;
     
     text-align: center;
   }
@@ -461,6 +467,30 @@
     width: 90%;
     margin: 24px;
   }
+
+  .preview-container{
+    max-width: 90%;
+  }
+
+  .result-container {
+    width: 90%;
+  }
+
+  .progress-container {
+    max-width: 100%;
+    padding: 4px;
+    margin: 20px 0px;
+  }
+ 
+  .result-description {
+    font-size: 0.8rem;
+    margin-top: 8px;
+  }
+
+  .tools-notes {
+    margin-top: 8px;
+  }
+
 }
 
 /* Medium tablets */

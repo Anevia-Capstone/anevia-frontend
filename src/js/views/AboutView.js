@@ -100,7 +100,7 @@ export default class AboutView extends BaseView {
         // GitHub repository button
         if (event.target.id === "github-repository-btn") {
           console.log("GitHub button clicked");
-          window.open("https://github.com/your-repo-url", "_blank");
+          window.open("https://github.com/Anevia-Capstone", "_blank");
         }
 
         // View All button
