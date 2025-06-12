@@ -14,17 +14,26 @@ export default class ToolsPresenter extends BasePresenter {
   }
 
   onShow() {
-    console.log("ToolsPresenter shown");
+    console.log("ToolsPresenter shown - starting button visibility check");
     // Scroll to top when showing tools page
     window.scrollTo(0, 0);
+
+    // Ensure scan history button is visible and properly positioned with a small delay
+    setTimeout(() => {
+      console.log("ToolsPresenter: Attempting to show scan history button");
+      this.ensureScanHistoryButtonVisible();
+    }, 100);
   }
 
   onHide() {
-    console.log("ToolsPresenter hidden");
+    console.log("ToolsPresenter hidden - hiding scan history button");
     // Stop camera when hiding tools page
     if (this.view) {
       this.view.stopCamera();
     }
+
+    // Hide scan history button when leaving tools page
+    this.hideScanHistoryButton();
   }
 
   // Handle user actions from the view
@@ -413,5 +422,40 @@ export default class ToolsPresenter extends BasePresenter {
     setTimeout(() => {
       this.hideMessage();
     }, 3000);
+  }
+
+  // Ensure scan history button is visible and properly positioned
+  ensureScanHistoryButtonVisible() {
+    // Wait for DOM to be ready
+    const checkButton = () => {
+      const scanHistoryBtn = document.getElementById("scan-history-btn");
+      if (scanHistoryBtn) {
+        // Force the button to be visible and properly positioned
+        scanHistoryBtn.style.setProperty('display', 'flex', 'important');
+        scanHistoryBtn.style.setProperty('position', 'fixed', 'important');
+        scanHistoryBtn.style.setProperty('bottom', '20px', 'important');
+        scanHistoryBtn.style.setProperty('right', '20px', 'important');
+        scanHistoryBtn.style.setProperty('z-index', '1000', 'important');
+        scanHistoryBtn.style.setProperty('visibility', 'visible', 'important');
+        scanHistoryBtn.style.setProperty('opacity', '1', 'important');
+
+        console.log("Scan history button visibility ensured with !important");
+      } else {
+        console.warn("Scan history button not found, retrying...");
+        // Retry after a short delay
+        setTimeout(checkButton, 50);
+      }
+    };
+
+    checkButton();
+  }
+
+  // Hide scan history button when leaving tools page
+  hideScanHistoryButton() {
+    const scanHistoryBtn = document.getElementById("scan-history-btn");
+    if (scanHistoryBtn) {
+      scanHistoryBtn.style.setProperty('display', 'none', 'important');
+      console.log("Scan history button hidden with !important");
+    }
   }
 }

@@ -424,11 +424,15 @@ header {
   }
 
   .mobile-login {
-    display: block;
+    display: none;
     width: 100%;
-    margin-top: 12px;
-    padding-top: 16px;
-    border-top: 1px solid #e5e7eb;
+    /* margin-top: 12px; */
+    /* padding-top: 16px; */
+    /* border-top: 1px solid #e5e7eb; */
+  }
+
+  .mobile {
+    display: none;
   }
 
   .mobile-login .login-btn {
@@ -588,11 +592,15 @@ header {
   }
 
   .mobile-login {
-    display: block;
+    display: none;
     width: 100%;
     margin-top: 8px;
     padding-top: 12px;
     border-top: 1px solid #e5e7eb;
+  }
+
+  .mobile {
+    display: none;
   }
 
   .mobile-login .login-btn {

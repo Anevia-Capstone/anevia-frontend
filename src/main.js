@@ -275,6 +275,7 @@ class App {
   showTools() {
     this.hideAllPages();
     this.showHeaderFooter();
+
     if (!this.toolsPresenter) {
       this.toolsPresenter = new ToolsPresenter();
     }
@@ -597,7 +598,7 @@ class App {
     }
 
     // Default avatar
-    return "./src/assets/default-avatar.svg";
+    return "/src/assets/default-avatar.svg";
   }
 }
 

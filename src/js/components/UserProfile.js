@@ -60,12 +60,12 @@ export default class UserProfile {
     // Main profile container content
     this.profileContainer.innerHTML = `
       <div class="profile-button">
-        <img src="./src/assets/default-avatar.svg" alt="Profile" class="profile-image">
+        <img src="/src/assets/default-avatar.svg" alt="Profile" class="profile-image">
         <i class="fas fa-chevron-down profile-arrow"></i>
       </div>
       <div class="profile-dropdown">
         <div class="dropdown-header">
-          <img src="./src/assets/default-avatar.svg" alt="Profile" class="dropdown-profile-image">
+          <img src="/src/assets/default-avatar.svg" alt="Profile" class="dropdown-profile-image">
           <div class="dropdown-user-info">
             <span class="dropdown-user-name">User</span>
             <span class="dropdown-user-email">user@example.com</span>
@@ -89,11 +89,11 @@ export default class UserProfile {
     if (this.mobileProfileContainer) {
       this.mobileProfileContainer.innerHTML = `
         <div class="profile-button mobile">
-          <img src="./src/assets/default-avatar.svg" alt="Profile" class="profile-image">
+          <img src="/src/assets/default-avatar.svg" alt="Profile" class="profile-image">
         </div>
         <div class="profile-dropdown mobile">
           <div class="dropdown-header">
-            <img src="./src/assets/default-avatar.svg" alt="Profile" class="dropdown-profile-image">
+            <img src="/src/assets/default-avatar.svg" alt="Profile" class="dropdown-profile-image">
             <div class="dropdown-user-info">
               <span class="dropdown-user-name">User</span>
               <span class="dropdown-user-email">user@example.com</span>
@@ -322,18 +322,21 @@ export default class UserProfile {
   }
 
   setUserProfileImage(imageElement, user) {
-    let photoURL = "./src/assets/default-avatar.svg";
+    let photoURL = "/src/assets/default-avatar.svg";
+    let photoSource = "default";
 
     // Priority: user.photoURL > provider photoURL > default
     if (user.photoURL) {
       photoURL = user.photoURL;
+      photoSource = "user profile";
       console.log("Using user profile photo:", photoURL);
     } else if (user.providerData && user.providerData.length > 0) {
       // Try to get photo from provider data
       for (const provider of user.providerData) {
         if (provider.photoURL) {
           photoURL = provider.photoURL;
-          console.log("Using provider photo URL:", photoURL);
+          photoSource = `${provider.providerId} provider`;
+          console.log(`Using ${provider.providerId} provider photo:`, photoURL);
           break;
         }
       }
@@ -343,12 +346,14 @@ export default class UserProfile {
     imageElement.src = photoURL;
 
     // Add error handler to fallback to default avatar if image fails to load
-    imageElement.onerror = () => {
-      console.warn("Failed to load profile image, using default avatar");
-      imageElement.src = "./src/assets/default-avatar.svg";
-      imageElement.onerror = null; // Prevent infinite loop
-    };
+    if (photoSource !== "default") {
+      imageElement.onerror = () => {
+        console.info(`${photoSource} image unavailable, using default avatar`);
+        imageElement.src = "/src/assets/default-avatar.svg";
+        imageElement.onerror = null; // Prevent infinite loop
+      };
+    }
 
-    console.log("Updated profile image:", photoURL);
+    console.log(`Profile image set from ${photoSource}:`, photoURL);
   }
 }
