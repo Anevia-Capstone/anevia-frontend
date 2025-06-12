@@ -29,10 +29,10 @@
     align-items: flex-start;
   }
 
-  .mobile-login {
+  /* .mobile-login {
     display: none;
     width: 100%;
-  }
+  } */
 
   .mobile-login .login-btn {
     width: 100%;

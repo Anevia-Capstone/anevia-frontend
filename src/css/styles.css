@@ -18,8 +18,3 @@
 @import url('./scan-history.css');
 @import url('./pwa.css');
 @import url('./responsive.css');
-
-/* Global scan history button control */
-#scan-history-btn {
-  display: none !important;
-}

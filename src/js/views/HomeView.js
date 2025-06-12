@@ -104,7 +104,7 @@ export default class HomeView extends BaseView {
 
       <div class="innovation-statement" data-animation="fadeInUp">
         <div class="container">
-          <p class="statement-text typing-animation animated" data-animation="typeWriter">Innovative AI-powered anemia detection technology applied to tackle real-world healthcare challenges.</p>
+          <p class="statement-text typing-animation" data-animation="typeWriter">Innovative AI-powered anemia detection technology applied to tackle real-world healthcare challenges.</p>
         </div>
       </div>
 
@@ -502,6 +502,15 @@ export default class HomeView extends BaseView {
     setTimeout(() => {
       animationManager.animateHeroSection();
     }, 100);
+
+    // Trigger typing animation for statement text after hero animation
+    setTimeout(() => {
+      const statementText = document.querySelector('.statement-text[data-animation="typeWriter"]');
+      if (statementText && !statementText.classList.contains('animated')) {
+        animationManager.typeWriter(statementText);
+        statementText.classList.add('animated');
+      }
+    }, 1500); // Start typing after hero animation completes
 
     // Setup scroll-triggered animations for other sections
     animationManager.observeElements("[data-animation]");
