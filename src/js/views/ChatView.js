@@ -54,9 +54,6 @@ export default class ChatView extends BaseView {
                 <button class="chat-btn chat-btn-secondary" id="refresh-btn" title="Refresh">
                   <i class="fas fa-redo"></i>
                 </button>
-                <button class="chat-btn chat-btn-secondary" id="attach-btn" title="Attach">
-                  <i class="fas fa-plus"></i>
-                </button>
                 <button class="chat-btn chat-btn-primary" id="send-btn" title="Send">
                   <i class="fas fa-paper-plane"></i>
                 </button>
