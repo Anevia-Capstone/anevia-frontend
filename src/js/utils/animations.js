@@ -381,7 +381,7 @@ export class AnimationManager {
     });
   }
 
-  // Typing animation for text elements
+  // Enhanced typing animation for text elements
   typeWriter(target) {
     const originalText = target.textContent.trim();
 
@@ -393,16 +393,16 @@ export class AnimationManager {
     const cursor = document.createElement("span");
     cursor.className = "typing-cursor";
 
-    // Start typing animation
+    // Start typing animation with improved timing
     this.startTypingAnimation(target, originalText, cursor);
   }
 
-  // Start the typing animation
+  // Start the enhanced typing animation
   startTypingAnimation(target, text, cursor) {
     let currentIndex = 0;
-    const typingSpeed = 50; // milliseconds per character
+    const baseTypingSpeed = 40; // Base speed in milliseconds per character
 
-    // Add cursor to target
+    // Add cursor to target first
     target.appendChild(cursor);
 
     const typeNextChar = () => {
@@ -415,23 +415,38 @@ export class AnimationManager {
 
         currentIndex++;
 
-        // Variable speed for more natural typing
-        let delay = typingSpeed;
-        if (char === " ") delay = 50;
-        if (char === "," || char === ";") delay = 100;
-        if (char === "." || char === "!" || char === "?") delay = 150;
+        // Enhanced variable speed for more natural typing
+        let delay = baseTypingSpeed;
 
-        setTimeout(typeNextChar, delay);
+        // Adjust speed based on character type
+        if (char === " ") {
+          delay = 30; // Faster for spaces
+        } else if (char === "," || char === ";") {
+          delay = 120; // Pause for commas and semicolons
+        } else if (char === "." || char === "!" || char === "?") {
+          delay = 200; // Longer pause for sentence endings
+        } else if (char === "-") {
+          delay = 80; // Medium pause for hyphens
+        } else if (/[aeiouAEIOU]/.test(char)) {
+          delay = 35; // Slightly faster for vowels
+        } else if (/[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]/.test(char)) {
+          delay = 45; // Normal speed for consonants
+        }
+
+        // Add slight randomness for more natural feel
+        delay += Math.random() * 20 - 10;
+
+        setTimeout(typeNextChar, Math.max(delay, 20));
       } else {
-        // Typing complete - hide cursor after a delay
+        // Typing complete - keep cursor blinking for a while, then hide
         setTimeout(() => {
           cursor.classList.add("hidden");
-        }, 2000);
+        }, 3000);
       }
     };
 
-    // Start typing after a short delay
-    setTimeout(typeNextChar, 500);
+    // Start typing after a short delay to build anticipation
+    setTimeout(typeNextChar, 800);
   }
 
   // Setup global animations and effects

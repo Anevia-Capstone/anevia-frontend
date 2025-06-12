@@ -117,7 +117,7 @@
   }
 }
 
-/* Typing Animation Keyframes */
+/* Enhanced Typing Animation Keyframes */
 @keyframes blink-cursor {
   0%,
   50% {
@@ -129,24 +129,40 @@
   }
 }
 
-/* Statement text typing animation */
+@keyframes cursor-glow {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 rgba(41, 122, 254, 0);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 8px rgba(41, 122, 254, 0.6);
+  }
+}
+
+/* Enhanced statement text typing animation */
 .statement-text.typing-animation {
   position: relative;
   overflow: visible;
+  min-height: 1.4em; /* Prevent layout shift */
 }
 
 .statement-text .typing-cursor {
   display: inline-block;
-  width: 2px;
-  height: 1.2em;
-  background-color: var(--primary-color);
-  margin-left: 3px;
-  animation: blink-cursor 1s infinite;
+  width: 3px;
+  height: 1.3em;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  margin-left: 4px;
+  animation: blink-cursor 1.2s infinite, cursor-glow 2s infinite;
   vertical-align: text-bottom;
+  border-radius: 2px;
+  transition: all 0.3s ease;
 }
 
 .statement-text .typing-cursor.hidden {
-  display: none;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.5s ease;
 }
 
 /* AI Thinking Animation */

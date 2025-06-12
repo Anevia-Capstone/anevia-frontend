@@ -20,12 +20,6 @@ export default class ToolsView extends BaseView {
     const html = `
       <div class="container tools-container">
         <div class="tools-headline">
-          <div class="tools-header-actions">
-            <button class="btn btn-secondary scan-history-btn" id="scan-history-btn">
-              <i class="fas fa-history"></i>
-              View Scan History
-            </button>
-          </div>
           <h2 class="tools-title">Capture or Upload Your Eye Image</h2>
           <p class="tools-subtitle">To check for signs of anemia, please take a clear photo of your eye's conjunctiva (the inner part of your lower eyelid) or upload an existing image.</p>
         </div>
@@ -176,14 +170,6 @@ export default class ToolsView extends BaseView {
   }
 
   setupEventListeners() {
-    // Scan history button
-    const scanHistoryBtn = this.findElement("#scan-history-btn");
-    if (scanHistoryBtn) {
-      this.addEventListener(scanHistoryBtn, "click", () => {
-        this.onScanHistory();
-      });
-    }
-
     // Scan option selection
     const scanOptions = this.findElements(".scan-option");
 
@@ -428,10 +414,7 @@ export default class ToolsView extends BaseView {
     this.notifyPresenter("downloadReport");
   }
 
-  onScanHistory() {
-    // Notify presenter to handle scan history navigation
-    this.notifyPresenter("scanHistory");
-  }
+
 
   // Method to notify presenter of user actions
   notifyPresenter(action, data = {}) {

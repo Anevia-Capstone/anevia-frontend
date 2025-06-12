@@ -424,11 +424,16 @@ header {
   }
 
   .mobile-login {
-    display: none;
+    display: block;
     width: 100%;
-    /* margin-top: 12px; */
-    /* padding-top: 16px; */
-    /* border-top: 1px solid #e5e7eb; */
+    margin-top: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  /* Hide mobile login when user is authenticated */
+  .user-authenticated .mobile-login {
+    display: none;
   }
 
   .mobile {
@@ -592,11 +597,16 @@ header {
   }
 
   .mobile-login {
-    display: none;
+    display: block;
     width: 100%;
     margin-top: 8px;
     padding-top: 12px;
     border-top: 1px solid #e5e7eb;
+  }
+
+  /* Hide mobile login when user is authenticated */
+  .user-authenticated .mobile-login {
+    display: none;
   }
 
   .mobile {

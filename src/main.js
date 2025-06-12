@@ -444,6 +444,12 @@ class App {
   }
 
   updateUIForLoggedInUser(user, backendUser) {
+    // Add user-authenticated class to navigation for CSS styling
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+      navbar.classList.add('user-authenticated');
+    }
+
     // Update user profile with user information
     if (this.userProfile) {
       console.log("Updating user profile in main.js with user:", user);
@@ -490,6 +496,12 @@ class App {
   }
 
   updateUIForLoggedOutUser() {
+    // Remove user-authenticated class from navigation for CSS styling
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+      navbar.classList.remove('user-authenticated');
+    }
+
     // Update user profile to hide it and show login buttons
     if (this.userProfile) {
       this.userProfile.updateUserInfo(null);
