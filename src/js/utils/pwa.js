@@ -90,10 +90,11 @@ class PWAManager {
         const cache = await caches.open("anevia-essential-v1");
         const essentialResources = [
           "/",
-          "/src/css/styles.css",
-          "/src/main.js",
-          "/src/assets/logo.svg",
-          "/src/assets/favicon.svg",
+          // "/css/styles.css", // Uncomment if you move styles.css to public/css
+          // "/main.js", // Uncomment if you copy main.js to public
+          "/logo.svg", // If you move logo.svg to public
+          "/favicon.svg", // If you move favicon.svg to public
+          // Tambahkan file lain yang memang ada di public
         ];
 
         await cache.addAll(essentialResources);

@@ -58,7 +58,7 @@ export default class ToolsView extends BaseView {
                   </button>
                 </div>
                 <div class="eye-placeholder" id="eye-placeholder">
-                  <img src="/src/assets/eye-placeholder.svg" alt="Eye Placement Guide" width="100%" height="100%">
+                  <img src="/eye-placeholder.svg" alt="Eye Placement Guide" width="100%" height="100%">
                 </div>
               </div>
 
@@ -923,5 +923,57 @@ export default class ToolsView extends BaseView {
 
     // Call parent destroy
     super.destroy();
+  }
+
+  async switchCamera() {
+    // Get all video input devices
+    let devices = [];
+    try {
+      devices = await navigator.mediaDevices.enumerateDevices();
+    } catch (e) {
+      // fallback to facingMode if enumerateDevices fails
+    }
+    const videoDevices = devices.filter((d) => d.kind === 'videoinput');
+
+    // Get current facing mode
+    let currentFacingMode = 'environment';
+    if (this.stream && this.stream.getVideoTracks().length > 0) {
+      const settings = this.stream.getVideoTracks()[0].getSettings();
+      if (settings.facingMode) currentFacingMode = settings.facingMode;
+    }
+    // Toggle facing mode
+    const newFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+
+    // Try to find deviceId for the new facing mode
+    let deviceId = null;
+    for (const device of videoDevices) {
+      if (device.label.toLowerCase().includes(newFacingMode)) {
+        deviceId = device.deviceId;
+        break;
+      }
+    }
+
+    // Stop current stream
+    if (this.stream) {
+      this.stream.getTracks().forEach((track) => track.stop());
+    }
+
+    // Try to get new stream with deviceId if available, else fallback to facingMode
+    let constraints;
+    if (deviceId) {
+      constraints = { video: { deviceId: { exact: deviceId } } };
+    } else {
+      constraints = { video: { facingMode: newFacingMode } };
+    }
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+      const videoElement = this.findElement('.camera-feed');
+      if (videoElement) videoElement.srcObject = this.stream;
+      const eyePlaceholder = this.findElement('#eye-placeholder');
+      if (eyePlaceholder) eyePlaceholder.classList.add('active');
+    } catch (error) {
+      console.error('Error switching camera:', error);
+      this.showError('Failed to switch camera');
+    }
   }
 }
