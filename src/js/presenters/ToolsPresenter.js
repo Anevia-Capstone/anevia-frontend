@@ -103,9 +103,31 @@ export default class ToolsPresenter extends BasePresenter {
     }
   }
 
-  handleCameraSwitch() {
-    // Implement camera switching logic
-    this.switchCamera();
+  async handleCameraSwitch() {
+    // Use the view's switchCamera method for deviceId logic
+    if (typeof this.view.switchCamera === "function") {
+      await this.view.switchCamera();
+    } else {
+      // Fallback: legacy logic
+      if (!this.view.stream) return;
+      try {
+        this.view.stream.getTracks().forEach((track) => track.stop());
+        const currentFacingMode = this.view.stream
+          .getVideoTracks()[0]
+          .getSettings().facingMode;
+        const newFacingMode =
+          currentFacingMode === "environment" ? "user" : "environment";
+        const newStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: newFacingMode },
+        });
+        const videoElement = this.view.findElement(".camera-feed");
+        if (videoElement) videoElement.srcObject = newStream;
+        this.view.stream = newStream;
+      } catch (error) {
+        console.error("Error switching camera:", error);
+        this.showError("Failed to switch camera");
+      }
+    }
   }
 
   handleCameraStop() {
@@ -264,44 +286,6 @@ export default class ToolsPresenter extends BasePresenter {
         }
       </div>
     `;
-  }
-
-  // Switch camera between front and back
-  async switchCamera() {
-    if (!this.view.stream) return;
-
-    try {
-      // Stop current stream
-      this.view.stream.getTracks().forEach((track) => track.stop());
-
-      // Get current facing mode
-      const currentFacingMode = this.view.stream
-        .getVideoTracks()[0]
-        .getSettings().facingMode;
-      const newFacingMode =
-        currentFacingMode === "environment" ? "user" : "environment";
-
-      // Start new stream with different facing mode
-      const newStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: newFacingMode },
-      });
-
-      const videoElement = this.view.findElement(".camera-feed");
-      const eyePlaceholder = this.view.findElement("#eye-placeholder");
-
-      this.view.stream = newStream;
-      if (videoElement) {
-        videoElement.srcObject = newStream;
-      }
-
-      // Restore eye placeholder if it was active
-      if (eyePlaceholder && eyePlaceholder.classList.contains("active")) {
-        eyePlaceholder.classList.add("active");
-      }
-    } catch (error) {
-      console.error("Error switching camera:", error);
-      this.showError("Failed to switch camera");
-    }
   }
 
   // Update method called when model data changes

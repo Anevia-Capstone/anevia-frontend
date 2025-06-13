@@ -933,16 +933,17 @@ export default class ToolsView extends BaseView {
     } catch (e) {
       // fallback to facingMode if enumerateDevices fails
     }
-    const videoDevices = devices.filter((d) => d.kind === 'videoinput');
+    const videoDevices = devices.filter((d) => d.kind === "videoinput");
 
     // Get current facing mode
-    let currentFacingMode = 'environment';
+    let currentFacingMode = "environment";
     if (this.stream && this.stream.getVideoTracks().length > 0) {
       const settings = this.stream.getVideoTracks()[0].getSettings();
       if (settings.facingMode) currentFacingMode = settings.facingMode;
     }
     // Toggle facing mode
-    const newFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+    const newFacingMode =
+      currentFacingMode === "environment" ? "user" : "environment";
 
     // Try to find deviceId for the new facing mode
     let deviceId = null;
@@ -967,13 +968,13 @@ export default class ToolsView extends BaseView {
     }
     try {
       this.stream = await navigator.mediaDevices.getUserMedia(constraints);
-      const videoElement = this.findElement('.camera-feed');
+      const videoElement = this.findElement(".camera-feed");
       if (videoElement) videoElement.srcObject = this.stream;
-      const eyePlaceholder = this.findElement('#eye-placeholder');
-      if (eyePlaceholder) eyePlaceholder.classList.add('active');
+      const eyePlaceholder = this.findElement("#eye-placeholder");
+      if (eyePlaceholder) eyePlaceholder.classList.add("active");
     } catch (error) {
-      console.error('Error switching camera:', error);
-      this.showError('Failed to switch camera');
+      console.error("Error switching camera:", error);
+      this.showError("Failed to switch camera");
     }
   }
 }
