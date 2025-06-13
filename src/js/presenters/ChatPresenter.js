@@ -69,7 +69,12 @@ export default class ChatPresenter extends BasePresenter {
 
   // Load existing chat session
   async loadChatSession(sessionId, existingMessages = null) {
-    console.log("Loading chat session:", sessionId, "with existing messages:", existingMessages ? existingMessages.length : 0);
+    console.log(
+      "Loading chat session:",
+      sessionId,
+      "with existing messages:",
+      existingMessages ? existingMessages.length : 0
+    );
 
     // Get current user
     const user = getCurrentUser();
@@ -203,13 +208,13 @@ export default class ChatPresenter extends BasePresenter {
     if (this.scanData) {
       // If we came from a scan, go back to tools
       const navigationEvent = new CustomEvent("navigateToTools", {
-        detail: { from: "chat" }
+        detail: { from: "chat" },
       });
       window.dispatchEvent(navigationEvent);
     } else {
       // If we came from chat history, go back to scan history
       const navigationEvent = new CustomEvent("navigateToScanHistory", {
-        detail: { from: "chat" }
+        detail: { from: "chat" },
       });
       window.dispatchEvent(navigationEvent);
     }

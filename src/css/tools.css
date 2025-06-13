@@ -865,11 +865,6 @@
   transition: all 0.3s ease;
 }
 
-/* .recommendations-list li:hover {
-  transform: translateX(4px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-} */
-
 .recommendations-list li:before {
   /* content: "-"; */
   position: absolute;

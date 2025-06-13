@@ -221,9 +221,15 @@ export default class ChatView extends BaseView {
       let imageUrl = message.photoUrl;
 
       // Convert relative URLs to absolute URLs
-      if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('blob:')) {
+      if (
+        imageUrl &&
+        !imageUrl.startsWith("http") &&
+        !imageUrl.startsWith("blob:")
+      ) {
         const API_BASE_URL = "https://server.anevia.my.id";
-        imageUrl = imageUrl.startsWith('/') ? `${API_BASE_URL}${imageUrl}` : `${API_BASE_URL}/${imageUrl}`;
+        imageUrl = imageUrl.startsWith("/")
+          ? `${API_BASE_URL}${imageUrl}`
+          : `${API_BASE_URL}/${imageUrl}`;
       }
 
       const img = document.createElement("img");
@@ -237,7 +243,8 @@ export default class ChatView extends BaseView {
         // Create a placeholder for failed images
         const placeholder = document.createElement("div");
         placeholder.className = "chat-image-placeholder";
-        placeholder.innerHTML = '<i class="fas fa-image"></i><span>Image not available</span>';
+        placeholder.innerHTML =
+          '<i class="fas fa-image"></i><span>Image not available</span>';
         bubbleDiv.replaceChild(placeholder, img);
       };
 
@@ -273,7 +280,7 @@ export default class ChatView extends BaseView {
 
     // Escape HTML to prevent XSS attacks
     const escapeHtml = (text) => {
-      const div = document.createElement('div');
+      const div = document.createElement("div");
       div.textContent = text;
       return div.innerHTML;
     };
@@ -281,48 +288,73 @@ export default class ChatView extends BaseView {
     let formattedMessage = escapeHtml(message);
 
     // Convert double line breaks to paragraph breaks
-    formattedMessage = formattedMessage.replace(/\n\n/g, '</p><p>');
+    formattedMessage = formattedMessage.replace(/\n\n/g, "</p><p>");
 
     // Convert single line breaks to <br> tags
-    formattedMessage = formattedMessage.replace(/\n/g, '<br>');
+    formattedMessage = formattedMessage.replace(/\n/g, "<br>");
 
     // Format bullet points (lines starting with *, -, or •)
-    formattedMessage = formattedMessage.replace(/^(\*|\-|•)\s+(.+)$/gm, '<li>$2</li>');
+    formattedMessage = formattedMessage.replace(
+      /^(\*|\-|•)\s+(.+)$/gm,
+      "<li>$2</li>"
+    );
 
     // Wrap consecutive list items in <ul> tags
-    formattedMessage = formattedMessage.replace(/(<li>.*<\/li>)(\s*<br>\s*<li>.*<\/li>)*/g, (match) => {
-      // Remove <br> tags between list items
-      const cleanMatch = match.replace(/<br>\s*/g, '');
-      return '<ul>' + cleanMatch + '</ul>';
-    });
+    formattedMessage = formattedMessage.replace(
+      /(<li>.*<\/li>)(\s*<br>\s*<li>.*<\/li>)*/g,
+      (match) => {
+        // Remove <br> tags between list items
+        const cleanMatch = match.replace(/<br>\s*/g, "");
+        return "<ul>" + cleanMatch + "</ul>";
+      }
+    );
 
     // Format numbered lists (lines starting with numbers)
-    formattedMessage = formattedMessage.replace(/^(\d+)\.\s+(.+)$/gm, '<li>$2</li>');
+    formattedMessage = formattedMessage.replace(
+      /^(\d+)\.\s+(.+)$/gm,
+      "<li>$2</li>"
+    );
 
     // Wrap consecutive numbered list items in <ol> tags
-    formattedMessage = formattedMessage.replace(/(<li>.*<\/li>)(\s*<br>\s*<li>.*<\/li>)*/g, (match) => {
-      // Check if this is part of a numbered list by looking for the pattern before it
-      const beforeMatch = formattedMessage.substring(0, formattedMessage.indexOf(match));
-      if (beforeMatch.match(/\d+\.\s+[^<]*$/)) {
-        const cleanMatch = match.replace(/<br>\s*/g, '');
-        return '<ol>' + cleanMatch + '</ol>';
+    formattedMessage = formattedMessage.replace(
+      /(<li>.*<\/li>)(\s*<br>\s*<li>.*<\/li>)*/g,
+      (match) => {
+        // Check if this is part of a numbered list by looking for the pattern before it
+        const beforeMatch = formattedMessage.substring(
+          0,
+          formattedMessage.indexOf(match)
+        );
+        if (beforeMatch.match(/\d+\.\s+[^<]*$/)) {
+          const cleanMatch = match.replace(/<br>\s*/g, "");
+          return "<ol>" + cleanMatch + "</ol>";
+        }
+        return match;
       }
-      return match;
-    });
+    );
 
     // Format bold text (**text** or __text__)
-    formattedMessage = formattedMessage.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    formattedMessage = formattedMessage.replace(/__(.*?)__/g, '<strong>$1</strong>');
+    formattedMessage = formattedMessage.replace(
+      /\*\*(.*?)\*\*/g,
+      "<strong>$1</strong>"
+    );
+    formattedMessage = formattedMessage.replace(
+      /__(.*?)__/g,
+      "<strong>$1</strong>"
+    );
 
     // Format italic text (*text* or _text_)
-    formattedMessage = formattedMessage.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    formattedMessage = formattedMessage.replace(/_(.*?)_/g, '<em>$1</em>');
+    formattedMessage = formattedMessage.replace(/\*(.*?)\*/g, "<em>$1</em>");
+    formattedMessage = formattedMessage.replace(/_(.*?)_/g, "<em>$1</em>");
 
     // Wrap in paragraph tags if not already wrapped
-    if (!formattedMessage.startsWith('<p>') && !formattedMessage.startsWith('<ul>') && !formattedMessage.startsWith('<ol>')) {
-      formattedMessage = '<p>' + formattedMessage + '</p>';
-    } else if (formattedMessage.includes('</p><p>')) {
-      formattedMessage = '<p>' + formattedMessage + '</p>';
+    if (
+      !formattedMessage.startsWith("<p>") &&
+      !formattedMessage.startsWith("<ul>") &&
+      !formattedMessage.startsWith("<ol>")
+    ) {
+      formattedMessage = "<p>" + formattedMessage + "</p>";
+    } else if (formattedMessage.includes("</p><p>")) {
+      formattedMessage = "<p>" + formattedMessage + "</p>";
     }
 
     return formattedMessage;

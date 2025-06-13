@@ -26,12 +26,14 @@ export default class ToolsModel extends BaseModel {
 
       // Check if the API response is successful and contains scan data
       if (response.status === "success" && response.data) {
-        // Use the actual scan result from the backend according to API documentation
+        // Use the actual scan result from the backend according to new API documentation
         const scanData = response.data;
         const scanId = scanData.scanId;
-        const scanResult = scanData.scanResult; // boolean value from API
         const photoUrl = scanData.photoUrl;
         const scanDate = scanData.scanDate;
+
+        // Extract confidence data using helper method
+        const confidenceInfo = this.extractConfidenceData(scanData);
 
         this.currentScan = {
           id: scanId,
@@ -39,15 +41,19 @@ export default class ToolsModel extends BaseModel {
           photoUrl: photoUrl,
           timestamp: new Date(scanDate),
           result: {
-            isAnemic: scanResult, // Use the boolean scanResult from API
-            confidence: 85, // Default confidence since API doesn't provide it
-            description: this.getDefaultDescription(scanResult),
+            isAnemic: confidenceInfo.isAnemic,
+            confidence: confidenceInfo.confidence,
+            description: this.getDefaultDescription(confidenceInfo.isAnemic),
             details: {
-              confidenceLevel: "85%", // Default since API doesn't provide confidence
+              confidenceLevel: `${confidenceInfo.confidence}%`,
               scanDate: new Date(scanDate).toLocaleDateString(),
               scanId: scanId,
               photoUrl: photoUrl,
-              recommendations: this.getDefaultRecommendations(scanResult),
+              recommendations: this.getDefaultRecommendations(
+                confidenceInfo.isAnemic
+              ),
+              // Store detailed confidence breakdown if available
+              confidenceBreakdown: confidenceInfo.confidenceBreakdown,
             },
           },
           imageFile: imageFile,
@@ -115,9 +121,6 @@ export default class ToolsModel extends BaseModel {
         recommendations: isAnemic
           ? [
               "Based on your scan results, it is recommended to consult with a healthcare professional for further evaluation and guidance. Anemia may require medical attention andtreatment.",
-              "Consult with a healthcare professional",
-              "Consider iron-rich foods in your diet",
-              "Schedule a complete blood count test",
             ]
           : [
               "Continue regular health monitoring",
@@ -131,6 +134,53 @@ export default class ToolsModel extends BaseModel {
   // Generate unique scan ID
   generateScanId() {
     return Math.random().toString(36).substring(2, 10).toUpperCase();
+  }
+
+  // Helper method to extract confidence data from different API response formats
+  extractConfidenceData(scanData) {
+    // For POST /api/scans response (with detectionDetails)
+    if (scanData.detectionDetails && scanData.detectionDetails.confidence) {
+      const confidenceData = scanData.detectionDetails.confidence;
+      const anemicConfidence = confidenceData.Anemic;
+      const nonAnemicConfidence = confidenceData["Non-Anemic"];
+      const detectionResult = scanData.detectionDetails.detection;
+      const isAnemic = detectionResult === "Anemic";
+      const primaryConfidence = isAnemic
+        ? anemicConfidence
+        : nonAnemicConfidence;
+
+      return {
+        isAnemic,
+        confidence: Math.round(primaryConfidence * 100),
+        confidenceBreakdown: {
+          anemic: Math.round(anemicConfidence * 100),
+          nonAnemic: Math.round(nonAnemicConfidence * 100),
+          detection: detectionResult,
+        },
+      };
+    }
+
+    // For GET /api/scans and GET /api/scans/{id} response (with single confidence value)
+    if (
+      scanData.confidence !== undefined &&
+      scanData.scanResult !== undefined
+    ) {
+      const confidencePercentage = Math.round(scanData.confidence * 100);
+
+      return {
+        isAnemic: scanData.scanResult,
+        confidence: confidencePercentage,
+        confidenceBreakdown: null, // Not available in this format
+      };
+    }
+
+    // Fallback for unknown format
+    console.warn("Unknown scan data format, using default confidence");
+    return {
+      isAnemic: false,
+      confidence: 50,
+      confidenceBreakdown: null,
+    };
   }
 
   // Get default description based on anemia status
@@ -273,35 +323,50 @@ Please consult with a healthcare professional for proper diagnosis and treatment
 
       if (response && !response.error && response.listScans) {
         // Transform API response to match internal data structure
-        this.scanHistory = response.listScans.map(scan => ({
-          id: scan.scanId,
-          scanId: scan.scanId,
-          photoUrl: scan.photoUrl,
-          timestamp: new Date(scan.scanDate),
-          result: {
-            isAnemic: scan.scanResult,
-            confidence: 85, // Default since API doesn't provide confidence
-            description: this.getDefaultDescription(scan.scanResult),
-            details: {
-              confidenceLevel: "85%",
-              scanDate: new Date(scan.scanDate).toLocaleDateString(),
-              scanId: scan.scanId,
-              photoUrl: scan.photoUrl,
-              recommendations: this.getDefaultRecommendations(scan.scanResult),
+        this.scanHistory = response.listScans.map((scan) => {
+          // Extract confidence data using helper method
+          const confidenceInfo = this.extractConfidenceData(scan);
+
+          return {
+            id: scan.scanId,
+            scanId: scan.scanId,
+            photoUrl: scan.photoUrl,
+            timestamp: new Date(scan.scanDate),
+            result: {
+              isAnemic: confidenceInfo.isAnemic,
+              confidence: confidenceInfo.confidence,
+              description: this.getDefaultDescription(confidenceInfo.isAnemic),
+              details: {
+                confidenceLevel: `${confidenceInfo.confidence}%`,
+                scanDate: new Date(scan.scanDate).toLocaleDateString(),
+                scanId: scan.scanId,
+                photoUrl: scan.photoUrl,
+                recommendations: this.getDefaultRecommendations(
+                  confidenceInfo.isAnemic
+                ),
+                // Store detailed confidence breakdown if available
+                confidenceBreakdown: confidenceInfo.confidenceBreakdown,
+              },
             },
-          },
-          backendData: scan,
-        }));
+            backendData: scan,
+          };
+        });
 
         this.setData("scanHistory", this.scanHistory);
         return { success: true, scans: this.scanHistory };
       } else {
         console.warn("No scan history found or API error:", response);
-        return { success: false, error: response?.message || "Failed to load scan history" };
+        return {
+          success: false,
+          error: response?.message || "Failed to load scan history",
+        };
       }
     } catch (error) {
       console.error("Error loading scan history:", error);
-      return { success: false, error: error.message || "Failed to load scan history" };
+      return {
+        success: false,
+        error: error.message || "Failed to load scan history",
+      };
     }
   }
 
@@ -314,21 +379,28 @@ Please consult with a healthcare professional for proper diagnosis and treatment
       if (response && !response.error && response.scan) {
         const scan = response.scan;
         // Transform API response to match internal data structure
+        // Extract confidence data using helper method
+        const confidenceInfo = this.extractConfidenceData(scan);
+
         const transformedScan = {
           id: scan.scanId,
           scanId: scan.scanId,
           photoUrl: scan.photoUrl,
           timestamp: new Date(scan.scanDate),
           result: {
-            isAnemic: scan.scanResult,
-            confidence: 85, // Default since API doesn't provide confidence
-            description: this.getDefaultDescription(scan.scanResult),
+            isAnemic: confidenceInfo.isAnemic,
+            confidence: confidenceInfo.confidence,
+            description: this.getDefaultDescription(confidenceInfo.isAnemic),
             details: {
-              confidenceLevel: "85%",
+              confidenceLevel: `${confidenceInfo.confidence}%`,
               scanDate: new Date(scan.scanDate).toLocaleDateString(),
               scanId: scan.scanId,
               photoUrl: scan.photoUrl,
-              recommendations: this.getDefaultRecommendations(scan.scanResult),
+              recommendations: this.getDefaultRecommendations(
+                confidenceInfo.isAnemic
+              ),
+              // Store detailed confidence breakdown if available
+              confidenceBreakdown: confidenceInfo.confidenceBreakdown,
             },
           },
           backendData: scan,

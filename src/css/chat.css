@@ -123,7 +123,7 @@
   word-wrap: break-word;
 }
 
-.chat-message.user-message .chat-bubble  {
+.chat-message.user-message .chat-bubble {
   background: #5f9bfe;
   color: #ffffff;
 }
