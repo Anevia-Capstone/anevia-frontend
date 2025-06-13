@@ -74,7 +74,7 @@ export default class AboutView extends BaseView {
               <!-- Team members will be inserted here -->
               <div class="team-member">
                 <div class="member-avatar">
-                  <img src="/src/assets/team-placeholder.svg" alt="Test Member" class="member-image">
+                  <img src="/team-placeholder.svg" alt="Test Member" class="member-image">
                 </div>
                 <div class="member-info">
                   <h3 class="member-name">Test Member</h3>

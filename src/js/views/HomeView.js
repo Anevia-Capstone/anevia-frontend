@@ -174,7 +174,7 @@ export default class HomeView extends BaseView {
 
             <div class="what-can-anevia-image">
               <div class="eye-image-container">
-                <img src="/src/assets/Eye-face.jpg" alt="Eye analysis for anemia detection" class="eye-analysis-image" />
+                <img src="/Eye-face.jpg" alt="Eye analysis for anemia detection" class="eye-analysis-image" />
                 <div class="analysis-overlay">
                   <div class="analysis-point point-1"></div>
                   <div class="analysis-point point-2"></div>

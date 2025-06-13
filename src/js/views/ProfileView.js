@@ -55,7 +55,7 @@ export default class ProfileView extends BaseView {
             <br>
             <div class="picture-container">
               <div class="profile-image-container">
-                <img src="/src/assets/default-avatar.svg" alt="Profile" class="profile-image-page" id="profileImage">
+                <img src="/default-avatar.svg" alt="Profile" class="profile-image-page" id="profileImage">
                 <div class="image-overlay">
                   <i class="fas fa-camera"></i>
                   <span>Change Photo</span>
@@ -484,7 +484,7 @@ export default class ProfileView extends BaseView {
 
   // Set profile image with fallback
   setProfileImage(imageElement) {
-    let imageUrl = "/src/assets/default-avatar.svg";
+    let imageUrl = "/default-avatar.svg";
     let imageSource = "default";
 
     // Priority: backend photoUrl > Firebase photoURL > default

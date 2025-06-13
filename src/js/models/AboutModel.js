@@ -14,7 +14,7 @@ export default class AboutModel extends BaseModel {
       {
         name: "Yonathan Tirza Karsono",
         role: "Leader & Machine Learning",
-        image: "/src/assets/member/Yona.png",
+        image: "/member/Yona.png",
         social: {
           linkedin: "#",
           github: "#",
@@ -23,7 +23,7 @@ export default class AboutModel extends BaseModel {
       {
         name: "Wiefran Varenzo.",
         role: "Machine Learning",
-        image: "/src/assets/member/Wiefran.png",
+        image: "/member/Wiefran.png",
         social: {
           linkedin: "#",
           github: "#",
@@ -32,7 +32,7 @@ export default class AboutModel extends BaseModel {
       {
         name: "Dearni Lambardo Sarargih",
         role: "Machine Learning",
-        image: "/src/assets/member/Dearni.png",
+        image: "/member/Dearni.png",
         social: {
           linkedin: "#",
           github: "#",
@@ -41,7 +41,7 @@ export default class AboutModel extends BaseModel {
       {
         name: "Rayina Ilham",
         role: "Front-end & Backend",
-        image: "/src/assets/member/Rayin.png",
+        image: "/member/Rayin.png",
         social: {
           linkedin: "#",
           github: "#",
@@ -50,7 +50,7 @@ export default class AboutModel extends BaseModel {
       {
         name: "Oatse Rizqy Hendarto",
         role: "Front-end & Backend",
-        image: "/src/assets/member/Oatse.png",
+        image: "/member/Oatse.png",
         social: {
           linkedin: "#",
           github: "#",
@@ -59,7 +59,7 @@ export default class AboutModel extends BaseModel {
       {
         name: "Muhammad Irza Alfarizi",
         role: "Front-end & Backend",
-        image: "/src/assets/member/Irza.png",
+        image: "/member/Irza.png",
         social: {
           linkedin: "#",
           github: "#",

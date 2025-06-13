@@ -584,7 +584,7 @@ class App {
     }
 
     // Default avatar
-    return "/src/assets/default-avatar.svg";
+    return "/default-avatar.svg";
   }
 }
 

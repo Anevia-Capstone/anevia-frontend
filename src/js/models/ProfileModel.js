@@ -362,7 +362,7 @@ export default class ProfileModel extends BaseModel {
 
   // Get user profile image URL
   getProfileImageUrl() {
-    let imageUrl = "/src/assets/default-avatar.svg";
+    let imageUrl = "/default-avatar.svg";
 
     // Priority: backend photoUrl > Firebase photoURL > default
     if (this.backendUser?.photoUrl) {
