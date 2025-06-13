@@ -15,22 +15,21 @@ export default class ScanHistoryPresenter extends BasePresenter {
   }
 
   onShow() {
-    console.log("ScanHistoryPresenter shown");
     // Scroll to top when showing chat history page
     window.scrollTo(0, 0);
 
     // Get current user ID from various sources
     if (!this.currentUserId) {
       // Try to get from localStorage first
-      this.currentUserId = localStorage.getItem('currentUserId');
+      this.currentUserId = localStorage.getItem("currentUserId");
 
       // If not found, try to get from Firebase token
       if (!this.currentUserId) {
-        const firebaseToken = localStorage.getItem('firebaseToken');
+        const firebaseToken = localStorage.getItem("firebaseToken");
         if (firebaseToken) {
           try {
             // Decode JWT token to get user ID (basic decode, not verification)
-            const payload = JSON.parse(atob(firebaseToken.split('.')[1]));
+            const payload = JSON.parse(atob(firebaseToken.split(".")[1]));
             this.currentUserId = payload.user_id || payload.uid;
           } catch (error) {
             console.warn("Could not decode Firebase token:", error);
@@ -40,17 +39,13 @@ export default class ScanHistoryPresenter extends BasePresenter {
 
       // Final fallback
       if (!this.currentUserId) {
-        this.currentUserId = 'default-user';
+        this.currentUserId = "default-user";
         console.warn("Using default user ID for chat history");
       }
-
-      console.log("Using user ID for chat history:", this.currentUserId);
     }
   }
 
-  onHide() {
-    console.log("ScanHistoryPresenter hidden");
-  }
+  onHide() {}
 
   // Set user ID
   setUserId(userId) {
@@ -60,8 +55,6 @@ export default class ScanHistoryPresenter extends BasePresenter {
 
   // Handle user actions from view
   handleUserAction(action, data = {}) {
-    console.log("ScanHistoryPresenter handling action:", action, data);
-
     switch (action) {
       case "loadChatHistory":
         this.loadChatHistory();
@@ -79,8 +72,6 @@ export default class ScanHistoryPresenter extends BasePresenter {
 
   // Load chat history from API
   async loadChatHistory() {
-    console.log("ScanHistoryPresenter: loadChatHistory called with userId:", this.currentUserId);
-
     if (!this.currentUserId) {
       console.error("ScanHistoryPresenter: No user ID available");
       this.view.showError("User not authenticated");
@@ -88,21 +79,20 @@ export default class ScanHistoryPresenter extends BasePresenter {
     }
 
     try {
-      console.log("ScanHistoryPresenter: Showing loading state");
       this.view.showLoading();
 
-      console.log("ScanHistoryPresenter: Calling model.loadUserChatSessions");
       const result = await this.model.loadUserChatSessions(this.currentUserId);
 
-      console.log("ScanHistoryPresenter: API result:", result);
       this.view.hideLoading();
 
       if (result.success) {
         const stats = this.getChatStatistics(result.sessions);
-        console.log("ScanHistoryPresenter: Displaying chat history with stats:", stats);
         this.view.displayChatHistory(result.sessions, stats);
       } else {
-        console.error("ScanHistoryPresenter: Failed to load chat history:", result.error);
+        console.error(
+          "ScanHistoryPresenter: Failed to load chat history:",
+          result.error
+        );
         this.view.showError(result.error || "Failed to load chat history");
       }
     } catch (error) {
@@ -115,14 +105,14 @@ export default class ScanHistoryPresenter extends BasePresenter {
   // Get chat statistics
   getChatStatistics(sessions) {
     const totalSessions = sessions.length;
-    const sessionsWithScans = sessions.filter(session =>
-      session.title && session.title.includes('Scan')
+    const sessionsWithScans = sessions.filter(
+      (session) => session.title && session.title.includes("Scan")
     ).length;
 
     const now = new Date();
     const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const recentSessions = sessions.filter(session =>
-      new Date(session.updatedAt) > oneWeekAgo
+    const recentSessions = sessions.filter(
+      (session) => new Date(session.updatedAt) > oneWeekAgo
     ).length;
 
     return {
@@ -137,7 +127,7 @@ export default class ScanHistoryPresenter extends BasePresenter {
   navigateToTools() {
     // Dispatch navigation event
     const navigationEvent = new CustomEvent("navigateToTools", {
-      detail: { from: "chat-history" }
+      detail: { from: "chat-history" },
     });
     window.dispatchEvent(navigationEvent);
   }
@@ -151,7 +141,10 @@ export default class ScanHistoryPresenter extends BasePresenter {
 
     try {
       // Load chat messages for the session
-      const result = await this.model.loadChatMessages(this.currentUserId, sessionId);
+      const result = await this.model.loadChatMessages(
+        this.currentUserId,
+        sessionId
+      );
 
       if (result.success) {
         // Dispatch event to show chat view with loaded session
@@ -159,8 +152,8 @@ export default class ScanHistoryPresenter extends BasePresenter {
           detail: {
             sessionId: sessionId,
             userId: this.currentUserId,
-            messages: result.messages
-          }
+            messages: result.messages,
+          },
         });
         window.dispatchEvent(chatEvent);
       } else {

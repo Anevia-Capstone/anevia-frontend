@@ -55,8 +55,6 @@ export default class Navigation {
     const loginBtns = this.header.querySelectorAll(".login-btn");
     const installBtn = this.header.querySelector("#navInstallBtn");
 
-    
-
     // Mobile menu toggle
     mobileMenuBtn.addEventListener("click", () => {
       navLinks.classList.toggle("active");
@@ -102,7 +100,7 @@ export default class Navigation {
     if (!installBtn) return;
 
     // Keep install button hidden - disabled functionality
-    installBtn.style.display = 'none';
+    installBtn.style.display = "none";
 
     // Commented out - install button functionality disabled
     /*
@@ -171,7 +169,9 @@ export default class Navigation {
 
       // Add or remove scroll listener based on screen size
       if (this.enableScrollEffects && !oldEnableScrollEffects) {
-        window.addEventListener("scroll", this.scrollHandler, { passive: true });
+        window.addEventListener("scroll", this.scrollHandler, {
+          passive: true,
+        });
       } else if (!this.enableScrollEffects && oldEnableScrollEffects) {
         window.removeEventListener("scroll", this.scrollHandler);
         // Reset navbar to default state when disabling scroll effects
@@ -198,26 +198,18 @@ export default class Navigation {
 
     // Get current screen width for responsive behavior
     // Use both window.innerWidth and screen.width for better device detection
-    const screenWidth = Math.min(window.innerWidth, window.screen?.width || window.innerWidth);
+    const screenWidth = Math.min(
+      window.innerWidth,
+      window.screen?.width || window.innerWidth
+    );
     const viewportWidth = window.innerWidth;
 
     // Check if we're in a small screen environment (including device emulation)
-    const isSmallScreen = screenWidth <= 425 || viewportWidth <= 425 ||
-                         window.matchMedia('(max-width: 425px)').matches ||
-                         window.matchMedia('(max-device-width: 425px)').matches;
-
-    // Debug logging for device emulation issues
-    if (screenWidth <= 425 || viewportWidth <= 425) {
-      console.log('Small screen detected:', {
-        screenWidth,
-        viewportWidth,
-        innerWidth: window.innerWidth,
-        screenAvailWidth: window.screen?.availWidth,
-        matchMedia425: window.matchMedia('(max-width: 425px)').matches,
-        matchMediaDevice425: window.matchMedia('(max-device-width: 425px)').matches,
-        isSmallScreen
-      });
-    }
+    const isSmallScreen =
+      screenWidth <= 425 ||
+      viewportWidth <= 425 ||
+      window.matchMedia("(max-width: 425px)").matches ||
+      window.matchMedia("(max-device-width: 425px)").matches;
 
     // For very small screens (425px and below), completely disable animations
     if (isSmallScreen) {

@@ -14,13 +14,11 @@ export default class ToolsPresenter extends BasePresenter {
   }
 
   onShow() {
-    console.log("ToolsPresenter shown");
     // Scroll to top when showing tools page
     window.scrollTo(0, 0);
   }
 
   onHide() {
-    console.log("ToolsPresenter hidden");
     // Stop camera when hiding tools page
     if (this.view) {
       this.view.stopCamera();
@@ -139,7 +137,9 @@ export default class ToolsPresenter extends BasePresenter {
 
   async handleScanImage() {
     if (!this.view.capturedImage) {
-      this.showError("No image captured or uploaded. Please take a photo or upload an image first.");
+      this.showError(
+        "No image captured or uploaded. Please take a photo or upload an image first."
+      );
       return;
     }
 
@@ -156,12 +156,18 @@ export default class ToolsPresenter extends BasePresenter {
 
         // Show scan result with scan data
         const scanResult = result.result;
-        this.view.showScanResult({
-          isLoading: false,
-          isAnemic: scanResult.isAnemic,
-          description: scanResult.description,
-          details: this.formatResultDetails(scanResult.details, scanResult.isAnemic),
-        }, currentScan);
+        this.view.showScanResult(
+          {
+            isLoading: false,
+            isAnemic: scanResult.isAnemic,
+            description: scanResult.description,
+            details: this.formatResultDetails(
+              scanResult.details,
+              scanResult.isAnemic
+            ),
+          },
+          currentScan
+        );
       } else {
         this.showError(result.error || "Failed to scan image");
       }
@@ -185,7 +191,9 @@ export default class ToolsPresenter extends BasePresenter {
     const currentScan = this.model.getCurrentScan();
 
     if (!currentScan || !currentScan.scanId) {
-      this.showError("No scan data available for chat. Please complete a scan first.");
+      this.showError(
+        "No scan data available for chat. Please complete a scan first."
+      );
       return;
     }
 
@@ -216,8 +224,6 @@ export default class ToolsPresenter extends BasePresenter {
     }
   }
 
-
-
   // Format result details for display
   formatResultDetails(details, isAnemic = false) {
     return `
@@ -238,14 +244,24 @@ export default class ToolsPresenter extends BasePresenter {
           </div>
         </div>
 
-        ${isAnemic ? `
+        ${
+          isAnemic
+            ? `
         <div class="recommendations-section">
           <h5 class="recommendations-title">Recommendations:</h5>
           <ul class="recommendations-list">
-            ${details.recommendations ? details.recommendations.map((rec) => `<li>${rec}</li>`).join("") : ''}
+            ${
+              details.recommendations
+                ? details.recommendations
+                    .map((rec) => `<li>${rec}</li>`)
+                    .join("")
+                : ""
+            }
           </ul>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
       </div>
     `;
   }
@@ -299,12 +315,18 @@ export default class ToolsPresenter extends BasePresenter {
       // Update UI with scan result
       const scan = data.value;
       if (scan && scan.result) {
-        this.view.showScanResult({
-          isLoading: false,
-          isAnemic: scan.result.isAnemic,
-          description: scan.result.description,
-          details: this.formatResultDetails(scan.result.details, scan.result.isAnemic),
-        }, scan);
+        this.view.showScanResult(
+          {
+            isLoading: false,
+            isAnemic: scan.result.isAnemic,
+            description: scan.result.description,
+            details: this.formatResultDetails(
+              scan.result.details,
+              scan.result.isAnemic
+            ),
+          },
+          scan
+        );
       }
     }
   }
@@ -324,7 +346,6 @@ export default class ToolsPresenter extends BasePresenter {
     try {
       const result = await this.model.loadScanHistory();
       if (result.success) {
-        console.log("Scan history loaded successfully:", result.scans);
         return result;
       } else {
         this.showError(result.error || "Failed to load scan history");
@@ -342,7 +363,6 @@ export default class ToolsPresenter extends BasePresenter {
     try {
       const result = await this.model.loadScanById(scanId);
       if (result.success) {
-        console.log("Scan loaded successfully:", result.scan);
         return result;
       } else {
         this.showError(result.error || "Failed to load scan");
@@ -403,6 +423,4 @@ export default class ToolsPresenter extends BasePresenter {
       this.hideMessage();
     }, 3000);
   }
-
-
 }

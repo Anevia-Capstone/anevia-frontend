@@ -1,24 +1,24 @@
 // Login Presenter for managing login logic
-import BasePresenter from './BasePresenter.js';
-import LoginView from '../views/LoginView.js';
-import UserModel from '../models/UserModel.js';
+import BasePresenter from "./BasePresenter.js";
+import LoginView from "../views/LoginView.js";
+import UserModel from "../models/UserModel.js";
 
 export default class LoginPresenter extends BasePresenter {
   constructor() {
     const model = new UserModel();
     const view = new LoginView();
     super(model, view);
-    
+
     // Set presenter reference in view
     this.view.setPresenter(this);
   }
 
   onShow() {
-    console.log('LoginPresenter shown');
+    // Hapus semua baris console.log
   }
 
   onHide() {
-    console.log('LoginPresenter hidden');
+    // Hapus semua baris console.log
     // Clear form when hiding
     this.view.clearForm();
   }
@@ -26,14 +26,14 @@ export default class LoginPresenter extends BasePresenter {
   // Handle user actions from the view
   handleUserAction(action, data = {}) {
     switch (action) {
-      case 'signIn':
+      case "signIn":
         this.handleSignIn(data.username, data.password);
         break;
-      case 'googleSignIn':
+      case "googleSignIn":
         this.handleGoogleSignIn();
         break;
-      case 'showRegister':
-        this.navigate('register');
+      case "showRegister":
+        this.navigate("register");
         break;
       default:
         super.handleUserAction(action, data);
@@ -46,29 +46,27 @@ export default class LoginPresenter extends BasePresenter {
       this.view.removeStatusMessage();
 
       // Determine if input is email or username
-      const isEmail = username.includes('@');
+      const isEmail = username.includes("@");
       const email = isEmail ? username : `${username}@example.com`; // Convert username to email format
 
       const result = await this.model.login(email, password);
 
       if (result.success) {
-        console.log('Login successful:', result.user);
-        console.log('Backend user data:', result.backendUser);
+        this.view.showSuccess("Login successful!");
 
-        this.view.showSuccess('Login successful!');
-        
         // Redirect to home page after successful login
         setTimeout(() => {
-          this.navigate('home');
+          this.navigate("home");
           // Reload to update UI with logged in state
           window.location.reload();
         }, 1000);
       } else {
-        this.view.showError(result.error || 'Login failed. Please check your credentials.');
+        this.view.showError(
+          result.error || "Login failed. Please check your credentials."
+        );
       }
     } catch (error) {
-      console.error('Login error:', error);
-      this.view.showError('An error occurred during login. Please try again.');
+      this.view.showError("An error occurred during login. Please try again.");
     } finally {
       this.view.setLoading(false);
     }
@@ -82,23 +80,23 @@ export default class LoginPresenter extends BasePresenter {
       const result = await this.model.loginWithGoogle();
 
       if (result.success) {
-        console.log('Google login successful:', result.user);
-        console.log('Backend user data:', result.backendUser);
+        this.view.showSuccess("Google login successful!");
 
-        this.view.showSuccess('Google login successful!');
-        
         // Redirect to home page after successful login
         setTimeout(() => {
-          this.navigate('home');
+          this.navigate("home");
           // Reload to update UI with logged in state
           window.location.reload();
         }, 1000);
       } else {
-        this.view.showError(result.error || 'Google login failed. Please try again.');
+        this.view.showError(
+          result.error || "Google login failed. Please try again."
+        );
       }
     } catch (error) {
-      console.error('Google login error:', error);
-      this.view.showError('An error occurred during Google login. Please try again.');
+      this.view.showError(
+        "An error occurred during Google login. Please try again."
+      );
     } finally {
       this.view.setLoading(false);
     }
@@ -106,9 +104,9 @@ export default class LoginPresenter extends BasePresenter {
 
   // Update method called when model data changes
   onUpdate(data) {
-    if (data.key === 'isAuthenticated' && data.value === true) {
+    if (data.key === "isAuthenticated" && data.value === true) {
       // User is now authenticated, redirect to home
-      this.navigate('home');
+      this.navigate("home");
     }
   }
 
@@ -116,7 +114,7 @@ export default class LoginPresenter extends BasePresenter {
   checkAuthState() {
     if (this.model.isUserAuthenticated()) {
       // User is already logged in, redirect to home
-      this.navigate('home');
+      this.navigate("home");
       return true;
     }
     return false;

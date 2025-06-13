@@ -14,11 +14,11 @@ export default class Router {
   // Start the router and listen for hash changes
   start() {
     if (this.isStarted) return;
-    
+
     this.isStarted = true;
-    
+
     // Listen for hash changes
-    window.addEventListener('hashchange', () => {
+    window.addEventListener("hashchange", () => {
       this.handleRouteChange();
     });
 
@@ -29,44 +29,41 @@ export default class Router {
   // Stop the router
   stop() {
     this.isStarted = false;
-    window.removeEventListener('hashchange', this.handleRouteChange.bind(this));
+    window.removeEventListener("hashchange", this.handleRouteChange.bind(this));
   }
 
   // Handle route changes
   handleRouteChange() {
     const hash = window.location.hash;
     const route = this.extractRoute(hash);
-    
-    console.log('Route changed to:', route);
-    
+
     if (this.routes.has(route)) {
       this.currentRoute = route;
       this.routes.get(route)();
     } else {
       // Default to home route if route not found
-      console.log('Route not found, defaulting to home');
-      this.navigate('home');
+      this.navigate("home");
     }
   }
 
   // Extract route from hash
   extractRoute(hash) {
     // Remove the # symbol and any query parameters
-    let route = hash.replace('#', '');
-    
+    let route = hash.replace("#", "");
+
     // Remove query parameters if any
-    const queryIndex = route.indexOf('?');
+    const queryIndex = route.indexOf("?");
     if (queryIndex !== -1) {
       route = route.substring(0, queryIndex);
     }
-    
+
     return route;
   }
 
   // Navigate to a specific route
   navigate(route) {
     if (route === this.currentRoute) return;
-    
+
     window.location.hash = route;
   }
 
@@ -78,35 +75,37 @@ export default class Router {
   // Get query parameters from current URL
   getQueryParams() {
     const hash = window.location.hash;
-    const queryIndex = hash.indexOf('?');
-    
+    const queryIndex = hash.indexOf("?");
+
     if (queryIndex === -1) return {};
-    
+
     const queryString = hash.substring(queryIndex + 1);
     const params = {};
-    
-    queryString.split('&').forEach(param => {
-      const [key, value] = param.split('=');
+
+    queryString.split("&").forEach((param) => {
+      const [key, value] = param.split("=");
       if (key) {
-        params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+        params[decodeURIComponent(key)] = decodeURIComponent(value || "");
       }
     });
-    
+
     return params;
   }
 
   // Navigate with query parameters
   navigateWithParams(route, params = {}) {
     let url = route;
-    
+
     const queryString = Object.keys(params)
-      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
-      .join('&');
-    
+      .map(
+        (key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
+      )
+      .join("&");
+
     if (queryString) {
-      url += '?' + queryString;
+      url += "?" + queryString;
     }
-    
+
     window.location.hash = url;
   }
 

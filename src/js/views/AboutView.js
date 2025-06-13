@@ -92,20 +92,17 @@ export default class AboutView extends BaseView {
 
   setupEventListeners() {
     // Add any specific event listeners for the about page
-    console.log("About page event listeners setup");
 
     // Use event delegation on the container to handle clicks
     if (this.container) {
       this.container.addEventListener("click", (event) => {
         // GitHub repository button
         if (event.target.id === "github-repository-btn") {
-          console.log("GitHub button clicked");
           window.open("https://github.com/Anevia-Capstone", "_blank");
         }
 
         // View All button
         if (event.target.id === "view-all-btn") {
-          console.log("View All button clicked via delegation");
           this.toggleTeamContainer();
         }
       });
@@ -114,11 +111,8 @@ export default class AboutView extends BaseView {
     // Also try direct approach as backup
     setTimeout(() => {
       const viewAllBtn = document.getElementById("view-all-btn");
-      console.log("Direct approach - View All button found:", !!viewAllBtn);
       if (viewAllBtn) {
-        console.log("Adding direct event listener to View All button");
         viewAllBtn.addEventListener("click", () => {
-          console.log("View All clicked via direct listener");
           this.toggleTeamContainer();
         });
       }
@@ -127,15 +121,8 @@ export default class AboutView extends BaseView {
 
   // Toggle team container visibility with View Transition
   async toggleTeamContainer() {
-    console.log("🔥 toggleTeamContainer called via onclick!");
-
     const teamContainer = document.getElementById("team-container");
     const viewAllBtn = document.getElementById("view-all-btn");
-
-    console.log("Elements found:", {
-      teamContainer: !!teamContainer,
-      viewAllBtn: !!viewAllBtn
-    });
 
     if (!teamContainer || !viewAllBtn) {
       console.error("❌ Required elements not found!");
@@ -145,20 +132,13 @@ export default class AboutView extends BaseView {
     // Check current visibility
     const isVisible = teamContainer.classList.contains("show");
 
-    console.log("Current state:", {
-      isVisible: isVisible,
-      hasShowClass: teamContainer.classList.contains("show")
-    });
-
     // Use View Transition utility
     await toggleWithTransition(
       teamContainer,
       () => this.performToggle(teamContainer, viewAllBtn, isVisible),
       {
-        transitionName: 'team-container-toggle',
+        transitionName: "team-container-toggle",
         duration: 400,
-        onStart: () => console.log("🎬 Starting team container transition..."),
-        onFinish: () => console.log("✅ Team container transition completed")
       }
     );
   }
@@ -167,16 +147,13 @@ export default class AboutView extends BaseView {
   performToggle(teamContainer, viewAllBtn, isVisible) {
     if (isVisible) {
       // Hide the container
-      console.log("🔴 Hiding team container...");
       teamContainer.classList.remove("show");
       viewAllBtn.textContent = "View All";
     } else {
       // Show the container
-      console.log("🟢 Showing team container...");
-
       // Load team members if container is empty
-      if (teamContainer.children.length <= 1) { // Only test member exists
-        console.log("📝 Loading team members...");
+      if (teamContainer.children.length <= 1) {
+        // Only test member exists
         this.loadTeamMembers();
       }
 
@@ -190,7 +167,6 @@ export default class AboutView extends BaseView {
     // Verify the change
     setTimeout(() => {
       const hasShow = teamContainer.classList.contains("show");
-      console.log("✅ After toggle - hasShow:", hasShow);
     }, 100);
   }
 
@@ -209,7 +185,6 @@ export default class AboutView extends BaseView {
         const aboutData = this.presenter.model.getAllData();
         if (aboutData && aboutData.teamMembers) {
           this.renderTeamMembers(aboutData.teamMembers);
-          console.log("✅ Team members loaded successfully");
         }
       }
     } catch (error) {
@@ -244,7 +219,9 @@ export default class AboutView extends BaseView {
     const container = document.getElementById("team-container");
     if (!container || !teamMembers) return;
 
-    const teamHTML = teamMembers.map(member => `
+    const teamHTML = teamMembers
+      .map(
+        (member) => `
       <div class="team-member" data-animation="fadeInUp">
         <div class="member-avatar">
           <img src="${member.image}" alt="${member.name}" class="member-image">
@@ -254,7 +231,9 @@ export default class AboutView extends BaseView {
           <p class="member-role">${member.role}</p>
         </div>
       </div>
-    `).join("");
+    `
+      )
+      .join("");
 
     container.innerHTML = teamHTML;
   }
@@ -281,7 +260,6 @@ export default class AboutView extends BaseView {
 
   update(data) {
     // Update view if needed based on data changes
-    console.log("AboutView update called with data:", data);
     this.updateContent(data);
   }
 }

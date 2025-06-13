@@ -505,13 +505,11 @@ export default class ProfileView extends BaseView {
       imageSource = "Firebase provider";
     }
 
-    console.log(`Setting profile image from ${imageSource}:`, imageUrl);
     imageElement.src = imageUrl;
 
     // Add error handler to fallback to default avatar
     if (imageSource !== "default") {
       imageElement.onerror = () => {
-        console.info(`${imageSource} image unavailable, using default avatar`);
         imageElement.src = "/src/assets/default-avatar.svg";
         imageElement.onerror = null; // Prevent infinite loop
       };
@@ -598,7 +596,9 @@ export default class ProfileView extends BaseView {
     this.isLoading = isLoading;
     const loadingOverlay = this.findElement("#loadingOverlay");
     const loadingText = loadingOverlay?.querySelector(".loading-text");
-    const spinnerCircle = loadingOverlay?.querySelector(".loading-spinner-circle");
+    const spinnerCircle = loadingOverlay?.querySelector(
+      ".loading-spinner-circle"
+    );
 
     if (loadingOverlay) {
       loadingOverlay.style.display = isLoading ? "flex" : "none";
@@ -606,12 +606,6 @@ export default class ProfileView extends BaseView {
 
     if (loadingText && isLoading) {
       loadingText.textContent = message;
-    }
-
-    // Debug: Ensure spinner circle exists and has correct styles
-    if (spinnerCircle && isLoading) {
-      console.log("Spinner circle found:", spinnerCircle);
-      console.log("Spinner circle computed styles:", window.getComputedStyle(spinnerCircle));
     }
   }
 

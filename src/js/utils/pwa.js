@@ -1,5 +1,5 @@
 // PWA utilities for cache management and offline functionality
-import { Workbox } from 'workbox-window';
+import { Workbox } from "workbox-window";
 
 class PWAManager {
   constructor() {
@@ -11,9 +11,9 @@ class PWAManager {
 
   async init() {
     // Register service worker
-    if ('serviceWorker' in navigator) {
+    if ("serviceWorker" in navigator) {
       // Use different service worker paths for dev and production
-      const swPath = import.meta.env.DEV ? '/dev-sw.js?dev-sw' : '/sw.js';
+      const swPath = import.meta.env.DEV ? "/dev-sw.js?dev-sw" : "/sw.js";
       this.wb = new Workbox(swPath);
 
       // Add event listeners
@@ -22,9 +22,8 @@ class PWAManager {
       // Register the service worker
       try {
         await this.wb.register();
-        console.log('Service Worker registered successfully');
       } catch (error) {
-        console.error('Service Worker registration failed:', error);
+        console.error("Service Worker registration failed:", error);
       }
     }
 
@@ -42,21 +41,18 @@ class PWAManager {
     if (!this.wb) return;
 
     // Service worker waiting for activation
-    this.wb.addEventListener('waiting', (event) => {
-      console.log('New service worker is waiting');
+    this.wb.addEventListener("waiting", (event) => {
       this.updateAvailable = true;
       this.showUpdateNotification();
     });
 
     // Service worker activated
-    this.wb.addEventListener('controlling', (event) => {
-      console.log('New service worker is controlling');
+    this.wb.addEventListener("controlling", (event) => {
       window.location.reload();
     });
 
     // Service worker installed for the first time
-    this.wb.addEventListener('installed', (event) => {
-      console.log('Service worker installed');
+    this.wb.addEventListener("installed", (event) => {
       if (event.isUpdate) {
         this.showUpdateNotification();
       } else {
@@ -67,15 +63,15 @@ class PWAManager {
 
   setupNetworkDetection() {
     // Listen for online/offline events
-    window.addEventListener('online', () => {
+    window.addEventListener("online", () => {
       this.isOnline = true;
-      this.showNetworkStatus('online');
+      this.showNetworkStatus("online");
       this.syncOfflineData();
     });
 
-    window.addEventListener('offline', () => {
+    window.addEventListener("offline", () => {
       this.isOnline = false;
-      this.showNetworkStatus('offline');
+      this.showNetworkStatus("offline");
     });
   }
 
@@ -89,72 +85,69 @@ class PWAManager {
   }
 
   async cacheEssentialResources() {
-    if ('caches' in window && !import.meta.env.DEV) {
+    if ("caches" in window && !import.meta.env.DEV) {
       try {
-        const cache = await caches.open('anevia-essential-v1');
+        const cache = await caches.open("anevia-essential-v1");
         const essentialResources = [
-          '/',
-          '/src/css/styles.css',
-          '/src/main.js',
-          '/src/assets/logo.svg',
-          '/src/assets/favicon.svg'
+          "/",
+          "/src/css/styles.css",
+          "/src/main.js",
+          "/src/assets/logo.svg",
+          "/src/assets/favicon.svg",
         ];
 
         await cache.addAll(essentialResources);
-        console.log('Essential resources cached');
       } catch (error) {
-        console.error('Failed to cache essential resources:', error);
+        console.error("Failed to cache essential resources:", error);
       }
     } else if (import.meta.env.DEV) {
-      console.log('Skipping cache in development mode');
+      console.log("Skipping cache in development mode");
     }
   }
 
   async cacheUserData(key, data) {
-    if ('caches' in window) {
+    if ("caches" in window) {
       try {
-        const cache = await caches.open('anevia-user-data-v1');
+        const cache = await caches.open("anevia-user-data-v1");
         const response = new Response(JSON.stringify(data));
         await cache.put(key, response);
-        console.log(`User data cached: ${key}`);
       } catch (error) {
-        console.error('Failed to cache user data:', error);
+        console.error("Failed to cache user data:", error);
       }
     }
   }
 
   async getCachedUserData(key) {
-    if ('caches' in window) {
+    if ("caches" in window) {
       try {
-        const cache = await caches.open('anevia-user-data-v1');
+        const cache = await caches.open("anevia-user-data-v1");
         const response = await cache.match(key);
         if (response) {
           return await response.json();
         }
       } catch (error) {
-        console.error('Failed to get cached user data:', error);
+        console.error("Failed to get cached user data:", error);
       }
     }
     return null;
   }
 
   async clearCache() {
-    if ('caches' in window) {
+    if ("caches" in window) {
       try {
         const cacheNames = await caches.keys();
         await Promise.all(
-          cacheNames.map(cacheName => caches.delete(cacheName))
+          cacheNames.map((cacheName) => caches.delete(cacheName))
         );
-        console.log('All caches cleared');
       } catch (error) {
-        console.error('Failed to clear cache:', error);
+        console.error("Failed to clear cache:", error);
       }
     }
   }
 
   showUpdateNotification() {
-    const notification = document.createElement('div');
-    notification.className = 'pwa-update-notification';
+    const notification = document.createElement("div");
+    notification.className = "pwa-update-notification";
     notification.innerHTML = `
       <div class="pwa-notification-content">
         <i class="fas fa-download"></i>
@@ -167,8 +160,8 @@ class PWAManager {
   }
 
   showInstallNotification() {
-    const notification = document.createElement('div');
-    notification.className = 'pwa-install-notification';
+    const notification = document.createElement("div");
+    notification.className = "pwa-install-notification";
     notification.innerHTML = `
       <div class="pwa-notification-content">
         <i class="fas fa-mobile-alt"></i>
@@ -181,23 +174,26 @@ class PWAManager {
   }
 
   showNetworkStatus(status) {
-    const statusElement = document.getElementById('network-status') || this.createNetworkStatusElement();
+    const statusElement =
+      document.getElementById("network-status") ||
+      this.createNetworkStatusElement();
     statusElement.className = `network-status ${status}`;
-    statusElement.textContent = status === 'online' ? 'Back online' : 'You are offline';
+    statusElement.textContent =
+      status === "online" ? "Back online" : "You are offline";
 
-    if (status === 'online') {
+    if (status === "online") {
       setTimeout(() => {
-        statusElement.style.display = 'none';
+        statusElement.style.display = "none";
       }, 3000);
     } else {
-      statusElement.style.display = 'block';
+      statusElement.style.display = "block";
     }
   }
 
   createNetworkStatusElement() {
-    const statusElement = document.createElement('div');
-    statusElement.id = 'network-status';
-    statusElement.className = 'network-status';
+    const statusElement = document.createElement("div");
+    statusElement.id = "network-status";
+    statusElement.className = "network-status";
     document.body.appendChild(statusElement);
     return statusElement;
   }
@@ -212,14 +208,12 @@ class PWAManager {
     if (this.deferredPrompt) {
       this.deferredPrompt.prompt();
       const { outcome } = await this.deferredPrompt.userChoice;
-      console.log(`User response to install prompt: ${outcome}`);
       this.deferredPrompt = null;
     }
   }
 
   async syncOfflineData() {
     // Sync any offline data when back online
-    console.log('Syncing offline data...');
     // Implementation depends on your specific offline data storage
   }
 
@@ -228,16 +222,20 @@ class PWAManager {
   }
 
   async getCacheSize() {
-    if ('caches' in window && 'storage' in navigator && 'estimate' in navigator.storage) {
+    if (
+      "caches" in window &&
+      "storage" in navigator &&
+      "estimate" in navigator.storage
+    ) {
       try {
         const estimate = await navigator.storage.estimate();
         return {
           used: estimate.usage,
           available: estimate.quota,
-          percentage: Math.round((estimate.usage / estimate.quota) * 100)
+          percentage: Math.round((estimate.usage / estimate.quota) * 100),
         };
       } catch (error) {
-        console.error('Failed to get cache size:', error);
+        console.error("Failed to get cache size:", error);
       }
     }
     return null;
@@ -248,7 +246,7 @@ class PWAManager {
 const pwaManager = new PWAManager();
 
 // Listen for beforeinstallprompt event
-window.addEventListener('beforeinstallprompt', (e) => {
+window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   pwaManager.deferredPrompt = e;
 });

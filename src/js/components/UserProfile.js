@@ -30,7 +30,6 @@ export default class UserProfile {
       }
     } else {
       // Fallback if nav-right not found
-      console.log("Nav-right not found, using fallback");
       const navbar = this.navigation.querySelector(".navbar");
       navbar.appendChild(this.profileContainer);
     }
@@ -230,7 +229,6 @@ export default class UserProfile {
     try {
       const result = await logoutUser();
       if (result.success) {
-        console.log("Logged out successfully");
         // Reload page to update UI
         window.location.reload();
       } else {
@@ -274,9 +272,6 @@ export default class UserProfile {
     if (this.mobileLoginBtn) {
       this.mobileLoginBtn.style.display = "none";
     }
-
-    console.log("Updating user profile with:", user);
-    console.log("User photo URL:", user.photoURL);
 
     // Update profile image and name
     const profileImage = this.profileContainer.querySelector(".profile-image");
@@ -329,14 +324,12 @@ export default class UserProfile {
     if (user.photoURL) {
       photoURL = user.photoURL;
       photoSource = "user profile";
-      console.log("Using user profile photo:", photoURL);
     } else if (user.providerData && user.providerData.length > 0) {
       // Try to get photo from provider data
       for (const provider of user.providerData) {
         if (provider.photoURL) {
           photoURL = provider.photoURL;
           photoSource = `${provider.providerId} provider`;
-          console.log(`Using ${provider.providerId} provider photo:`, photoURL);
           break;
         }
       }
@@ -348,12 +341,9 @@ export default class UserProfile {
     // Add error handler to fallback to default avatar if image fails to load
     if (photoSource !== "default") {
       imageElement.onerror = () => {
-        console.info(`${photoSource} image unavailable, using default avatar`);
         imageElement.src = "/src/assets/default-avatar.svg";
         imageElement.onerror = null; // Prevent infinite loop
       };
     }
-
-    console.log(`Profile image set from ${photoSource}:`, photoURL);
   }
 }

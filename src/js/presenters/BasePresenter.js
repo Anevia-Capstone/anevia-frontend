@@ -4,9 +4,9 @@ export default class BasePresenter {
     this.model = model;
     this.view = view;
     this.isActive = false;
-    
+
     // Set up model observer if model exists
-    if (this.model && typeof this.model.addObserver === 'function') {
+    if (this.model && typeof this.model.addObserver === "function") {
       this.model.addObserver(this);
     }
   }
@@ -41,7 +41,7 @@ export default class BasePresenter {
 
   // Update method called by model when data changes
   update(data) {
-    if (this.view && typeof this.view.update === 'function') {
+    if (this.view && typeof this.view.update === "function") {
       this.view.update(data);
     }
     this.onUpdate(data);
@@ -55,7 +55,6 @@ export default class BasePresenter {
   // Handle user interactions from view
   handleUserAction(action, data) {
     // Override in subclasses to handle specific actions
-    console.log('BasePresenter handleUserAction:', action, data);
   }
 
   // Get data from model
@@ -65,14 +64,14 @@ export default class BasePresenter {
 
   // Set data in model
   setModelData(key, value) {
-    if (this.model && typeof this.model.setData === 'function') {
+    if (this.model && typeof this.model.setData === "function") {
       this.model.setData(key, value);
     }
   }
 
   // Update model data
   updateModelData(data) {
-    if (this.model && typeof this.model.updateData === 'function') {
+    if (this.model && typeof this.model.updateData === "function") {
       this.model.updateData(data);
     }
   }
@@ -85,31 +84,31 @@ export default class BasePresenter {
   // Clean up presenter
   destroy() {
     this.hide();
-    
+
     // Remove observer from model
-    if (this.model && typeof this.model.removeObserver === 'function') {
+    if (this.model && typeof this.model.removeObserver === "function") {
       this.model.removeObserver(this);
     }
-    
+
     // Clean up view
-    if (this.view && typeof this.view.destroy === 'function') {
+    if (this.view && typeof this.view.destroy === "function") {
       this.view.destroy();
     }
-    
+
     this.model = null;
     this.view = null;
   }
 
   // Show loading state
   showLoading(message) {
-    if (this.view && typeof this.view.showLoading === 'function') {
+    if (this.view && typeof this.view.showLoading === "function") {
       this.view.showLoading(message);
     }
   }
 
   // Show error state
   showError(message) {
-    if (this.view && typeof this.view.showError === 'function') {
+    if (this.view && typeof this.view.showError === "function") {
       this.view.showError(message);
     }
   }
@@ -123,13 +122,15 @@ export default class BasePresenter {
   navigateWithParams(route, params) {
     let url = route;
     const queryString = Object.keys(params)
-      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
-      .join('&');
-    
+      .map(
+        (key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
+      )
+      .join("&");
+
     if (queryString) {
-      url += '?' + queryString;
+      url += "?" + queryString;
     }
-    
+
     window.location.hash = url;
   }
 }

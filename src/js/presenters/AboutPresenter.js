@@ -14,17 +14,14 @@ export default class AboutPresenter extends BasePresenter {
   }
 
   onShow() {
-    console.log("AboutPresenter shown");
-    
     // Load and display about page data
     this.loadAboutData();
-    
+
     // Scroll to top when showing about page
     window.scrollTo(0, 0);
   }
 
   onHide() {
-    console.log("AboutPresenter hidden");
     // Any cleanup when about page is hidden
   }
 
@@ -54,13 +51,11 @@ export default class AboutPresenter extends BasePresenter {
 
   // Handle contact actions
   handleContactAction(data) {
-    console.log("Contact action:", data);
     // Implement contact functionality if needed
   }
 
   // Handle team member actions
   handleTeamMemberAction(data) {
-    console.log("Team member action:", data);
     // Implement team member profile functionality if needed
   }
 

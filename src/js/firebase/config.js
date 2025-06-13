@@ -28,14 +28,8 @@ try {
   // Only initialize analytics if we're in a browser environment
   if (typeof window !== "undefined") {
     analytics = getAnalytics(app);
-    console.log("Firebase Analytics initialized successfully");
-  } else {
-    console.log(
-      "Skipping Firebase Analytics initialization (not in browser environment)"
-    );
   }
 } catch (error) {
-  console.warn("Firebase Analytics initialization error:", error);
   // Continue without analytics - this is non-critical
   analytics = null;
 }
@@ -44,15 +38,10 @@ try {
 const auth = getAuth(app);
 
 // Set persistence to local storage to maintain login state across browser sessions
-setPersistence(auth, browserLocalPersistence)
-  .then(() => {
-    console.log("Firebase Auth persistence set to local storage");
-  })
-  .catch((error) => {
-    console.warn("Error setting Firebase Auth persistence:", error);
-  });
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.warn("Error setting Firebase Auth persistence:", error);
+});
 
 // Log Firebase initialization
-console.log("Firebase initialized successfully");
 
 export { app, analytics, auth };

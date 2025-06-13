@@ -44,10 +44,6 @@ export const registerWithEmailPassword = async (username, email, password) => {
       backendResponse: userProfile,
     };
   } catch (error) {
-    console.error("Firebase registration error:", error);
-    console.error("Error code:", error.code);
-    console.error("Error message:", error.message);
-
     return {
       success: false,
       error: error.message,
@@ -162,18 +158,14 @@ export const getCurrentUserToken = async (forceRefresh = false) => {
     }
     return token;
   } catch (error) {
-    console.error("Error getting current user token:", error);
-
     // If force refresh failed, try to get cached token as fallback
     if (forceRefresh) {
-      console.log("Force refresh failed, trying to get cached token...");
       try {
         const cachedToken = localStorage.getItem("firebaseToken");
         const tokenExpiry = localStorage.getItem("firebaseTokenExpiry");
 
         // Check if cached token is still valid
         if (cachedToken && tokenExpiry && Date.now() < parseInt(tokenExpiry)) {
-          console.log("Using cached token as fallback");
           return cachedToken;
         }
       } catch (cacheError) {
@@ -197,22 +189,17 @@ export const setPasswordChangeInProgress = (inProgress, userData = null) => {
     storedUserDataDuringPasswordChange = {
       user: userData.user,
       backendUser: userData.backendUser,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
-    console.log("Password change in progress - stored user data:", storedUserDataDuringPasswordChange);
   } else if (!inProgress) {
     // Clear stored data when password change is complete
     storedUserDataDuringPasswordChange = null;
-    console.log("Password change completed - cleared stored user data");
   }
-  console.log("Password change in progress:", inProgress);
 };
 
 // Listen for authentication state changes
 export const onAuthStateChanged = (callback) => {
   return auth.onAuthStateChanged(async (user) => {
-    console.log("Auth state changed - user:", user ? "exists" : "null", "passwordChangeInProgress:", isPasswordChangeInProgress);
-
     if (user) {
       try {
         // First call callback immediately with Firebase user to prevent logout
@@ -220,11 +207,8 @@ export const onAuthStateChanged = (callback) => {
 
         // If password change is in progress, be more lenient with token handling
         if (isPasswordChangeInProgress) {
-          console.log("Password change in progress, using minimal token verification");
-
           // During password change, avoid any backend calls that might fail due to token issues
           // Just use Firebase user data and let the natural auth flow handle backend sync later
-          console.log("Skipping backend calls during password change to avoid token conflicts");
           return; // Don't make any backend calls, just keep the user logged in
         }
 
@@ -234,17 +218,13 @@ export const onAuthStateChanged = (callback) => {
 
         // Check if token is expired or doesn't exist
         if (!token || !tokenExpiry || Date.now() > parseInt(tokenExpiry)) {
-          console.log("Token expired or missing, getting fresh token");
           // Get a fresh token
           token = await getCurrentUserToken(true);
 
           // If token refresh fails, don't proceed with backend calls
           if (!token) {
-            console.warn("Failed to get fresh token, continuing with Firebase user only");
             return;
           }
-        } else {
-          console.log("Using cached token");
         }
 
         // Try to get user profile from backend (non-blocking)
@@ -257,36 +237,26 @@ export const onAuthStateChanged = (callback) => {
           // Call callback again with complete user data
           callback(user, userProfile?.user || null, userProfile);
         } catch (backendError) {
-          console.warn(
-            "Backend unavailable, continuing with Firebase user only:",
-            backendError
-          );
           // Don't throw error, just continue with Firebase user
           // No need to call callback again since we already called it with Firebase user
         }
       } catch (error) {
-        console.error("Error in auth state change handler:", error);
         // Still call callback with user to prevent logout
         callback(user, null, null);
       }
     } else {
       // If password change is in progress and user becomes null, restore the stored user data
       if (isPasswordChangeInProgress && storedUserDataDuringPasswordChange) {
-        console.log("User became null during password change - restoring stored user data");
         const storedData = storedUserDataDuringPasswordChange;
 
         // Check if stored data is not too old (within 30 seconds)
         if (Date.now() - storedData.timestamp < 30000) {
-          console.log("Restoring user session with stored data:", storedData);
           callback(storedData.user, storedData.backendUser, null);
           return;
-        } else {
-          console.warn("Stored user data is too old, proceeding with logout");
         }
       }
 
       // User is signed out
-      console.log("User is signed out");
       callback(null, null, null);
     }
   });
@@ -300,7 +270,6 @@ export const setupTokenRefresh = () => {
     if (user) {
       try {
         await refreshToken(user);
-        console.log("Firebase token refreshed");
       } catch (error) {
         console.error("Error refreshing token:", error);
       }

@@ -33,10 +33,6 @@ export default class ChatModel extends BaseModel {
       this.isLoading = true;
       this.setData("isLoading", true);
 
-      console.log(
-        `Starting chat session for scan ${scanId} and user ${userId}`
-      );
-
       // Call API to start chat session
       const response = await startChatFromScan(scanId, userId);
 
@@ -208,7 +204,7 @@ export default class ChatModel extends BaseModel {
       const response = await getUserChatSessions(userId);
 
       if (response.status === "success") {
-        this.chatSessions = response.data.chatSessions.map(session => ({
+        this.chatSessions = response.data.chatSessions.map((session) => ({
           ...session,
           createdAt: new Date(session.createdAt),
           updatedAt: new Date(session.updatedAt),

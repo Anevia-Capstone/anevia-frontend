@@ -22,7 +22,6 @@ export default class ToolsModel extends BaseModel {
 
       // Upload image to API
       const response = await uploadScanImage(imageFile);
-      console.log("Backend scan response received:", response);
 
       // Check if the API response is successful and contains scan data
       if (response.status === "success" && response.data) {
@@ -319,7 +318,6 @@ Please consult with a healthcare professional for proper diagnosis and treatment
   async loadScanHistory() {
     try {
       const response = await getAllScans();
-      console.log("Scan history loaded from API:", response);
 
       if (response && !response.error && response.listScans) {
         // Transform API response to match internal data structure
@@ -374,7 +372,6 @@ Please consult with a healthcare professional for proper diagnosis and treatment
   async loadScanById(scanId) {
     try {
       const response = await getScanById(scanId);
-      console.log("Scan loaded from API:", response);
 
       if (response && !response.error && response.scan) {
         const scan = response.scan;

@@ -9,12 +9,10 @@ export default class HomePresenter extends BasePresenter {
   }
 
   onShow() {
-    console.log("HomePresenter shown");
     // Any additional logic when home page is shown
   }
 
   onHide() {
-    console.log("HomePresenter hidden");
     // Any cleanup when home page is hidden
   }
 

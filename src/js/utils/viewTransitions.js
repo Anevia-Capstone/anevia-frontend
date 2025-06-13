@@ -5,7 +5,7 @@
 
 export class ViewTransitionManager {
   constructor() {
-    this.isSupported = 'startViewTransition' in document;
+    this.isSupported = "startViewTransition" in document;
     this.currentTransition = null;
   }
 
@@ -26,43 +26,38 @@ export class ViewTransitionManager {
       fallbackDelay = 0,
       onStart = null,
       onFinish = null,
-      onError = null
+      onError = null,
     } = options;
 
     try {
       if (onStart) onStart();
 
       if (this.isSupported) {
-        console.log('🎬 Starting View Transition...');
-        
         this.currentTransition = document.startViewTransition(async () => {
           await updateCallback();
         });
 
         await this.currentTransition.finished;
-        console.log('✅ View Transition completed');
-        
+
         if (onFinish) onFinish();
       } else {
-        console.log('⚠️ View Transition not supported, using fallback');
-        
         if (fallbackDelay > 0) {
-          await new Promise(resolve => setTimeout(resolve, fallbackDelay));
+          await new Promise((resolve) => setTimeout(resolve, fallbackDelay));
         }
-        
+
         await updateCallback();
-        
+
         if (onFinish) onFinish();
       }
     } catch (error) {
-      console.error('❌ View Transition error:', error);
+      console.error("❌ View Transition error:", error);
       if (onError) onError(error);
-      
+
       // Fallback execution
       try {
         await updateCallback();
       } catch (fallbackError) {
-        console.error('❌ Fallback execution error:', fallbackError);
+        console.error("❌ Fallback execution error:", fallbackError);
       }
     }
   }
@@ -73,10 +68,7 @@ export class ViewTransitionManager {
    * @param {Object} options - Navigation options
    */
   async navigateWithTransition(navigationCallback, options = {}) {
-    const {
-      transitionName = 'page-transition',
-      duration = 300
-    } = options;
+    const { transitionName = "page-transition", duration = 300 } = options;
 
     // Set transition name for the root element
     if (this.isSupported) {
@@ -88,10 +80,10 @@ export class ViewTransitionManager {
       onFinish: () => {
         // Clean up transition name
         if (this.isSupported) {
-          document.documentElement.style.viewTransitionName = '';
+          document.documentElement.style.viewTransitionName = "";
         }
       },
-      ...options
+      ...options,
     });
   }
 
@@ -102,10 +94,7 @@ export class ViewTransitionManager {
    * @param {Object} options - Toggle options
    */
   async toggleWithTransition(element, toggleCallback, options = {}) {
-    const {
-      transitionName = 'element-toggle',
-      duration = 300
-    } = options;
+    const { transitionName = "element-toggle", duration = 300 } = options;
 
     // Set transition name for the element
     if (this.isSupported && element) {
@@ -117,10 +106,10 @@ export class ViewTransitionManager {
       onFinish: () => {
         // Clean up transition name
         if (this.isSupported && element) {
-          element.style.viewTransitionName = '';
+          element.style.viewTransitionName = "";
         }
       },
-      ...options
+      ...options,
     });
   }
 
@@ -131,9 +120,8 @@ export class ViewTransitionManager {
     if (this.currentTransition) {
       try {
         this.currentTransition.skipTransition();
-        console.log('🛑 View Transition cancelled');
       } catch (error) {
-        console.warn('⚠️ Could not cancel transition:', error);
+        console.warn("⚠️ Could not cancel transition:", error);
       }
       this.currentTransition = null;
     }
@@ -160,9 +148,9 @@ export class ViewTransitionManager {
   clearTransitionNames(elements) {
     if (!this.isSupported) return;
 
-    elements.forEach(element => {
+    elements.forEach((element) => {
       if (element) {
-        element.style.viewTransitionName = '';
+        element.style.viewTransitionName = "";
       }
     });
   }
@@ -172,14 +160,14 @@ export class ViewTransitionManager {
 export const viewTransitionManager = new ViewTransitionManager();
 
 // Export convenience functions
-export const startViewTransition = (callback, options) => 
+export const startViewTransition = (callback, options) =>
   viewTransitionManager.startTransition(callback, options);
 
-export const navigateWithTransition = (callback, options) => 
+export const navigateWithTransition = (callback, options) =>
   viewTransitionManager.navigateWithTransition(callback, options);
 
-export const toggleWithTransition = (element, callback, options) => 
+export const toggleWithTransition = (element, callback, options) =>
   viewTransitionManager.toggleWithTransition(element, callback, options);
 
-export const isViewTransitionSupported = () => 
+export const isViewTransitionSupported = () =>
   viewTransitionManager.isViewTransitionSupported();

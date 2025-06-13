@@ -17,8 +17,8 @@ export default class AboutModel extends BaseModel {
         image: "/src/assets/member/Yona.png",
         social: {
           linkedin: "#",
-          github: "#"
-        }
+          github: "#",
+        },
       },
       {
         name: "Wiefran Varenzo.",
@@ -26,8 +26,8 @@ export default class AboutModel extends BaseModel {
         image: "/src/assets/member/Wiefran.png",
         social: {
           linkedin: "#",
-          github: "#"
-        }
+          github: "#",
+        },
       },
       {
         name: "Dearni Lambardo Sarargih",
@@ -35,8 +35,8 @@ export default class AboutModel extends BaseModel {
         image: "/src/assets/member/Dearni.png",
         social: {
           linkedin: "#",
-          github: "#"
-        }
+          github: "#",
+        },
       },
       {
         name: "Rayina Ilham",
@@ -44,8 +44,8 @@ export default class AboutModel extends BaseModel {
         image: "/src/assets/member/Rayin.png",
         social: {
           linkedin: "#",
-          github: "#"
-        }
+          github: "#",
+        },
       },
       {
         name: "Oatse Rizqy Hendarto",
@@ -53,8 +53,8 @@ export default class AboutModel extends BaseModel {
         image: "/src/assets/member/Oatse.png",
         social: {
           linkedin: "#",
-          github: "#"
-        }
+          github: "#",
+        },
       },
       {
         name: "Muhammad Irza Alfarizi",
@@ -62,41 +62,48 @@ export default class AboutModel extends BaseModel {
         image: "/src/assets/member/Irza.png",
         social: {
           linkedin: "#",
-          github: "#"
-        }
-      }
+          github: "#",
+        },
+      },
     ];
   }
 
   // Get company information
   getCompanyInfo() {
     return {
-      mission: "LoughboroughDublin Travel has a dedicated to connecting travelers from around the world. We believe that sharing travel experiences enriches our understanding of different cultures and creates a global community of explorers.",
-      vision: "LoughboroughDublin Travel has a dedicated to connecting travelers from around the world. We believe that sharing travel experiences enriches our understanding of different cultures and creates a global community of explorers.",
-      projectInfo: "Our platform allows you to share your travel stories with photos and precise locations, discover new destinations through other travelers' experiences, and connect with like-minded adventurers who share your passion for exploration.",
-      description: "We're on a mission to make anemia detection accessible to everyone through innovative technology.",
+      mission:
+        "LoughboroughDublin Travel has a dedicated to connecting travelers from around the world. We believe that sharing travel experiences enriches our understanding of different cultures and creates a global community of explorers.",
+      vision:
+        "LoughboroughDublin Travel has a dedicated to connecting travelers from around the world. We believe that sharing travel experiences enriches our understanding of different cultures and creates a global community of explorers.",
+      projectInfo:
+        "Our platform allows you to share your travel stories with photos and precise locations, discover new destinations through other travelers' experiences, and connect with like-minded adventurers who share your passion for exploration.",
+      description:
+        "We're on a mission to make anemia detection accessible to everyone through innovative technology.",
       values: [
         {
           title: "Innovation",
-          description: "Continuously pushing the boundaries of what's possible in healthcare technology.",
-          icon: "fas fa-lightbulb"
+          description:
+            "Continuously pushing the boundaries of what's possible in healthcare technology.",
+          icon: "fas fa-lightbulb",
         },
         {
           title: "Accessibility",
-          description: "Making healthcare solutions available to everyone, everywhere.",
-          icon: "fas fa-universal-access"
+          description:
+            "Making healthcare solutions available to everyone, everywhere.",
+          icon: "fas fa-universal-access",
         },
         {
           title: "Accuracy",
           description: "Delivering reliable and precise results you can trust.",
-          icon: "fas fa-bullseye"
+          icon: "fas fa-bullseye",
         },
         {
           title: "Privacy",
-          description: "Protecting your personal health information with the highest standards.",
-          icon: "fas fa-shield-alt"
-        }
-      ]
+          description:
+            "Protecting your personal health information with the highest standards.",
+          icon: "fas fa-shield-alt",
+        },
+      ],
     };
   }
 
@@ -104,7 +111,7 @@ export default class AboutModel extends BaseModel {
   getAllData() {
     return {
       teamMembers: this.teamMembers,
-      companyInfo: this.companyInfo
+      companyInfo: this.companyInfo,
     };
   }
 }

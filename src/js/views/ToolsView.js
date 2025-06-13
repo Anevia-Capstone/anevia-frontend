@@ -414,8 +414,6 @@ export default class ToolsView extends BaseView {
     this.notifyPresenter("downloadReport");
   }
 
-
-
   // Method to notify presenter of user actions
   notifyPresenter(action, data = {}) {
     if (
@@ -544,9 +542,15 @@ export default class ToolsView extends BaseView {
       let imageUrl = scanData.photoUrl || scanData.imageUrl;
 
       // Convert relative URLs to absolute URLs
-      if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('blob:')) {
+      if (
+        imageUrl &&
+        !imageUrl.startsWith("http") &&
+        !imageUrl.startsWith("blob:")
+      ) {
         const API_BASE_URL = "https://server.anevia.my.id";
-        imageUrl = imageUrl.startsWith('/') ? `${API_BASE_URL}${imageUrl}` : `${API_BASE_URL}/${imageUrl}`;
+        imageUrl = imageUrl.startsWith("/")
+          ? `${API_BASE_URL}${imageUrl}`
+          : `${API_BASE_URL}/${imageUrl}`;
       }
 
       if (resultImage && resultImageContainer) {
@@ -560,9 +564,7 @@ export default class ToolsView extends BaseView {
         };
 
         // Add loading indicator
-        resultImage.onload = () => {
-          console.log("Scan image loaded successfully:", imageUrl);
-        };
+        resultImage.onload = () => {};
       }
     } else if (this.capturedImageUrl) {
       // Use captured image URL if available
@@ -745,7 +747,7 @@ export default class ToolsView extends BaseView {
       { id: "step-1", text: "Uploading image...", duration: 1000 },
       { id: "step-2", text: "Processing image...", duration: 2000 },
       { id: "step-3", text: "Analyzing data...", duration: 2500 },
-      { id: "step-4", text: "Finalizing results...", duration: 1500 }
+      { id: "step-4", text: "Finalizing results...", duration: 1500 },
     ];
 
     let progress = 0;
@@ -759,7 +761,7 @@ export default class ToolsView extends BaseView {
     }
 
     // Reset all steps first
-    steps.forEach(step => {
+    steps.forEach((step) => {
       const stepElement = this.findElement(`#${step.id}`);
       if (stepElement) {
         stepElement.classList.remove("active", "completed");
@@ -779,7 +781,10 @@ export default class ToolsView extends BaseView {
       // Calculate progress based on current step
       const currentStepData = steps[currentStep];
       if (currentStepData) {
-        const stepProgress = Math.min(stepElapsed / currentStepData.duration, 1);
+        const stepProgress = Math.min(
+          stepElapsed / currentStepData.duration,
+          1
+        );
         const baseProgress = (currentStep / steps.length) * 100;
         const stepContribution = (stepProgress / steps.length) * 100;
         progress = baseProgress + stepContribution;
@@ -801,7 +806,10 @@ export default class ToolsView extends BaseView {
       }
 
       // Check if current step is completed
-      if (stepElapsed >= currentStepData.duration && currentStep < steps.length - 1) {
+      if (
+        stepElapsed >= currentStepData.duration &&
+        currentStep < steps.length - 1
+      ) {
         // Mark current step as completed
         const currentStepElement = this.findElement(`#${currentStepData.id}`);
         if (currentStepElement) {
@@ -809,9 +817,9 @@ export default class ToolsView extends BaseView {
           currentStepElement.classList.add("completed");
 
           // Update icon to show checkmark
-          const stepIcon = currentStepElement.querySelector('.step-icon');
+          const stepIcon = currentStepElement.querySelector(".step-icon");
           if (stepIcon) {
-            stepIcon.textContent = '';
+            stepIcon.textContent = "";
           }
         }
 
@@ -835,7 +843,10 @@ export default class ToolsView extends BaseView {
       }
 
       // Complete the progress when all steps are done
-      if (currentStep >= steps.length - 1 && stepElapsed >= currentStepData.duration) {
+      if (
+        currentStep >= steps.length - 1 &&
+        stepElapsed >= currentStepData.duration
+      ) {
         progress = 100;
 
         if (progressBar) {
@@ -853,9 +864,9 @@ export default class ToolsView extends BaseView {
           finalStepElement.classList.add("completed");
 
           // Update icon to show checkmark
-          const stepIcon = finalStepElement.querySelector('.step-icon');
+          const stepIcon = finalStepElement.querySelector(".step-icon");
           if (stepIcon) {
-            stepIcon.textContent = '';
+            stepIcon.textContent = "";
           }
         }
 
@@ -879,7 +890,7 @@ export default class ToolsView extends BaseView {
     }
 
     // Reset all steps
-    steps.forEach(stepId => {
+    steps.forEach((stepId) => {
       const stepElement = this.findElement(`#${stepId}`);
       if (stepElement) {
         stepElement.classList.remove("active", "completed");

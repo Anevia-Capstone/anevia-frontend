@@ -14,13 +14,12 @@ export default class ProfilePresenter extends BasePresenter {
   }
 
   onShow() {
-    console.log("ProfilePresenter shown");
     // Load profile when shown
     this.loadProfile();
   }
 
   onHide() {
-    console.log("ProfilePresenter hidden");
+    // Hapus semua baris console.log
   }
 
   // Handle user actions from the view
@@ -63,14 +62,11 @@ export default class ProfilePresenter extends BasePresenter {
 
       if (result.success) {
         this.view.updateUserData(result.currentUser, result.backendUser);
-        // Don't show success message for normal profile loading
-        console.log("Profile loaded successfully");
       } else {
         // Check if this is just a temporary auth state issue
         const currentUser = this.model.getCurrentUser();
         if (!currentUser) {
           // Try to wait for auth state to load
-          console.log("Waiting for auth state to load...");
           let retryCount = 0;
           const maxRetries = 3;
 
@@ -83,12 +79,10 @@ export default class ProfilePresenter extends BasePresenter {
                 retryResult.currentUser,
                 retryResult.backendUser
               );
-              console.log("Profile loaded successfully after retry");
               return;
             }
 
             retryCount++;
-            console.log(`Retry ${retryCount}/${maxRetries} failed`);
           }
         }
 
@@ -99,9 +93,6 @@ export default class ProfilePresenter extends BasePresenter {
           result.error.includes("log in") ||
           result.error.includes("not authenticated")
         ) {
-          console.log(
-            "User not authenticated after retries, redirecting to home"
-          );
           setTimeout(() => {
             this.navigate("home");
           }, 3000); // Increased timeout to give user time to see the error
@@ -215,7 +206,7 @@ export default class ProfilePresenter extends BasePresenter {
     });
 
     // Add Enter key support
-    [newPasswordInput, confirmPasswordInput].forEach(input => {
+    [newPasswordInput, confirmPasswordInput].forEach((input) => {
       input.addEventListener("keypress", (e) => {
         if (e.key === "Enter") {
           this.handleChangePasswordConfirm(modal);
@@ -237,7 +228,7 @@ export default class ProfilePresenter extends BasePresenter {
       // Store current user data before password change
       const currentUserData = {
         user: this.model.getCurrentUser(),
-        backendUser: this.model.getBackendUser()
+        backendUser: this.model.getBackendUser(),
       };
 
       // Set flag to prevent logout during password change and store user data
@@ -258,15 +249,16 @@ export default class ProfilePresenter extends BasePresenter {
         }
 
         // Show success popup modal instead of regular message
-        this.showSuccessPopup("Password Changed Successfully", "Your password has been updated successfully. You can now use your new password to log in.");
+        this.showSuccessPopup(
+          "Password Changed Successfully",
+          "Your password has been updated successfully. You can now use your new password to log in."
+        );
 
         // Update user data if the API returned updated user info
         if (result.user) {
           // Update UI with available data
           this.view.updateUserData(this.model.getCurrentUser(), result.user);
           this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
-
-          console.log("Password change successful, UI updated. Token refresh will happen naturally via auth state change.");
         }
       } else {
         this.view.showError(result.error);
@@ -326,7 +318,7 @@ export default class ProfilePresenter extends BasePresenter {
       // Store current user data before password link
       const currentUserData = {
         user: this.model.getCurrentUser(),
-        backendUser: this.model.getBackendUser()
+        backendUser: this.model.getBackendUser(),
       };
 
       // Set flag to prevent logout during password link and store user data
@@ -350,15 +342,16 @@ export default class ProfilePresenter extends BasePresenter {
         }
 
         // Show success popup modal instead of regular message
-        this.showSuccessPopup("Password Linked Successfully", "Email/password authentication has been linked to your account successfully. You can now use email and password to log in.");
+        this.showSuccessPopup(
+          "Password Linked Successfully",
+          "Email/password authentication has been linked to your account successfully. You can now use email and password to log in."
+        );
 
         // Update user data if the API returned updated user info
         if (result.user) {
           // Update UI with available data
           this.view.updateUserData(this.model.getCurrentUser(), result.user);
           this.notifyProfileUpdate(this.model.getCurrentUser(), result.user);
-
-          console.log("Password link successful, UI updated. Token refresh will happen naturally via auth state change.");
         }
       } else {
         this.view.showError(result.error);
@@ -481,7 +474,7 @@ export default class ProfilePresenter extends BasePresenter {
     );
 
     // Set modal width for success popup
-    modal.querySelector('.modal-content').style.maxWidth = '400px';
+    modal.querySelector(".modal-content").style.maxWidth = "400px";
 
     return modal;
   }
@@ -504,11 +497,11 @@ export default class ProfilePresenter extends BasePresenter {
   // Notify the main app about profile updates
   notifyProfileUpdate(currentUser, backendUser) {
     // Dispatch a custom event that the main app can listen to
-    const profileUpdateEvent = new CustomEvent('profileUpdated', {
+    const profileUpdateEvent = new CustomEvent("profileUpdated", {
       detail: {
         currentUser,
-        backendUser
-      }
+        backendUser,
+      },
     });
     document.dispatchEvent(profileUpdateEvent);
   }

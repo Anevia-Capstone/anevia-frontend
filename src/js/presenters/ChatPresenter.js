@@ -18,18 +18,14 @@ export default class ChatPresenter extends BasePresenter {
   }
 
   onShow() {
-    console.log("ChatPresenter shown");
     // Scroll to top when showing chat page
     window.scrollTo(0, 0);
   }
 
-  onHide() {
-    console.log("ChatPresenter hidden");
-  }
+  onHide() {}
 
   // Initialize chat with scan data
   async initializeWithScanData(scanData) {
-    console.log("Initializing chat with scan data:", scanData);
     this.scanData = scanData;
 
     // Get current user
@@ -69,13 +65,6 @@ export default class ChatPresenter extends BasePresenter {
 
   // Load existing chat session
   async loadChatSession(sessionId, existingMessages = null) {
-    console.log(
-      "Loading chat session:",
-      sessionId,
-      "with existing messages:",
-      existingMessages ? existingMessages.length : 0
-    );
-
     // Get current user
     const user = getCurrentUser();
     if (!user) {
@@ -88,8 +77,6 @@ export default class ChatPresenter extends BasePresenter {
 
     // If we already have messages from history, use them directly
     if (existingMessages && existingMessages.length > 0) {
-      console.log("Using existing messages from history");
-
       // Clear any existing scan data since we're loading from history
       this.scanData = null;
 
@@ -150,8 +137,6 @@ export default class ChatPresenter extends BasePresenter {
       return;
     }
 
-    console.log("Sending message:", message);
-
     try {
       // Show AI thinking message instead of loading overlay
       this.view.showAIThinking();
@@ -164,7 +149,6 @@ export default class ChatPresenter extends BasePresenter {
       if (result.success) {
         // Messages are already updated in the model and view through the model's setData calls
         // The view will be updated via the onUpdate method
-        console.log("Message sent successfully");
       } else {
         this.view.showError(result.error || "Failed to send message");
       }
@@ -189,8 +173,6 @@ export default class ChatPresenter extends BasePresenter {
       return;
     }
 
-    console.log("Refreshing chat session:", currentSession.sessionId);
-
     try {
       // Reload current session from API (don't use existing messages)
       await this.loadChatSession(currentSession.sessionId, null);
@@ -202,8 +184,6 @@ export default class ChatPresenter extends BasePresenter {
 
   // Handle back action
   handleBack() {
-    console.log("ChatPresenter: handleBack called");
-
     // Determine where to navigate back to based on how we got here
     if (this.scanData) {
       // If we came from a scan, go back to tools
@@ -222,14 +202,11 @@ export default class ChatPresenter extends BasePresenter {
 
   // Update method called when model data changes
   onUpdate(data) {
-    console.log("ChatPresenter onUpdate:", data);
-
     if (data.key === "messages") {
       // Update view with new messages
       this.view.displayMessages(data.value);
     } else if (data.key === "currentSession") {
       // Session updated
-      console.log("Current session updated:", data.value);
     }
   }
 

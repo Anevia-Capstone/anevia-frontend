@@ -9,13 +9,13 @@ export default class BaseView {
 
   // Render the view
   render(data = {}) {
-    throw new Error('render() method must be implemented by subclass');
+    throw new Error("render() method must be implemented by subclass");
   }
 
   // Show the view
   show() {
     if (this.container) {
-      this.container.style.display = '';
+      this.container.style.display = "";
       this.isVisible = true;
       this.onShow();
     }
@@ -24,7 +24,7 @@ export default class BaseView {
   // Hide the view
   hide() {
     if (this.container) {
-      this.container.style.display = 'none';
+      this.container.style.display = "none";
       this.isVisible = false;
       this.onHide();
     }
@@ -42,7 +42,7 @@ export default class BaseView {
 
   // Add event listener and track it for cleanup
   addEventListener(element, event, handler) {
-    if (element && typeof element.addEventListener === 'function') {
+    if (element && typeof element.addEventListener === "function") {
       element.addEventListener(event, handler);
       this.eventListeners.push({ element, event, handler });
     }
@@ -51,7 +51,7 @@ export default class BaseView {
   // Remove all event listeners
   removeAllEventListeners() {
     this.eventListeners.forEach(({ element, event, handler }) => {
-      if (element && typeof element.removeEventListener === 'function') {
+      if (element && typeof element.removeEventListener === "function") {
         element.removeEventListener(event, handler);
       }
     });
@@ -59,13 +59,13 @@ export default class BaseView {
   }
 
   // Create element with attributes and content
-  createElement(tag, attributes = {}, content = '') {
+  createElement(tag, attributes = {}, content = "") {
     const element = document.createElement(tag);
 
-    Object.keys(attributes).forEach(key => {
-      if (key === 'className') {
+    Object.keys(attributes).forEach((key) => {
+      if (key === "className") {
         element.className = attributes[key];
-      } else if (key === 'innerHTML') {
+      } else if (key === "innerHTML") {
         element.innerHTML = attributes[key];
       } else {
         element.setAttribute(key, attributes[key]);
@@ -92,14 +92,13 @@ export default class BaseView {
   // Update view with new data
   update(data) {
     // Override in subclasses if needed
-    console.log('BaseView update called with data:', data);
   }
 
   // Clean up the view
   destroy() {
     this.removeAllEventListeners();
     if (this.container) {
-      this.container.innerHTML = '';
+      this.container.innerHTML = "";
     }
   }
 
@@ -123,7 +122,7 @@ export default class BaseView {
   }
 
   // Show loading state
-  showLoading(message = 'Loading...') {
+  showLoading(message = "Loading...") {
     this.setContent(`
       <div class="loading-container">
         <div class="loading-spinner"></div>
@@ -133,7 +132,7 @@ export default class BaseView {
   }
 
   // Show error state
-  showError(message = 'An error occurred') {
+  showError(message = "An error occurred") {
     this.setContent(`
       <div class="error-container">
         <div class="error-icon">⚠️</div>

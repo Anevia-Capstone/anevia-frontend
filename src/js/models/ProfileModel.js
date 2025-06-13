@@ -8,7 +8,11 @@ import {
   resetUserPassword,
   deleteUserProfile,
 } from "../api.js";
-import { getCurrentUser, logoutUser, getCurrentUserToken } from "../firebase/auth.js";
+import {
+  getCurrentUser,
+  logoutUser,
+  getCurrentUserToken,
+} from "../firebase/auth.js";
 
 export default class ProfileModel extends BaseModel {
   constructor() {
@@ -27,7 +31,7 @@ export default class ProfileModel extends BaseModel {
       if (!this.currentUser) {
         return {
           success: false,
-          error: "Please log in to view your profile"
+          error: "Please log in to view your profile",
         };
       }
 
@@ -45,7 +49,10 @@ export default class ProfileModel extends BaseModel {
           backendUser: this.backendUser,
         };
       } catch (backendError) {
-        console.warn("Backend profile fetch failed, using Firebase user only:", backendError);
+        console.warn(
+          "Backend profile fetch failed, using Firebase user only:",
+          backendError
+        );
         // Return Firebase user even if backend fails
         this.setData("currentUser", this.currentUser);
         this.setData("backendUser", null);
@@ -115,8 +122,6 @@ export default class ProfileModel extends BaseModel {
           throw new Error("Please enter a valid birthdate");
         }
       }
-
-      console.log("Sending profile update with data:", profileData);
 
       const response = await updateUserProfile(
         this.currentUser.uid,
@@ -204,7 +209,10 @@ export default class ProfileModel extends BaseModel {
         throw new Error("Passwords do not match");
       }
 
-      const response = await resetUserPassword(this.currentUser.uid, newPassword);
+      const response = await resetUserPassword(
+        this.currentUser.uid,
+        newPassword
+      );
 
       // Update backend user data with the response
       if (response.user) {
@@ -215,11 +223,10 @@ export default class ProfileModel extends BaseModel {
       // DON'T refresh Firebase user data immediately after password change
       // The backend password reset might invalidate the current token
       // Let the natural auth state change handle token refresh later
-      console.log("Password reset successful, skipping immediate token refresh to avoid auth issues");
 
       return {
         success: true,
-        user: response.user
+        user: response.user,
       };
     } catch (error) {
       console.error("Error changing password:", error);
@@ -264,11 +271,10 @@ export default class ProfileModel extends BaseModel {
       // DON'T refresh Firebase user data immediately after password link
       // The backend password link might invalidate the current token
       // Let the natural auth state change handle token refresh later
-      console.log("Password link successful, skipping immediate token refresh to avoid auth issues");
 
       return {
         success: true,
-        user: response.user
+        user: response.user,
       };
     } catch (error) {
       console.error("Error linking password:", error);
@@ -407,15 +413,12 @@ export default class ProfileModel extends BaseModel {
     try {
       if (!this.currentUser) return;
 
-      console.log("Refreshing Firebase user data...");
-
       // Add a longer delay to allow backend changes to propagate
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 3000));
 
       // Reload the user to get updated provider data (this is less likely to cause auth state changes)
       try {
         await this.currentUser.reload();
-        console.log("User reload successful");
       } catch (reloadError) {
         console.warn("User reload failed, but continuing:", reloadError);
         // Continue without throwing error
@@ -428,23 +431,28 @@ export default class ProfileModel extends BaseModel {
 
       while (!tokenRefreshSuccess && retryCount < maxRetries) {
         try {
-          console.log(`Attempting token refresh (attempt ${retryCount + 1}/${maxRetries})`);
-
           // Get a fresh token to ensure backend sync, but with longer delays between attempts
-          await new Promise(resolve => setTimeout(resolve, 2000 * (retryCount + 1)));
+          await new Promise((resolve) =>
+            setTimeout(resolve, 2000 * (retryCount + 1))
+          );
           await getCurrentUserToken(true);
           tokenRefreshSuccess = true;
-          console.log("Token refresh successful");
-
         } catch (tokenError) {
           retryCount++;
-          console.warn(`Token refresh attempt ${retryCount} failed:`, tokenError);
+          console.warn(
+            `Token refresh attempt ${retryCount} failed:`,
+            tokenError
+          );
 
           if (retryCount < maxRetries) {
             // Wait longer before retrying
-            await new Promise(resolve => setTimeout(resolve, 3000 * retryCount));
+            await new Promise((resolve) =>
+              setTimeout(resolve, 3000 * retryCount)
+            );
           } else {
-            console.error("All token refresh attempts failed, but continuing...");
+            console.error(
+              "All token refresh attempts failed, but continuing..."
+            );
             // Don't throw error, continue with existing token
           }
         }
@@ -454,12 +462,8 @@ export default class ProfileModel extends BaseModel {
       this.currentUser = getCurrentUser();
       this.setData("currentUser", this.currentUser);
 
-      console.log("Firebase user data refreshed successfully");
-      console.log("Updated providers:", this.currentUser?.providerData?.map(p => p.providerId));
-
       // Force a small delay to ensure UI updates properly
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
       console.error("Error refreshing Firebase user data:", error);
       // Don't throw error, just log it as this is not critical for password change success

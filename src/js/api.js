@@ -26,12 +26,6 @@ authAxios.interceptors.request.use(
 // Function to upload an image for anemia detection
 export const uploadScanImage = async (imageFile) => {
   try {
-    console.log(
-      "Uploading scan image to backend:",
-      imageFile.name,
-      imageFile.size
-    );
-
     const formData = new FormData();
     formData.append("image", imageFile);
 
@@ -42,7 +36,6 @@ export const uploadScanImage = async (imageFile) => {
       },
     });
 
-    console.log("Scan image upload response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error uploading scan image:", error);
@@ -78,18 +71,12 @@ export const getScanById = async (scanId) => {
 // Function to verify Firebase token with the backend
 export const verifyToken = async (token) => {
   try {
-    console.log(
-      "Verifying token with backend:",
-      token ? "Token exists" : "No token"
-    );
-
     // Verify the token with the backend
     const response = await axios.post(`${API_BASE_URL}/auth/verify`, { token });
 
     // Store the token in localStorage for future authenticated requests
     localStorage.setItem("firebaseToken", token);
 
-    console.log("Token verification successful:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error verifying token:", error);
@@ -112,11 +99,8 @@ export const verifyToken = async (token) => {
 // Function to get user profile from backend
 export const getUserProfile = async (uid) => {
   try {
-    console.log(`Fetching user profile for UID ${uid}`);
-
     // Try to get user profile from backend
     const response = await authAxios.get(`${API_BASE_URL}/auth/profile/${uid}`);
-    console.log("User profile fetched successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error(`Error fetching user profile for UID ${uid}:`, error);
@@ -124,7 +108,6 @@ export const getUserProfile = async (uid) => {
 
     // Check if it's a 404 error (user not found)
     if (error.response?.status === 404) {
-      console.log("User not found in backend, this might be a new user");
       // Return a structure that indicates the user needs to be created
       return {
         error: false,
@@ -170,8 +153,6 @@ export const refreshToken = async (user) => {
 // Function to upload profile image
 export const uploadProfileImage = async (uid, imageFile) => {
   try {
-    console.log(`Uploading profile image for UID ${uid}`);
-
     const formData = new FormData();
     formData.append("image", imageFile);
 
@@ -185,7 +166,6 @@ export const uploadProfileImage = async (uid, imageFile) => {
       }
     );
 
-    console.log("Profile image uploaded successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error(`Error uploading profile image for UID ${uid}:`, error);
@@ -197,8 +177,6 @@ export const uploadProfileImage = async (uid, imageFile) => {
 // Function to link email/password to existing account
 export const linkEmailPassword = async (uid, password) => {
   try {
-    console.log(`Linking email/password for UID ${uid}`);
-
     const response = await authAxios.post(
       `${API_BASE_URL}/auth/profile/${uid}/link-password`,
       {
@@ -211,7 +189,6 @@ export const linkEmailPassword = async (uid, password) => {
       }
     );
 
-    console.log("Email/password linked successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error(`Error linking email/password for UID ${uid}:`, error);
@@ -223,8 +200,6 @@ export const linkEmailPassword = async (uid, password) => {
 // Function to update user profile
 export const updateUserProfile = async (uid, profileData) => {
   try {
-    console.log(`Updating user profile for UID ${uid}`, profileData);
-
     const response = await authAxios.put(
       `${API_BASE_URL}/auth/profile/${uid}`,
       profileData,
@@ -235,7 +210,6 @@ export const updateUserProfile = async (uid, profileData) => {
       }
     );
 
-    console.log("User profile updated successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error(`Error updating user profile for UID ${uid}:`, error);
@@ -247,8 +221,6 @@ export const updateUserProfile = async (uid, profileData) => {
 // Function to reset user password
 export const resetUserPassword = async (uid, newPassword) => {
   try {
-    console.log(`Resetting password for UID ${uid}`);
-
     const response = await authAxios.put(
       `${API_BASE_URL}/auth/profile/${uid}/reset-password`,
       {
@@ -261,7 +233,6 @@ export const resetUserPassword = async (uid, newPassword) => {
       }
     );
 
-    console.log("Password reset successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error(`Error resetting password for UID ${uid}:`, error);
@@ -273,13 +244,10 @@ export const resetUserPassword = async (uid, newPassword) => {
 // Function to delete user profile
 export const deleteUserProfile = async (uid) => {
   try {
-    console.log(`Deleting user profile for UID ${uid}`);
-
     const response = await authAxios.delete(
       `${API_BASE_URL}/auth/profile/${uid}`
     );
 
-    console.log("User profile deleted successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error(`Error deleting user profile for UID ${uid}:`, error);
@@ -293,10 +261,6 @@ export const deleteUserProfile = async (uid) => {
 // Function to start a new chat session from scan data
 export const startChatFromScan = async (scanId, userId) => {
   try {
-    console.log(
-      `Starting new chat session for scan ${scanId} and user ${userId}`
-    );
-
     const response = await authAxios.post(
       `${API_ENDPOINT}/chats`,
       {
@@ -310,7 +274,6 @@ export const startChatFromScan = async (scanId, userId) => {
       }
     );
 
-    console.log("Chat session started successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error(`Error starting chat session for scan ${scanId}:`, error);
@@ -322,8 +285,6 @@ export const startChatFromScan = async (scanId, userId) => {
 // Function to send a message in an existing chat session
 export const sendChatMessage = async (sessionId, userId, message) => {
   try {
-    console.log(`Sending message to session ${sessionId} from user ${userId}`);
-
     const response = await authAxios.post(
       `${API_ENDPOINT}/chats/messages`,
       {
@@ -338,7 +299,6 @@ export const sendChatMessage = async (sessionId, userId, message) => {
       }
     );
 
-    console.log("Message sent successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error(`Error sending message to session ${sessionId}:`, error);
@@ -350,11 +310,8 @@ export const sendChatMessage = async (sessionId, userId, message) => {
 // Function to get all chat sessions for a user
 export const getUserChatSessions = async (userId) => {
   try {
-    console.log(`Fetching all chat sessions for user ${userId}`);
-
     const response = await authAxios.get(`${API_ENDPOINT}/chats/${userId}`);
 
-    console.log("Chat sessions fetched successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error(`Error fetching chat sessions for user ${userId}:`, error);
@@ -366,15 +323,10 @@ export const getUserChatSessions = async (userId) => {
 // Function to get chat messages by user and session ID
 export const getChatMessages = async (userId, sessionId) => {
   try {
-    console.log(
-      `Fetching chat messages for user ${userId} and session ${sessionId}`
-    );
-
     const response = await authAxios.get(
       `${API_ENDPOINT}/chats/${userId}/${sessionId}`
     );
 
-    console.log("Chat messages fetched successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error(

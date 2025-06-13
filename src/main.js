@@ -62,19 +62,16 @@ class App {
 
   initializePWA() {
     // PWA is automatically initialized by importing pwaManager
-    console.log('PWA functionality initialized');
 
     // Make pwaManager globally available
     window.pwaManager = pwaManager;
 
     // Setup offline/online event handlers for the app
-    window.addEventListener('online', () => {
-      console.log('App is back online');
+    window.addEventListener("online", () => {
       this.handleOnlineStatus(true);
     });
 
-    window.addEventListener('offline', () => {
-      console.log('App is offline');
+    window.addEventListener("offline", () => {
       this.handleOnlineStatus(false);
     });
 
@@ -87,38 +84,41 @@ class App {
 
   handleOnlineStatus(isOnline) {
     // Update UI based on online/offline status
-    const offlineIndicator = document.getElementById('offline-indicator') || this.createOfflineIndicator();
+    const offlineIndicator =
+      document.getElementById("offline-indicator") ||
+      this.createOfflineIndicator();
 
     if (isOnline) {
-      offlineIndicator.classList.remove('show');
+      offlineIndicator.classList.remove("show");
       // Sync any pending offline data
       this.syncOfflineData();
     } else {
-      offlineIndicator.classList.add('show');
+      offlineIndicator.classList.add("show");
     }
   }
 
   createOfflineIndicator() {
-    const indicator = document.createElement('div');
-    indicator.id = 'offline-indicator';
-    indicator.className = 'offline-indicator';
-    indicator.innerHTML = '<i class="fas fa-wifi"></i>You are currently offline';
+    const indicator = document.createElement("div");
+    indicator.id = "offline-indicator";
+    indicator.className = "offline-indicator";
+    indicator.innerHTML =
+      '<i class="fas fa-wifi"></i>You are currently offline';
     document.body.appendChild(indicator);
     return indicator;
   }
 
   setupDataCaching() {
     // Cache important user data for offline access
-    if ('serviceWorker' in navigator) {
+    if ("serviceWorker" in navigator) {
       // Listen for user data changes and cache them
-      document.addEventListener('userDataUpdated', (event) => {
+      document.addEventListener("userDataUpdated", (event) => {
         if (event.detail && pwaManager) {
-          pwaManager.cacheUserData('user-profile', event.detail);
+          pwaManager.cacheUserData("user-profile", event.detail);
         }
       });
 
       // Listen for scan results and cache them
-      document.addEventListener('scanResultCached', (event) => {
+      document.addEventListener("scanResultCached", (event) => {
         if (event.detail && pwaManager) {
           pwaManager.cacheUserData(`scan-${event.detail.scanId}`, event.detail);
         }
@@ -128,34 +128,32 @@ class App {
 
   async syncOfflineData() {
     // Sync any offline data when back online
-    console.log('Syncing offline data...');
     // This would be implemented based on your specific offline data storage needs
   }
 
   setupPWAInstallPrompts() {
     // Show install notification for eligible users
-    let installPromptShown = localStorage.getItem('pwa-install-prompt-shown');
+    let installPromptShown = localStorage.getItem("pwa-install-prompt-shown");
 
     // Show install prompt after 30 seconds if not shown before and app is installable
     if (!installPromptShown) {
       setTimeout(() => {
         if (window.pwaManager && window.pwaManager.deferredPrompt) {
           this.showInstallPrompt();
-          localStorage.setItem('pwa-install-prompt-shown', 'true');
+          localStorage.setItem("pwa-install-prompt-shown", "true");
         }
       }, 30000); // 30 seconds
     }
 
     // Listen for successful installation
-    window.addEventListener('appinstalled', () => {
-      console.log('PWA was installed successfully');
+    window.addEventListener("appinstalled", () => {
       this.showInstallSuccessMessage();
     });
   }
 
   showInstallPrompt() {
-    const prompt = document.createElement('div');
-    prompt.className = 'pwa-install-prompt show';
+    const prompt = document.createElement("div");
+    prompt.className = "pwa-install-prompt show";
     prompt.innerHTML = `
       <h3>Install Anevia App</h3>
       <p>Get faster access and work offline by installing our app on your device.</p>
@@ -175,8 +173,8 @@ class App {
   }
 
   showInstallSuccessMessage() {
-    const message = document.createElement('div');
-    message.className = 'pwa-install-notification';
+    const message = document.createElement("div");
+    message.className = "pwa-install-notification";
     message.innerHTML = `
       <div class="pwa-notification-content">
         <i class="fas fa-check-circle"></i>
@@ -224,27 +222,23 @@ class App {
 
     // Listen for navigate to chat event from tools page
     window.addEventListener("navigateToChat", (event) => {
-      console.log("Navigate to chat event received:", event.detail);
       this.pendingChatData = event.detail;
       this.router.navigate("chat");
     });
 
     // Listen for navigate to scan history event
     window.addEventListener("navigateToScanHistory", (event) => {
-      console.log("Navigate to scan history event received:", event.detail);
       this.router.navigate("scan-history");
     });
 
     // Listen for navigate to tools event from scan history
     window.addEventListener("navigateToTools", (event) => {
-      console.log("Navigate to tools event received:", event.detail);
       this.router.navigate("tools");
     });
 
     // Listen for profile updates (e.g., image upload, profile save)
     document.addEventListener("profileUpdated", (event) => {
       const { currentUser, backendUser } = event.detail;
-      console.log("Profile updated event received, updating navbar...");
       this.updateUIForLoggedInUser(currentUser, backendUser);
     });
   }
@@ -327,15 +321,14 @@ class App {
 
     // Handle different types of chat initialization
     if (this.pendingChatData) {
-      console.log("Main: Initializing chat with pending data:", this.pendingChatData);
-
       if (this.pendingChatData.sessionId) {
         // Loading existing chat session from history
-        console.log("Main: Loading existing chat session:", this.pendingChatData.sessionId);
-        this.chatPresenter.loadChatSession(this.pendingChatData.sessionId, this.pendingChatData.messages);
+        this.chatPresenter.loadChatSession(
+          this.pendingChatData.sessionId,
+          this.pendingChatData.messages
+        );
       } else if (this.pendingChatData.scanId) {
         // Starting new chat from scan
-        console.log("Main: Starting new chat from scan:", this.pendingChatData.scanId);
         this.chatPresenter.initializeWithScanData(this.pendingChatData);
       }
 
@@ -346,23 +339,17 @@ class App {
   }
 
   showScanHistory() {
-    console.log("Main: showScanHistory called");
     this.hideAllPages();
     this.showHeaderFooter();
     if (!this.scanHistoryPresenter) {
-      console.log("Main: Creating new ScanHistoryPresenter");
       this.scanHistoryPresenter = new ScanHistoryPresenter();
     }
 
     // Set user ID if available
     if (this.currentUser) {
-      console.log("Main: Setting user ID:", this.currentUser.uid);
       this.scanHistoryPresenter.setUserId(this.currentUser.uid);
-    } else {
-      console.log("Main: No current user available");
     }
 
-    console.log("Main: Showing scan history presenter");
     this.scanHistoryPresenter.show();
   }
 
@@ -404,23 +391,16 @@ class App {
 
     // Listen for authentication state changes
     onAuthStateChanged((user, backendUser, backendResponse) => {
-      console.log("Auth state changed:", user ? "logged in" : "logged out");
-
       if (user) {
         // User is signed in
         this.currentUser = user;
         this.backendUser = backendUser;
         this.backendResponse = backendResponse;
-        console.log("User is signed in:", user.displayName || user.email);
 
         if (backendUser) {
-          console.log("Backend user data:", backendUser);
           // Hide loading only when we have complete user data
           this.showAuthLoading(false);
         } else {
-          console.log(
-            "Backend user data not available, using Firebase user only"
-          );
           // Hide loading even if backend data is not available
           this.showAuthLoading(false);
         }
@@ -432,7 +412,6 @@ class App {
         this.currentUser = null;
         this.backendUser = null;
         this.backendResponse = null;
-        console.log("User is signed out");
 
         // Hide loading
         this.showAuthLoading(false);
@@ -445,16 +424,13 @@ class App {
 
   updateUIForLoggedInUser(user, backendUser) {
     // Add user-authenticated class to navigation for CSS styling
-    const navbar = document.querySelector('.navbar');
+    const navbar = document.querySelector(".navbar");
     if (navbar) {
-      navbar.classList.add('user-authenticated');
+      navbar.classList.add("user-authenticated");
     }
 
     // Update user profile with user information
     if (this.userProfile) {
-      console.log("Updating user profile in main.js with user:", user);
-      console.log("Backend user data for UI update:", backendUser);
-
       // Create a combined user object with proper photo URL handling
       const userToDisplay = {
         ...user,
@@ -467,7 +443,6 @@ class App {
         }),
       };
 
-      console.log("Combined user data for profile:", userToDisplay);
       this.userProfile.updateUserInfo(userToDisplay);
     } else {
       console.error("User profile component not initialized");
@@ -497,9 +472,9 @@ class App {
 
   updateUIForLoggedOutUser() {
     // Remove user-authenticated class from navigation for CSS styling
-    const navbar = document.querySelector('.navbar');
+    const navbar = document.querySelector(".navbar");
     if (navbar) {
-      navbar.classList.remove('user-authenticated');
+      navbar.classList.remove("user-authenticated");
     }
 
     // Update user profile to hide it and show login buttons
@@ -524,7 +499,6 @@ class App {
     const protectedRoutes = ["profile"]; // Add more protected routes here if needed
 
     if (protectedRoutes.includes(currentRoute)) {
-      console.log("User logged out from protected route, redirecting to home");
       this.router.navigate("home");
     }
   }
@@ -615,14 +589,14 @@ class App {
 }
 
 // Global error handlers
-window.addEventListener('unhandledrejection', (event) => {
-  console.error('Unhandled promise rejection:', event.reason);
+window.addEventListener("unhandledrejection", (event) => {
+  console.error("Unhandled promise rejection:", event.reason);
   // Prevent the default browser behavior (logging to console)
   event.preventDefault();
 });
 
-window.addEventListener('error', (event) => {
-  console.error('Global error:', event.error);
+window.addEventListener("error", (event) => {
+  console.error("Global error:", event.error);
 });
 
 // Initialize the application when the DOM is loaded

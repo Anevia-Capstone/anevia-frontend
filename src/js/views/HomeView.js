@@ -505,10 +505,12 @@ export default class HomeView extends BaseView {
 
     // Trigger typing animation for statement text after hero animation
     setTimeout(() => {
-      const statementText = document.querySelector('.statement-text[data-animation="typeWriter"]');
-      if (statementText && !statementText.classList.contains('animated')) {
+      const statementText = document.querySelector(
+        '.statement-text[data-animation="typeWriter"]'
+      );
+      if (statementText && !statementText.classList.contains("animated")) {
         animationManager.typeWriter(statementText);
-        statementText.classList.add('animated');
+        statementText.classList.add("animated");
       }
     }, 1500); // Start typing after hero animation completes
 
@@ -518,28 +520,28 @@ export default class HomeView extends BaseView {
 
   setupCapabilityAccordion() {
     // Get all capability headers
-    const capabilityHeaders = document.querySelectorAll('.capability-header');
+    const capabilityHeaders = document.querySelectorAll(".capability-header");
 
-    capabilityHeaders.forEach(header => {
-      header.addEventListener('click', (e) => {
+    capabilityHeaders.forEach((header) => {
+      header.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
 
-        const capabilityItem = header.closest('.capability-item');
-        const isExpanded = capabilityItem.classList.contains('expanded');
+        const capabilityItem = header.closest(".capability-item");
+        const isExpanded = capabilityItem.classList.contains("expanded");
 
         // Close all other capability items
-        document.querySelectorAll('.capability-item').forEach(item => {
+        document.querySelectorAll(".capability-item").forEach((item) => {
           if (item !== capabilityItem) {
-            item.classList.remove('expanded');
+            item.classList.remove("expanded");
           }
         });
 
         // Toggle current item
         if (isExpanded) {
-          capabilityItem.classList.remove('expanded');
+          capabilityItem.classList.remove("expanded");
         } else {
-          capabilityItem.classList.add('expanded');
+          capabilityItem.classList.add("expanded");
         }
 
         // Add a small delay for smooth animation
@@ -547,12 +549,13 @@ export default class HomeView extends BaseView {
           // Optional: scroll to item if needed
           if (!isExpanded) {
             const rect = capabilityItem.getBoundingClientRect();
-            const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+            const isVisible =
+              rect.top >= 0 && rect.bottom <= window.innerHeight;
 
             if (!isVisible) {
               capabilityItem.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
+                behavior: "smooth",
+                block: "center",
               });
             }
           }
@@ -563,6 +566,5 @@ export default class HomeView extends BaseView {
 
   update(data) {
     // Update view if needed based on data changes
-    console.log("HomeView update called with data:", data);
   }
 }

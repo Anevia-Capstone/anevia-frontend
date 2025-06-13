@@ -1,5 +1,5 @@
 // Offline-capable API wrapper for Anevia
-import pwaManager from './pwa.js';
+import pwaManager from "./pwa.js";
 
 class OfflineAPI {
   constructor() {
@@ -9,12 +9,12 @@ class OfflineAPI {
   }
 
   setupNetworkListeners() {
-    window.addEventListener('online', () => {
+    window.addEventListener("online", () => {
       this.isOnline = true;
       this.processPendingRequests();
     });
 
-    window.addEventListener('offline', () => {
+    window.addEventListener("offline", () => {
       this.isOnline = false;
     });
   }
@@ -33,12 +33,11 @@ class OfflineAPI {
 
         return data;
       } catch (error) {
-        console.error('Network request failed:', error);
+        console.error("Network request failed:", error);
         // Fall back to cache if available
         if (cacheKey) {
           const cachedData = await this.getCachedResponse(cacheKey);
           if (cachedData) {
-            console.log('Returning cached data due to network error');
             return cachedData;
           }
         }
@@ -49,17 +48,16 @@ class OfflineAPI {
       if (cacheKey) {
         const cachedData = await this.getCachedResponse(cacheKey);
         if (cachedData) {
-          console.log('Returning cached data (offline)');
           return cachedData;
         }
       }
 
       // Queue the request for when we're back online
-      if (options.method && options.method !== 'GET') {
+      if (options.method && options.method !== "GET") {
         this.queueRequest(url, options, cacheKey);
       }
 
-      throw new Error('No internet connection and no cached data available');
+      throw new Error("No internet connection and no cached data available");
     }
   }
 
@@ -68,7 +66,7 @@ class OfflineAPI {
       await pwaManager.cacheUserData(key, {
         data: data,
         timestamp: Date.now(),
-        url: key
+        url: key,
       });
     }
   }
@@ -78,7 +76,7 @@ class OfflineAPI {
       const cached = await pwaManager.getCachedUserData(key);
       if (cached && cached.data) {
         // Check if cache is still valid (24 hours)
-        const isValid = (Date.now() - cached.timestamp) < (24 * 60 * 60 * 1000);
+        const isValid = Date.now() - cached.timestamp < 24 * 60 * 60 * 1000;
         if (isValid) {
           return cached.data;
         }
@@ -88,24 +86,25 @@ class OfflineAPI {
   }
 
   queueRequest(url, options, cacheKey) {
-    this.pendingRequests.push({ url, options, cacheKey, timestamp: Date.now() });
-    console.log('Request queued for when online:', url);
+    this.pendingRequests.push({
+      url,
+      options,
+      cacheKey,
+      timestamp: Date.now(),
+    });
   }
 
   async processPendingRequests() {
-    console.log(`Processing ${this.pendingRequests.length} pending requests`);
-
     const requests = [...this.pendingRequests];
     this.pendingRequests = [];
 
     for (const request of requests) {
       try {
         await this.makeRequest(request.url, request.options, request.cacheKey);
-        console.log('Pending request processed successfully:', request.url);
       } catch (error) {
-        console.error('Failed to process pending request:', request.url, error);
+        console.error("Failed to process pending request:", request.url, error);
         // Re-queue if it's still recent (within 1 hour)
-        if ((Date.now() - request.timestamp) < (60 * 60 * 1000)) {
+        if (Date.now() - request.timestamp < 60 * 60 * 1000) {
           this.pendingRequests.push(request);
         }
       }
@@ -115,49 +114,49 @@ class OfflineAPI {
   // Scan-specific methods
   async uploadScanImage(imageFile) {
     const formData = new FormData();
-    formData.append('image', imageFile);
+    formData.append("image", imageFile);
 
-    const token = localStorage.getItem('firebaseToken');
+    const token = localStorage.getItem("firebaseToken");
     const options = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
-      body: formData
+      body: formData,
     };
 
     return await this.makeRequest(
-      'https://server.anevia.my.id/api/scans',
+      "https://server.anevia.my.id/api/scans",
       options,
       null // Don't cache upload requests
     );
   }
 
   async getAllScans() {
-    const token = localStorage.getItem('firebaseToken');
+    const token = localStorage.getItem("firebaseToken");
     const options = {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
     };
 
     return await this.makeRequest(
-      'https://server.anevia.my.id/api/scans',
+      "https://server.anevia.my.id/api/scans",
       options,
-      'all-scans'
+      "all-scans"
     );
   }
 
   async getScanById(scanId) {
-    const token = localStorage.getItem('firebaseToken');
+    const token = localStorage.getItem("firebaseToken");
     const options = {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
     };
 
     return await this.makeRequest(
@@ -169,13 +168,13 @@ class OfflineAPI {
 
   // User profile methods
   async getUserProfile(uid) {
-    const token = localStorage.getItem('firebaseToken');
+    const token = localStorage.getItem("firebaseToken");
     const options = {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
     };
 
     return await this.makeRequest(
@@ -187,13 +186,13 @@ class OfflineAPI {
 
   // Chat methods
   async getUserChatSessions(userId) {
-    const token = localStorage.getItem('firebaseToken');
+    const token = localStorage.getItem("firebaseToken");
     const options = {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
     };
 
     return await this.makeRequest(
@@ -204,13 +203,13 @@ class OfflineAPI {
   }
 
   async getChatMessages(userId, sessionId) {
-    const token = localStorage.getItem('firebaseToken');
+    const token = localStorage.getItem("firebaseToken");
     const options = {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
     };
 
     return await this.makeRequest(
@@ -226,7 +225,7 @@ class OfflineAPI {
       await pwaManager.cacheUserData(`offline-${key}`, {
         data: data,
         timestamp: Date.now(),
-        synced: false
+        synced: false,
       });
     }
   }
